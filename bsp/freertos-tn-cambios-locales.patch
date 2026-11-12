@@ -1,0 +1,21 @@
+diff --git a/examples/imx7d_pico_m4/demo_apps/blinking_imx_demo/main.c b/examples/imx7d_pico_m4/demo_apps/blinking_imx_demo/main.c
+index e280647..d190079 100644
+--- a/examples/imx7d_pico_m4/demo_apps/blinking_imx_demo/main.c
++++ b/examples/imx7d_pico_m4/demo_apps/blinking_imx_demo/main.c
+@@ -50,8 +50,14 @@ void ToggleTask(void *pvParameters)
+     while (true)
+     {
+         GPIO_Ctrl_ToggleLed();
+-        /* Use Hardware timer to get accurate delay */
+-        Hw_Timer_Delay(blinkingInterval);
++        /* PRUEBA 2026-08-15: se sustituye el retardo por GPT3 por el SysTick
++         * del propio Cortex-M4, para aislar si el problema de escala de tiempo
++         * viene del reloj del GPT3 (que gestiona Linux) o del nucleo M4.
++         * Original:  Hw_Timer_Delay(blinkingInterval);
++         * configTICK_RATE_HZ = 1000, luego 1 tick = 1 ms.
++         * Este FreeRTOS es V8.0.0 y no tiene pdMS_TO_TICKS; se usa
++         * portTICK_PERIOD_MS, que si existe. */
++        vTaskDelay(blinkingInterval / portTICK_PERIOD_MS);
+     }
+ }
+ 

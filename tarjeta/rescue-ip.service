@@ -1,0 +1,10 @@
+[Unit]
+Description=IP de rescate fija 192.168.1.240 (salvavidas de NM, espera al enlace y se autorrepara)
+After=NetworkManager.service
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/rescue-ip.sh
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target

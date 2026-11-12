@@ -1,0 +1,549 @@
+<!--
+  Entrada para https://compilando-pico-pi-imx7.blogspot.com
+  Pegar en Blogger: Nueva entrada → vista «HTML» (no «Redactar») → pegar todo.
+  Título sugerido: WiFi, punto de acceso e Internet en la Pico-Pi… sin perder RPMsg
+  Etiquetas sugeridas: WiFi, RPMsg, Kernel, NetworkManager, M4, eMMC
+
+  ANTES DE PUBLICAR, rellenar los tres marcadores:
+    URL_IMAGEN_EMMC     → enlace de descarga de la imagen
+    SHA256_IMAGEN_EMMC  → sha256sum del fichero
+    TAMANO_IMAGEN_EMMC  → tamaño del fichero
+  (buscar «URL_IMAGEN_EMMC» etc. en este texto)
+-->
+<div style="background:#ffffff;color:#222222;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.65;max-width:820px;margin:0 auto;padding:8px 4px;">
+
+<p style="font-size:14px;color:#666666;margin:0 0 18px 0;">
+11 de noviembre de 2026 · TechNexion Pico-Pi-i.MX7D · kernel <code style="font-family:Consolas,'Courier New',monospace;font-size:14px;">5.10.72</code> · FreeRTOS en el M4
+</p>
+
+<p>
+En entradas anteriores habíamos dejado dos cuentas pendientes con esta tarjeta.
+La primera: <b>el WiFi nunca funcionó</b>, porque no aparecía ninguna interfaz
+<code style="font-family:Consolas,'Courier New',monospace;font-size:15px;background:#f3f3f3;padding:1px 4px;">wlan0</code>.
+La segunda: cualquier arreglo que tocara el kernel tenía que <b>conservar RPMsg</b>,
+el canal entre Linux (los dos Cortex-A7) y FreeRTOS (el Cortex-M4), que es la
+pieza central de cualquier proyecto que reparta el trabajo entre los dos tipos
+de núcleo.
+</p>
+
+<p>
+Hoy quedaron resueltas las dos, y alguna más. La Pico-Pi ya hace de
+<b>punto de acceso WiFi con salida a Internet</b>, arranca sola, sobrevive a un
+arranque con el cable de red desconectado y mantiene el canal con el M4.
+<b>Y no hizo falta cambiar el kernel que ya estaba instalado.</b>
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">Resumen de lo logrado</h2>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:15px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;">
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Pieza</th>
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Estado</th>
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Evidencia</th>
+</tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">RPMsg A7 ↔ M4</td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Verificado</b></td><td style="padding:8px;border:1px solid #cccccc;">104/104 ecos, mediana 4,9 ms</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">WiFi BCM4339 (<code>wlan0</code>)</td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Verificado</b></td><td style="padding:8px;border:1px solid #cccccc;">Escanea en 2,4 y 5 GHz</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">Punto de acceso <code>PicoPi-AP</code></td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Verificado</b></td><td style="padding:8px;border:1px solid #cccccc;">Un teléfono conectado a 65 Mbit/s, <i>sin antena</i></td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">Internet para los clientes (NAT)</td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Verificado</b></td><td style="padding:8px;border:1px solid #cccccc;">El teléfono navega a través de la Pico-Pi</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">Todo vuelve solo tras reiniciar</td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Verificado</b></td><td style="padding:8px;border:1px solid #cccccc;">Probado con el cable de red desconectado durante el arranque</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">Corte de luz real</td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>Superado una vez</b></td><td style="padding:8px;border:1px solid #cccccc;">Un apagón doméstico a mitad de la jornada</td></tr>
+</table>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">1. Primero, RPMsg: ¿ya estaba en el kernel?</h2>
+
+<p>
+Antes de recompilar nada había que saber de qué partíamos. El kernel de la
+tarjeta expone su configuración en <code style="font-family:Consolas,'Courier New',monospace;font-size:15px;background:#f3f3f3;padding:1px 4px;">/proc/config.gz</code>,
+y ahí estaba todo lo necesario:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ zcat /proc/config.gz | grep -E 'RPMSG|IMX_REMOTEPROC'
+CONFIG_RPMSG=y
+CONFIG_RPMSG_VIRTIO=y
+CONFIG_IMX_REMOTEPROC=y
+CONFIG_IMX_RPMSG_TTY=m
+CONFIG_IMX_RPMSG_PINGPONG=m</pre>
+
+<p>
+El árbol de dispositivos (DTB) que usa U-Boot también trae el nodo
+<code style="font-family:Consolas,'Courier New',monospace;font-size:15px;background:#f3f3f3;padding:1px 4px;">rpmsg</code>
+activado, con la memoria compartida en <code>0x9FFF0000</code> (64 KiB).
+Faltaba solo un firmware en el M4 que hablara RPMsg.
+</p>
+
+<p><b>Comprobación previa que no hay que saltarse:</b> los anillos de mensajes
+(<i>vrings</i>) del firmware del M4 tienen que caer exactamente en esa zona y
+<b>fuera</b> de la RAM de Linux. En el BSP de FreeRTOS están en
+<code>middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c</code>:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">#define VRING0_BASE  0x9FFF0000
+#define VRING1_BASE  0x9FFF8000
+
+$ grep 'System RAM' /proc/iomem
+80000000-9fefffff : System RAM      ← termina antes de 0x9FFF0000: no se pisan</pre>
+
+<p>
+Con la placa correcta del BSP, <b><code>imx7d_pico_m4</code></b> (no la
+<code>sdb</code>, que es la tarjeta de referencia de NXP y tiene 1 GB), todo
+coincide de fábrica.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">El firmware de eco y la prueba</h3>
+
+<p>Compilamos el ejemplo <code>rpmsg/str_echo_freertos</code>: devuelve al A7
+cada cadena que recibe.</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;"># en el PC de desarrollo (toolchain GNU Arm Embedded 10.3-2021.10, CMake 3.28)
+./scripts/build-m4.sh rpmsg/str_echo_freertos release clean
+#  → rpmsg_str_echo_freertos_example.bin  (21 372 B, enlazado en TCM)
+scp rpmsg_str_echo_freertos_example.bin ubuntu@&lt;tarjeta&gt;:/tmp/rpmsg_echo.bin
+
+# en la tarjeta: copiar a la partición FAT y decírselo a U-Boot
+sudo mount /dev/mmcblk2p1 /mnt/boot
+sudo cp /tmp/rpmsg_echo.bin /mnt/boot/
+sudo cp /mnt/boot/uEnv.txt /mnt/boot/uEnv.pre-rpmsg       # respaldo
+sudo sed -i 's/^m4image=.*/m4image=rpmsg_echo.bin/' /mnt/boot/uEnv.txt
+sudo sync; sudo umount /mnt/boot; sudo reboot</pre>
+
+<p>
+El U-Boot de esta tarjeta ya trae el flujo del M4 integrado: si encuentra
+<code>m4image</code> en la FAT, lo carga en la TCM (<code>0x7F8000</code> visto
+desde el A7) y lo lanza con <code>bootaux</code> <b>antes</b> de arrancar Linux.
+Tras el arranque:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ dmesg | grep rpmsg
+virtio_rpmsg_bus virtio0: rpmsg host is online
+virtio_rpmsg_bus virtio0: creating channel rpmsg-openamp-demo-channel addr 0x0
+
+$ sudo modprobe imx_rpmsg_tty        # aparece /dev/ttyRPMSG0
+
+TX 'hola M4, soy el A7'      -&gt; RX 'hola M4, soy el A7'       OK 6.01 ms
+TX 'prueba RPMsg 2026-11-11' -&gt; RX 'prueba RPMsg 2026-11-11'  OK 6.37 ms
+104/104 ecos correctos; latencia mín 4,40 · mediana 4,88 · máx 14,04 ms</pre>
+
+<p>Para que <code>/dev/ttyRPMSG0</code> aparezca en cada arranque sin hacer nada:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">echo imx_rpmsg_tty | sudo tee /etc/modules-load.d/rpmsg.conf</pre>
+
+<div style="background:#fff8e1;border-left:4px solid #e0a800;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Truco:</b> se puede comprobar <i>qué</i> firmware tiene cargado el M4 sin
+consola serie, leyendo la TCM desde Linux por <code>/dev/mem</code> en
+<code>0x7F8000</code> (32 KiB) y comparándola byte a byte con el <code>.bin</code>.
+Aquí dio 21 372/21 372 bytes iguales. <b>Solo lectura</b>: escribir ahí corrompe
+el firmware en marcha.
+</div>
+
+<p>Recordatorio de lo que ya sabíamos: en el i.MX7 <b>no hay remoteproc completo</b>.
+El M4 lo arranca U-Boot, y desde Linux no se puede parar ni recargar limpiamente.
+Cambiar el firmware del M4 exige reiniciar.</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">2. Por qué no había WiFi</h2>
+
+<p>
+El chip WiFi/Bluetooth de la SOM es un <b>Broadcom BCM4339</b> (módulo AP6335)
+conectado por SDIO. El hardware estaba ahí y el kernel lo veía en el bus:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ cat /sys/bus/sdio/devices/*/vendor /sys/bus/sdio/devices/*/device
+0x02d0     ← Broadcom
+0x4335     ← BCM4339</pre>
+
+<p>
+Pero el kernel instalado se compiló <b>sin el driver</b>
+(<code>brcmfmac</code>), y en <code>/lib/firmware</code> no había firmware
+<code>brcm/</code>. Sin driver no hay <code>wlan0</code>. Así de simple.
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">3. Compilar el kernel… para usar solo dos módulos</h2>
+
+<p>El plan inicial era recompilar el kernel completo con WiFi y RPMsg. Estos fueron los ingredientes:</p>
+
+<ul>
+<li><b>Fuentes:</b> <code>github.com/TechNexion/linux-tn-imx</code>, rama
+<code>tn-imx_5.10.72_2.2.0-stable</code> (la misma versión que corre en la
+tarjeta). El <code>git clone</code> se cortaba por la red; el tarball de GitHub con
+<code>curl --retry</code> funcionó.</li>
+<li><b>Configuración:</b> la <b>del kernel vivo</b>, sacada de
+<code>/proc/config.gz</code>. Es la mejor garantía de que el resultado se parezca
+al original.</li>
+<li><b>Compilador cruzado:</b> GCC 6.5.0 <code>arm-linux-gnueabi</code> de
+kernel.org, la misma versión mayor con la que se compiló el kernel vivo (Linaro
+6.5, <i>gnueabihf</i>). Que sea <i>gnueabi</i> y no <i>gnueabihf</i> no importa
+para un kernel: no usa coma flotante ni la libc.</li>
+<li><b>Paquetes del PC:</b> <code>sudo apt install bison flex lzop libssl-dev bc libelf-dev</code>.</li>
+</ul>
+
+<p>Los únicos cambios sobre la configuración viva:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">export ARCH=arm
+export CROSS_COMPILE=~/opt/gcc-6.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-
+
+zcat config.gz &gt; .config                      # el .config del kernel vivo
+scripts/config --module BRCMFMAC --enable BRCMFMAC_SDIO
+scripts/config --enable RPMSG_CHAR              # aditivo: /dev/rpmsgN
+scripts/config --disable LOCALVERSION_AUTO --set-str LOCALVERSION "-g7966a667bd89-dirty"
+make olddefconfig
+make -j$(nproc) zImage modules dtbs</pre>
+
+<p>
+La línea de <code>LOCALVERSION</code> es importante: reproduce la
+<b>misma cadena de versión</b> del kernel vivo
+(<code>5.10.72-g7966a667bd89-dirty</code>). Desde un tarball no hay git que
+ponga ese sufijo solo, y sin él los módulos irían a otro directorio de
+<code>/lib/modules</code> y el kernel los rechazaría.
+</p>
+
+<div style="background:#fff8e1;border-left:4px solid #e0a800;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Aviso que ya habíamos aprendido:</b> <code>make modules_prepare</code> <b>no</b>
+genera <code>Module.symvers</code>. Para compilar módulos fiables hace falta la
+compilación completa.<br>
+<b>Y uno nuevo:</b> un apagón a mitad de la compilación dejó 136 objetos
+<code>.o</code> vacíos. Si se corta la luz, <code>make clean</code> y desde cero;
+no intentes «continuar».
+</div>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">El hallazgo: los CRC de los símbolos coinciden</h3>
+
+<p>
+El kernel vivo tiene <code>CONFIG_MODVERSIONS=y</code>: cada símbolo exportado
+lleva un CRC de su firma, y un módulo solo carga si sus CRC coinciden con los del
+kernel. Comparamos los símbolos que usan <b>todos los módulos que ya funcionan en
+la tarjeta</b> (<code>modprobe --dump-modversions</code>) con el
+<code>Module.symvers</code> del kernel recién compilado:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">símbolos usados por los módulos vivos:  1874
+presentes en el kernel nuevo:           1874     ausentes: 0
+CRC distintos:                             0</pre>
+
+<p>
+Conclusión: <b>el árbol compilado tiene la misma ABI que el kernel instalado</b>.
+Entonces el <code>brcmfmac.ko</code> nuevo debería cargar <b>en el kernel que ya
+corre</b>, sin cambiar el <code>zImage</code> ni tocar el arranque. Era la prueba
+menos arriesgada posible, y la hicimos primero.
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">4. Instalar el WiFi sin cambiar el kernel</h2>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">El firmware del chip</h3>
+
+<p>El driver necesita dos ficheros en <code>/lib/firmware/brcm/</code>:</p>
+
+<ul>
+<li><b><code>brcmfmac4339-sdio.bin</code></b>: el firmware del chip. En
+<code>linux-firmware</code> vive hoy como <code>cypress/cyfmac4339-sdio.bin</code>
+(la ruta <code>brcm/</code> antigua da 404). Se descarga y se renombra. Versión
+6.37.39.113.</li>
+<li><b><code>brcmfmac4339-sdio.txt</code></b>: la <b>calibración de radio de la
+placa</b>. Este no se descarga: viene con la imagen de TechNexion. En nuestra
+tarjeta estaba olvidado en <code>/media/rootfs/lib/firmware/brcm/</code>.
+<b>Guárdalo como oro</b>: sin él el chip no arranca bien.</li>
+</ul>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">Los módulos</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">R=$(uname -r)                                   # 5.10.72-g7966a667bd89-dirty
+sudo tar czf /root/lib-modules-pre-wifi.tgz -C /lib/modules $R    # respaldo
+
+D=/lib/modules/$R/kernel/drivers/net/wireless/broadcom/brcm80211
+sudo install -D -m644 brcmutil.ko $D/brcmutil/brcmutil.ko
+sudo install -D -m644 brcmfmac.ko $D/brcmfmac/brcmfmac.ko
+sudo install -D -m644 brcmfmac4339-sdio.bin /lib/firmware/brcm/
+sudo install -D -m644 brcmfmac4339-sdio.txt /lib/firmware/brcm/
+sudo depmod -a
+sudo modprobe brcmfmac</pre>
+
+<p>Y apareció:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4339-sdio for chip BCM4339/2
+brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4339/2 wl0: Sep  5 2019 11:05:52
+          version 6.37.39.113 (r722271 CY)
+
+$ ip -br link
+wlan0   DOWN   28:ed:e0:xx:xx:xx &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;
+
+$ iw list
+    Supported interface modes:
+         * IBSS  * managed  * AP  * P2P-client  * P2P-GO  * P2P-device
+    valid interface combinations:
+         * #{ managed } &lt;= 1, #{ AP } &lt;= 1, ... #channels &lt;= 1</pre>
+
+<p>
+Soporta <b>modo AP</b>, e incluso <b>cliente y AP a la vez</b> en el mismo canal,
+que es justo lo que pide una pasarela de campo. El escaneo vio seis redes en 2,4 y
+5 GHz. Después, el eco RPMsg con el WiFi cargado dio <b>20/20</b>: no se estorban.
+</p>
+
+<p style="font-size:15px;color:#555555;">
+Dos avisos inofensivos en <code>dmesg</code>: falta <code>clm_blob</code> (puede
+limitar canales; aun así vio 5 GHz) y el driver busca primero un
+<code>.txt</code> con el nombre de la placa
+(<code>brcmfmac4339-sdio.fsl,pico-imx7d.txt</code>) antes de usar el genérico.
+Como el módulo queda en <code>/lib/modules</code>, <b>udev lo carga solo en cada
+arranque</b>.
+</p>
+
+<p>
+<b>Vuelta atrás</b>, por si acaso: <code>sudo modprobe -r brcmfmac brcmutil</code>,
+borrar los dos <code>.ko</code> y <code>sudo depmod -a</code>. El kernel compilado
+completo (<code>zImage</code> con WiFi) queda guardado, por si algún día hiciera
+falta. No hizo falta.
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">5. Punto de acceso «PicoPi-AP» con NetworkManager</h2>
+
+<p>
+La tarjeta ya usa NetworkManager para <code>eth0</code>, así que el AP también va
+con él. Así no hay dos gestores peleándose por la misma interfaz; un
+<code>hostapd</code> suelto sería un segundo gestor.
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">sudo nmcli connection add type wifi ifname wlan0 con-name ap-picopi \
+     autoconnect yes ssid PicoPi-AP \
+     802-11-wireless.mode ap 802-11-wireless.band bg 802-11-wireless.channel 6 \
+     ipv4.method shared ipv6.method ignore \
+     wifi-sec.key-mgmt wpa-psk wifi-sec.proto rsn \
+     wifi-sec.pairwise ccmp wifi-sec.group ccmp \
+     wifi-sec.psk '&lt;TU_CLAVE_DE_8_O_MÁS_CARACTERES&gt;'
+sudo nmcli connection up ap-picopi</pre>
+
+<p>
+<code>ipv4.method shared</code> le da a <code>wlan0</code> la dirección
+<code>10.42.0.1/24</code> y lanza un <code>dnsmasq</code> propio que reparte
+direcciones (<code>10.42.0.10</code> a <code>.254</code>) a los clientes.
+<b>Ojo con la clave:</b> WPA2 exige <b>8 caracteres como mínimo</b>; con 7,
+<code>nmcli</code> la rechaza.
+</p>
+
+<p>Con un teléfono conectado:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ iw dev wlan0 station dump
+Station xx:xx:xx:xx:xx:xx (on wlan0)
+    tx bitrate:   65.0 MBit/s
+    rx bitrate:   65.0 MBit/s
+
+$ sudo cat /var/lib/NetworkManager/dnsmasq-wlan0.leases
+... 10.42.0.216 android ...</pre>
+
+<p><b>65 Mbit/s sin antena instalada</b>, eso sí, con el teléfono muy cerca de la placa.</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">El NAT no salía… y por qué</h3>
+
+<p>
+El teléfono se conectaba pero no tenía Internet. NetworkManager dejaba esto en el
+journal:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">&lt;warn&gt; iptables: command /usr/sbin/iptables failed: Child process exited with code 1</pre>
+
+<p>La causa son dos carencias del kernel vivo, que se ven en su <code>.config</code>:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;"># CONFIG_NF_TABLES is not set        ← por eso falla iptables-nft (el de Ubuntu)
+# CONFIG_IP_NF_FILTER is not set     ← no hay tabla 'filter' ni siquiera en legacy
+CONFIG_IP_NF_NAT=y                   ← pero la tabla 'nat' sí está
+CONFIG_IP_NF_TARGET_MASQUERADE=y     ← y MASQUERADE también</pre>
+
+<p>
+NetworkManager intenta poner reglas en <code>filter</code> y en <code>nat</code>,
+y como las de <code>filter</code> fallan, no termina. Pero <b>sin tabla
+<code>filter</code> tampoco hay nada que bloquee el reenvío</b>, así que basta con
+la regla de <code>MASQUERADE</code>. La solución tiene dos pasos:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;"># 1) usar la variante legacy de iptables (vuelta atrás: --auto)
+sudo update-alternatives --set iptables  /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy</pre>
+
+<p>2) Un script del <i>dispatcher</i> de NetworkManager, en
+<code>/etc/NetworkManager/dispatcher.d/50-ap-nat</code> (permisos 755,
+dueño root), que pone la regla al subir el AP y la quita al bajarlo:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">#!/bin/sh
+# NAT para el AP PicoPi-AP. El kernel no tiene tabla 'filter', pero sí 'nat'.
+[ "$CONNECTION_ID" = ap-picopi ] || exit 0
+regla() { iptables -w -t nat "$1" POSTROUTING -s 10.42.0.0/24 ! -d 10.42.0.0/24 -j MASQUERADE; }
+case "$2" in
+    up)   regla -C 2&gt;/dev/null || regla -A ;;
+    down) while regla -D 2&gt;/dev/null; do :; done ;;
+esac
+exit 0</pre>
+
+<p>Con eso, <b>el teléfono navega por Internet a través de la Pico-Pi</b>.</p>
+
+<div style="background:#fdecea;border-left:4px solid #c0392b;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Seguridad:</b> así configurado, quien se conecte a <code>PicoPi-AP</code> sale a
+Internet <b>y también alcanza la red de casa</b> (la LAN de <code>eth0</code>).
+Para pruebas, con WPA2 y una clave buena, es aceptable. Para una red abierta o
+compartida hay que aislarla.
+</div>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">6. Un fallo de red escondido: el cable que llega tarde</h2>
+
+<p>
+La tarjeta tiene una <b>IP fija de rescate</b> (<code>192.168.1.240</code>),
+ajena al DHCP, para no perder nunca el acceso por SSH (no tenemos consola serie).
+La servían dos fuentes: el perfil <code>eth0-main</code> de NetworkManager y un
+servicio <code>rescue-ip.service</code> que la ponía con <code>ip addr</code> al
+arrancar.
+</p>
+
+<p>
+Tras un apagado, el enlace del cable subió <b>1 min 45 s</b> después del
+arranque. Mientras tanto <code>rescue-ip</code> ya había puesto la
+<code>.240</code>. NetworkManager vio una dirección puesta por «otro», la
+<b>asumió</b> como conexión externa (<code>connected (externally)</code>) y,
+cuando llegó el cable, <b>no activó <code>eth0-main</code></b>. Resultado: la
+<code>.240</code> sí, pero <b>sin DHCP, sin ruta por defecto, sin Internet ni
+NTP</b>, y como el RTC no tiene pila, el reloj se quedó en julio.
+</p>
+
+<p>
+El salvavidas cumplió su función, porque seguimos entrando por la
+<code>.240</code>, pero escondía un fallo que se repetiría cada vez que el router
+volviera más tarde que la tarjeta, por ejemplo tras un corte de luz. El arreglo
+fue convertir <code>rescue-ip</code> en un <b>vigilante</b> que no se adelanta a
+NetworkManager y que además se autorrepara:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">#!/bin/sh
+# /usr/local/sbin/rescue-ip.sh — IP de rescate como salvavidas de NetworkManager.
+# Espera a que haya enlace, da GRACIA segundos a NM para activar su perfil
+# (que ya trae la .240) y solo la añade si falta. Vigila siempre.
+IP=192.168.1.240/24
+IF=eth0
+GRACIA=90
+PASO=30
+con_enlace=0
+while :; do
+    if [ "$(cat /sys/class/net/$IF/carrier 2&gt;/dev/null)" = 1 ]; then
+        con_enlace=$((con_enlace + PASO))
+        if [ $con_enlace -ge $GRACIA ] &amp;&amp; ! ip -4 addr show dev $IF | grep -q " ${IP%/*}/"; then
+            ip addr add $IP dev $IF &amp;&amp; logger -t rescue-ip "faltaba ${IP}: añadida a $IF"
+        fi
+    else
+        con_enlace=0
+    fi
+    sleep $PASO
+done</pre>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;"># /etc/systemd/system/rescue-ip.service
+[Unit]
+Description=IP de rescate fija (salvavidas de NM, espera al enlace y se autorrepara)
+After=NetworkManager.service
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/rescue-ip.sh
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target</pre>
+
+<p>
+Se probó dos veces. Primero, quitando la <code>.240</code> a mano con la máquina en
+marcha: volvió sola a los 10 s. Después, arrancando con el cable desconectado y
+conectándolo 2 minutos más tarde: <code>eth0-main</code> se activó en el mismo
+segundo en que subió el enlace, con DHCP y ruta, y el vigilante no tuvo que
+intervenir.
+</p>
+
+<div style="background:#eef5fb;border-left:4px solid #1a4d80;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Método para cambios de red en remoto</b>, repetido en cada paso de hoy:
+(1) respaldo de los ficheros; (2) reversión automática armada con
+<code>systemd-run --on-active=420 …</code>; (3) el cambio lanzado también con
+<code>systemd-run</code>, para que no muera si se corta la sesión SSH;
+(4) verificar el acceso; (5) solo entonces cancelar la reversión.
+</div>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">7. La prueba final: reiniciar con el cable desconectado</h2>
+
+<p>Reinicio por botón, cable de red fuera, y se conecta pasados unos 2 minutos. Sin tocar nada:</p>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:15px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;"><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Comprobación</th><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Resultado</th></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">Arranque nuevo</td><td style="padding:8px;border:1px solid #cccccc;"><code>boot_id</code> distinto (no fiarse del ping)</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">Red cableada</td><td style="padding:8px;border:1px solid #cccccc;"><code>eth0-main</code> activo al subir el enlace: DHCP, <code>.240</code> y ruta por defecto</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">WiFi</td><td style="padding:8px;border:1px solid #cccccc;"><code>brcmfmac</code> cargado solo, <code>wlan0</code> a los ~19 s</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">AP <code>PicoPi-AP</code></td><td style="padding:8px;border:1px solid #cccccc;">En el aire incluso sin cable; el teléfono se reconectó solo</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">NAT</td><td style="padding:8px;border:1px solid #cccccc;">Regla <code>MASQUERADE</code> puesta por el dispatcher, contando tráfico; el teléfono navega</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">RPMsg</td><td style="padding:8px;border:1px solid #cccccc;"><code>/dev/ttyRPMSG0</code> solo; eco <b>20/20</b></td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">Servicios</td><td style="padding:8px;border:1px solid #cccccc;">Ninguno fallido</td></tr>
+</table>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">8. Imagen de la eMMC con todas las mejoras</h2>
+
+<p>
+Para no repetir todo esto en las otras dos tarjetas (y como copia de seguridad),
+dejamos una imagen completa de la eMMC con todo lo de esta entrada ya instalado:
+</p>
+
+<ul>
+<li>Linux del A7 actualizado y estable; red con NetworkManager e IP de rescate vigilante.</li>
+<li>Driver WiFi <code>brcmfmac</code> + firmware BCM4339, carga automática.</li>
+<li>Punto de acceso <code>PicoPi-AP</code> con DHCP y NAT (dispatcher incluido).</li>
+<li>Firmware RPMsg de eco en el M4 y <code>imx_rpmsg_tty</code> cargado al arrancar.</li>
+</ul>
+
+<div style="background:#f4f6f8;border:2px dashed #1a4d80;padding:14px 16px;margin:18px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;">
+<b>Descarga:</b> <a href="URL_IMAGEN_EMMC" style="color:#1a4d80;">URL_IMAGEN_EMMC</a><br>
+<b>Tamaño:</b> TAMANO_IMAGEN_EMMC<br>
+<b>SHA-256:</b> <code style="word-break:break-all;">SHA256_IMAGEN_EMMC</code><br>
+<span style="color:#555555;">Comprueba la descarga con <code>sha256sum</code> antes de grabarla.</span>
+</div>
+
+<div style="background:#fdecea;border-left:4px solid #c0392b;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Antes de usarla en otra tarjeta:</b>
+<ul style="margin:6px 0 0 0;">
+<li><b>Cambia la contraseña</b> del usuario y la <b>clave del AP</b>
+(<code>nmcli connection modify ap-picopi wifi-sec.psk '…'</code>).</li>
+<li><b>Regenera las claves de host SSH</b>: todas las tarjetas grabadas con la misma
+imagen tendrían la misma identidad.
+<code>sudo rm /etc/ssh/ssh_host_* &amp;&amp; sudo dpkg-reconfigure openssh-server</code>.</li>
+<li><b>Cambia el SSID</b> (<code>PicoPi-AP</code> → uno por tarjeta) y la
+<b>IP de rescate</b> (perfil <code>eth0-main</code> y
+<code>/usr/local/sbin/rescue-ip.sh</code>). Dos tarjetas con la misma
+<code>.240</code> en la misma red chocan.</li>
+<li>El <code>brcmfmac4339-sdio.txt</code> es la calibración de <b>esta</b> placa; en
+otra conviene usar el suyo propio si se conserva.</li>
+</ul>
+</div>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">9. Lecciones de la jornada</h2>
+
+<ol>
+<li><b>Mira el kernel vivo antes de recompilar.</b> RPMsg ya estaba; solo faltaba firmware en el M4.</li>
+<li><b>Compilar no obliga a instalar el kernel.</b> Con la misma configuración y la misma cadena de versión, comparar los CRC de <code>MODVERSIONS</code> dice si basta con añadir módulos. Aquí bastó, y el arranque no se tocó.</li>
+<li><b>El <code>.txt</code> de calibración del WiFi es lo único irreemplazable.</b> El firmware se descarga; la calibración no.</li>
+<li><b>Lee el <code>.config</code> cuando algo de red falle «sin razón».</b> El NAT fallaba por una tabla que el kernel no tiene.</li>
+<li><b>Un salvavidas puede esconder un fallo.</b> La IP de rescate nos mantenía dentro mientras la red real estaba rota. Prueba los arranques en condiciones malas: sin cable, con el router tarde, con un corte de luz.</li>
+</ol>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">Lo que sigue</h2>
+
+<ul>
+<li>Instalar la antena y medir alcance real.</li>
+<li>Replicar en las otras dos Pico-Pi, cada una con su SSID, su subred y su IP de rescate.</li>
+<li>Un firmware propio en el M4 que envíe <b>datos útiles</b> por RPMsg (no solo eco).</li>
+<li>El reloj: el RTC no tiene pila; para registrar datos con marca de tiempo fiable hará falta <b>GPS con PPS</b>.</li>
+<li>El ADC por SPI: <b>ECSPI3</b> es el único que sale al conector, y hay que quitárselo a Linux por device tree.</li>
+</ul>
+
+<p style="font-size:14px;color:#666666;border-top:1px solid #dddddd;padding-top:10px;margin-top:30px;">
+Hardware: TechNexion Pico-Pi-i.MX7D (NXP i.MX7 Dual: 2× Cortex-A7 + Cortex-M4F) ·
+Kernel <code>5.10.72-g7966a667bd89-dirty</code> (TechNexion <code>linux-tn-imx</code>) ·
+BSP FreeRTOS 1.0.1 de TechNexion (<code>freertos-tn</code>, placa <code>imx7d_pico_m4</code>) ·
+WiFi BCM4339 (AP6335), firmware 6.37.39.113.
+</p>
+
+</div>

@@ -1,0 +1,11 @@
+#!/bin/sh
+# NAT para el AP PicoPi-AP. NM no consigue poner sus propias reglas porque el
+# kernel vivo no tiene tabla 'filter' (CONFIG_IP_NF_FILTER no está), pero sí 'nat'.
+# Sin tabla filter tampoco hay nada que bloquee el FORWARD, así que basta esto.
+[ "$CONNECTION_ID" = ap-picopi ] || exit 0
+regla() { iptables -w -t nat "$1" POSTROUTING -s 10.42.0.0/24 ! -d 10.42.0.0/24 -j MASQUERADE; }
+case "$2" in
+    up)   regla -C 2>/dev/null || regla -A ;;
+    down) while regla -D 2>/dev/null; do :; done ;;
+esac
+exit 0

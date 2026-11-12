@@ -1,0 +1,544 @@
+<!--
+  Entrada para https://compilando-pico-pi-imx7.blogspot.com
+  Pegar en Blogger: Nueva entrada → vista «HTML» (no «Redactar») → pegar todo.
+  Título sugerido: Compilando el kernel de la Pico-Pi (y el firmware del M4): herramientas, versiones y trampas
+  Etiquetas sugeridas: Kernel, Compilación cruzada, Toolchain, M4, FreeRTOS, CMake, WSL2
+  Complementa a la entrada «WiFi, punto de acceso e Internet en la Pico-Pi… sin perder RPMsg».
+-->
+<div style="background:#ffffff;color:#222222;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.65;max-width:820px;margin:0 auto;padding:8px 4px;">
+
+<p style="font-size:14px;color:#666666;margin:0 0 18px 0;">
+11 de noviembre de 2026 · Compilación cruzada para TechNexion Pico-Pi-i.MX7D · Linux 5.10.72 (A7) y FreeRTOS (M4)
+</p>
+
+<p>
+En la entrada anterior contamos <i>qué</i> logramos: WiFi, punto de acceso con
+Internet y RPMsg funcionando a la vez. Esta va del <b>cómo</b>: con qué
+herramientas, en qué versiones exactas, en qué orden y con qué tropiezos. Está
+pensada para quien quiera repetirlo, o para cualquier estudiante que se enfrente
+por primera vez a compilar un kernel para una placa ARM.
+</p>
+
+<p>
+Una regla que seguimos en todo el proyecto: distinguir siempre entre lo que está
+<b>documentado</b>, lo que <b>compiló</b> y lo que se <b>verificó funcionando en la
+tarjeta</b>. Que algo compile no prueba que funcione.
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">0. Dos procesadores, dos compiladores</h2>
+
+<p>
+El i.MX7D tiene dos tipos de núcleo, y cada uno necesita su propio compilador
+cruzado. Es la primera confusión típica:
+</p>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:15px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;">
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;"></th>
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;">2× Cortex-A7</th>
+  <th style="padding:8px;text-align:left;border:1px solid #1a4d80;">1× Cortex-M4F</th>
+</tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;"><b>Qué corre</b></td><td style="padding:8px;border:1px solid #cccccc;">Linux (kernel + Ubuntu)</td><td style="padding:8px;border:1px solid #cccccc;">FreeRTOS, sin sistema operativo «grande»</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;"><b>Prefijo del compilador</b></td><td style="padding:8px;border:1px solid #cccccc;"><code>arm-linux-gnueabi-</code> (o <code>…gnueabihf-</code>)</td><td style="padding:8px;border:1px solid #cccccc;"><code>arm-none-eabi-</code></td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;"><b>Qué significa</b></td><td style="padding:8px;border:1px solid #cccccc;">objetivo: ARM <i>con</i> Linux</td><td style="padding:8px;border:1px solid #cccccc;">objetivo: ARM <i>sin</i> sistema operativo (<i>bare metal</i>)</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;"><b>Versión usada</b></td><td style="padding:8px;border:1px solid #cccccc;">GCC 6.5.0 + binutils 2.32 (kernel.org)</td><td style="padding:8px;border:1px solid #cccccc;">GNU Arm Embedded 10.3-2021.10 (GCC 10.3.1)</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;"><b>Sistema de build</b></td><td style="padding:8px;border:1px solid #cccccc;">Kbuild (<code>make</code>)</td><td style="padding:8px;border:1px solid #cccccc;">CMake 3.28.3 + <code>make</code></td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;"><b>Salida</b></td><td style="padding:8px;border:1px solid #cccccc;"><code>zImage</code>, módulos <code>.ko</code>, <code>.dtb</code></td><td style="padding:8px;border:1px solid #cccccc;"><code>.elf</code>, <code>.bin</code>, <code>.hex</code>, <code>.map</code></td></tr>
+</table>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">1. La máquina de compilación</h2>
+
+<p>
+Todo se compiló en un portátil con Windows, dentro de <b>WSL2</b>. Esta es la
+ficha completa, porque las versiones del <i>host</i> también importan:
+</p>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:15px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;"><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Componente</th><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Versión</th></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">Distribución</td><td style="padding:8px;border:1px solid #cccccc;">Ubuntu 24.04.5 LTS (en WSL2, kernel 6.18 de Microsoft)</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">CPU / RAM</td><td style="padding:8px;border:1px solid #cccccc;">4 núcleos visibles (<code>nproc</code>) · 23 GiB</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">GNU Make</td><td style="padding:8px;border:1px solid #cccccc;">4.3</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">GCC nativo (para las herramientas del propio kernel)</td><td style="padding:8px;border:1px solid #cccccc;">13.3.0</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">bison / flex</td><td style="padding:8px;border:1px solid #cccccc;">3.8.2 / 2.6.4</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">lzop (LZO)</td><td style="padding:8px;border:1px solid #cccccc;">2.10</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">OpenSSL / libssl-dev</td><td style="padding:8px;border:1px solid #cccccc;">3.0.13</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">libelf-dev</td><td style="padding:8px;border:1px solid #cccccc;">0.190</td></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;">bc</td><td style="padding:8px;border:1px solid #cccccc;">1.07.1</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;">CMake</td><td style="padding:8px;border:1px solid #cccccc;">3.28.3 (el paquete de Ubuntu 24.04)</td></tr>
+</table>
+
+<p>Paquetes del sistema necesarios para el kernel:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">sudo apt install build-essential bison flex lzop libssl-dev bc libelf-dev</pre>
+
+<ul>
+<li><b>bison y flex</b>: generan los analizadores de <code>Kconfig</code> y de <code>dtc</code> (el compilador de device tree).</li>
+<li><b>lzop</b>: este kernel se comprime con <b>LZO</b> (<code>CONFIG_KERNEL_LZO=y</code>). Sin <code>lzop</code>, el <code>zImage</code> no se puede generar.</li>
+<li><b>libssl-dev</b>: lo usa <code>scripts/sign-file</code> y <code>extract-cert</code>, aunque aquí los módulos no se firman.</li>
+<li><b>bc</b>: lo usa Kbuild para calcular constantes de tiempo.</li>
+</ul>
+
+<div style="background:#fff8e1;border-left:4px solid #e0a800;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Detalle WSL2:</b> compila <b>dentro del sistema de ficheros de Linux</b>
+(<code>~/…</code>), nunca en <code>/mnt/c/…</code>. El disco de Windows montado es
+lentísimo para miles de ficheros pequeños y no distingue mayúsculas y minúsculas
+como Linux. El kernel tiene ficheros que solo se diferencian en eso (por ejemplo
+en <code>netfilter</code>).
+</div>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">PARTE A · El kernel de Linux</h2>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A1. Empezar por el kernel que ya corre</h3>
+
+<p>
+El error clásico es bajar unas fuentes, hacer <code>make defconfig</code> y
+compilar. Así sale <i>un</i> kernel, pero no <i>el</i> kernel de la tarjeta: otras
+opciones, otros módulos y otra cadena de versión. Lo primero es interrogar al
+kernel vivo:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ uname -r
+5.10.72-g7966a667bd89-dirty
+
+$ cat /proc/version
+Linux version 5.10.72-g7966a667bd89-dirty (usuario@pc)
+  (arm-linux-gnueabihf-gcc (Linaro GCC 6.5-2018.12) 6.5.0,
+   GNU ld (Linaro_Binutils-2018.12) 2.27.0.20161229) #7 SMP PREEMPT Tue Jun 20 20:05:48 -04 2023
+
+$ zcat /proc/config.gz &gt; config-vivo     # existe gracias a CONFIG_IKCONFIG_PROC=y</pre>
+
+<p>De ahí salen cuatro datos que condicionan todo lo demás:</p>
+
+<ol>
+<li><b>Versión base 5.10.72</b> → rama <code>tn-imx_5.10.72_2.2.0-stable</code> de TechNexion.</li>
+<li><b>Sufijo <code>-g7966a667bd89-dirty</code></b>. Lo añade Kbuild cuando se compila desde git: <code>g</code> + el hash corto del commit, y <code>-dirty</code> porque había cambios sin commitear. Hay que reproducirlo letra a letra.</li>
+<li><b>Compilador original: Linaro GCC 6.5</b>. Conviene usar la misma versión mayor.</li>
+<li><b><code>CONFIG_MODVERSIONS=y</code></b>: los módulos llevan CRC de cada símbolo. Esto nos dará una herramienta de verificación muy útil (A6).</li>
+</ol>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A2. Las fuentes</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">mkdir -p ~/kernel-wifi &amp;&amp; cd ~/kernel-wifi
+curl -L --retry 10 --retry-delay 5 -C - -o linux-tn-imx-5.10.72.tar.gz \
+  https://github.com/TechNexion/linux-tn-imx/archive/refs/heads/tn-imx_5.10.72_2.2.0-stable.tar.gz
+gzip -t linux-tn-imx-5.10.72.tar.gz &amp;&amp; echo "tarball íntegro"
+#  190 449 873 bytes · sha256 ab0e7884…2074c11b · 1,6 GB una vez compilado</pre>
+
+<p><b>Por qué tarball y no <code>git clone</code>:</b> el clon se cortaba una y
+otra vez con <code>fatal: early EOF</code>. Es un repositorio enorme, y en una
+conexión lenta no se reanuda. El tarball se descarga con <code>curl -C -</code>,
+que <b>sí</b> continúa donde se quedó. La contrapartida es que sin
+<code>.git</code> Kbuild no puede calcular el sufijo de versión, así que hay que
+fijarlo a mano (A4).</p>
+
+<p style="font-size:15px;color:#555555;">Ojo: la rama <code>-stable</code> avanza. Si la descargas en otra fecha puede
+no ser idéntica byte a byte a la nuestra. La comparación de CRC del paso A6 es lo
+que te dirá si tu árbol es compatible con tu kernel vivo.</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A3. El compilador cruzado: por qué GCC 6.5.0 de kernel.org</h3>
+
+<p>
+El kernel vivo se compiló con <b>Linaro GCC 6.5-2018.12, gnueabihf</b>. Ese
+paquete ya no se consigue con facilidad; los servidores de Linaro se
+reorganizaron. La alternativa son los <b>toolchains crosstool de kernel.org</b>,
+hechos precisamente para compilar kernels:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">cd ~/opt
+curl -LO https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/6.5.0/x86_64-gcc-6.5.0-nolibc-arm-linux-gnueabi.tar.xz
+mkdir gcc-6.5.0-nolibc &amp;&amp; tar xJf x86_64-gcc-6.5.0-nolibc-arm-linux-gnueabi.tar.xz -C gcc-6.5.0-nolibc --strip-components=1
+#  12 225 584 bytes
+
+~/opt/gcc-6.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-gcc --version
+arm-linux-gnueabi-gcc (GCC) 6.5.0
+~/opt/gcc-6.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-ld --version
+GNU ld (GNU Binutils) 2.32</pre>
+
+<p><b>Dos dudas razonables, y su respuesta:</b></p>
+
+<ul>
+<li><b>«Es <i>gnueabi</i> y el original era <i>gnueabihf</i>. ¿No es otra ABI?»</b>
+Para programas de usuario, sí: <i>hf</i> (<i>hard float</i>) pasa los flotantes en
+registros de la FPU, y mezclar las dos rompe el enlace. <b>Para el kernel no
+importa</b>: el kernel no usa coma flotante, se compila con
+<code>-msoft-float</code> y sus propias opciones de ABI, y no enlaza con ninguna
+libc. La comprobación de CRC del paso A6 lo confirmó en la práctica.</li>
+<li><b>«<i>nolibc</i>: ¿le falta algo?»</b> Le falta la biblioteca C, que el kernel
+no necesita. La única huella en el <code>.config</code> es que desaparecen
+<code>CC_CAN_LINK</code> y <code>CC_CAN_LINK_STATIC</code>, que solo sirven para
+compilar programas de prueba en espacio de usuario dentro del árbol. Este
+compilador <b>no sirve</b> para programas que vayan a correr en el Ubuntu de la
+tarjeta.</li>
+</ul>
+
+<div style="background:#eef5fb;border-left:4px solid #1a4d80;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>¿Por qué no el GCC 13 de Ubuntu (<code>gcc-arm-linux-gnueabihf</code>)?</b>
+Compilaría, pero un kernel 5.10 de 2021 con GCC 13 puede dar avisos nuevos
+convertidos en errores y, sobre todo, cambia la versión del compilador que queda
+grabada en el kernel (<code>CC_VERSION_TEXT</code>) y en algunos módulos. Si el
+objetivo es <b>compatibilidad con un kernel ya instalado</b>, lo prudente es
+la misma versión mayor del compilador original.
+</div>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A4. La configuración: la del kernel vivo, más lo mínimo</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">export ARCH=arm
+export CROSS_COMPILE=~/opt/gcc-6.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-
+
+mkdir linux-tn-imx &amp;&amp; tar xzf linux-tn-imx-5.10.72.tar.gz -C linux-tn-imx --strip-components=1
+cd linux-tn-imx
+cp ../config-vivo .config
+
+scripts/config --module BRCMFMAC --enable BRCMFMAC_SDIO        # el WiFi, como módulo
+scripts/config --enable RPMSG_CHAR                               # aditivo: /dev/rpmsgN
+scripts/config --disable LOCALVERSION_AUTO --set-str LOCALVERSION "-g7966a667bd89-dirty"
+make olddefconfig
+make -s kernelrelease          # debe imprimir: 5.10.72-g7966a667bd89-dirty</pre>
+
+<ul>
+<li><b><code>scripts/config</code></b> edita el <code>.config</code> desde la línea de comandos. Es reproducible y se puede meter en un script; <code>menuconfig</code> no.</li>
+<li><b><code>make olddefconfig</code></b> resuelve las dependencias de lo que cambiaste y da valor por defecto a lo nuevo, sin hacer preguntas.</li>
+<li><b>LOCALVERSION a mano</b>: como no hay <code>.git</code>, se apaga el sufijo automático y se escribe el del kernel vivo. Si la cadena difiere en un solo carácter, los módulos irían a otro directorio de <code>/lib/modules</code> y el kernel vivo los rechazaría.</li>
+</ul>
+
+<p><b>Revisa siempre qué cambió</b> con <code>scripts/diffconfig</code>. Esta fue nuestra salida, completa:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">$ scripts/diffconfig ../config-vivo .config
+-CC_CAN_LINK y                       ← el compilador nolibc (A3)
+-CC_CAN_LINK_STATIC y                ← ídem
+ BRCMFMAC n -&gt; m                     ← lo que pedimos
+ CC_VERSION_TEXT "arm-linux-gnueabihf-gcc (Linaro GCC 6.5-2018.12) 6.5.0"
+              -&gt; "arm-linux-gnueabi-gcc (GCC) 6.5.0"
+ LD_VERSION 227000000 -&gt; 232000000   ← binutils 2.27 → 2.32
+ LOCALVERSION "" -&gt; "-g7966a667bd89-dirty"
+ LOCALVERSION_AUTO y -&gt; n
+ RPMSG_CHAR n -&gt; y                   ← lo que pedimos
+ RPMSG_CTRL n -&gt; y                   ← arrastrado por RPMSG_CHAR
++BRCMFMAC_PROTO_BCDC y               ← arrastrado por BRCMFMAC_SDIO
++BRCMFMAC_SDIO y
++BRCMUTIL m                          ← dependencia de brcmfmac
++BRCMFMAC_PCIE n  +BRCMFMAC_USB n  +BRCMDBG n  +BRCM_TRACING n</pre>
+
+<p>
+Cada línea tiene explicación. <b>Si hubieran salido cientos de diferencias, la
+rama no correspondería al kernel vivo</b>, y habría que parar ahí. Que las
+opciones de RPMsg (<code>RPMSG</code>, <code>RPMSG_VIRTIO</code>,
+<code>IMX_REMOTEPROC</code>, <code>IMX_RPMSG_TTY</code>) <b>no aparezcan</b> en la
+lista significa que siguen igual: activadas.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A5. Compilar</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">make -j$(nproc) zImage modules dtbs 2&gt;&amp;1 | tee ../build.log</pre>
+
+<p>Resultado:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">Linux version 5.10.72-g7966a667bd89-dirty (usuario@pc)
+  (arm-linux-gnueabi-gcc (GCC) 6.5.0, GNU ld (GNU Binutils) 2.32) #1 SMP PREEMPT
+
+arch/arm/boot/zImage                     8 655 912 bytes
+arch/arm/boot/dts/imx7d-pico-pi-qca.dtb     59 450 bytes
+3 368 objetos .o · 262 módulos .ko · Module.symvers con 12 794 símbolos
+
+$ modinfo brcmfmac.ko | grep -E 'vermagic|depends'
+depends:   brcmutil
+vermagic:  5.10.72-g7966a667bd89-dirty SMP preempt mod_unload modversions ARMv7 p2v8</pre>
+
+<p>
+<b>Los avisos:</b> hubo 9 <code>warning:</code>, todos del mismo tipo:
+<code>'ENGINE_…' is deprecated: Since OpenSSL 3.0</code>. Vienen de
+<code>scripts/sign-file.c</code> y <code>extract-cert.c</code>, que son
+herramientas del <i>host</i> escritas para OpenSSL 1.1. Son inofensivos. Siempre
+conviene contarlos y mirar de dónde vienen:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">grep 'warning:' ../build.log | sed 's/.*warning: //' | sort | uniq -c | sort -rn</pre>
+
+<div style="background:#fdecea;border-left:4px solid #c0392b;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Se fue la luz a mitad de la compilación.</b> Al relanzar <code>make</code> «parecía»
+seguir, pero un apagón deja ficheros <b>a medio escribir o vacíos</b>. Kbuild ve que
+el <code>.o</code> es más nuevo que su <code>.c</code> y no lo recompila. Para
+detectarlo:
+<pre style="background:#ffffff;border:1px solid #e5b5b0;padding:8px;font-family:Consolas,'Courier New',monospace;font-size:14px;margin:8px 0;">find . -name '*.o' -size 0 | wc -l      # nos dio 136</pre>
+La única salida segura: guardar el <code>.config</code>, ejecutar
+<code>make clean</code> (que <b>no</b> borra el <code>.config</code>, a diferencia
+de <code>mrproper</code>) y compilar de nuevo desde cero.
+</div>
+
+<div style="background:#fff8e1;border-left:4px solid #e0a800;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b><code>make modules_prepare</code> no basta</b> para compilar módulos que vayan a
+cargar en un kernel con <code>MODVERSIONS</code>: no genera
+<code>Module.symvers</code>, y sin él los módulos salen sin CRC válidos. Eso ya nos
+pasó en un intento anterior, documentado en este blog. Hace falta la compilación
+completa.
+</div>
+
+<p style="font-size:15px;color:#555555;">
+Curiosidad: <code>make dtbs</code> generó <code>imx7d-pico-pi-qca.dtb</code> pero no
+la variante <code>-m4</code> que usa nuestro U-Boot, aunque su <code>.dts</code>
+está en el árbol: el <code>Makefile</code> de <code>arch/arm/boot/dts</code> no la
+lista. No nos afectó, porque seguimos usando el DTB que ya estaba en la tarjeta.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A6. La verificación clave: comparar los CRC antes de instalar</h3>
+
+<p>
+Con <code>CONFIG_MODVERSIONS=y</code>, cada símbolo que el kernel exporta lleva
+un CRC calculado a partir de su firma: tipos de los argumentos, estructuras
+que usa, etc. Cada módulo guarda los CRC de los símbolos que necesita, y el kernel
+<b>rechaza</b> cargarlo si no coinciden. Eso permite responder, <b>sin tocar la
+tarjeta</b>, a la pregunta «¿mi árbol compilado es compatible con el kernel que ya
+corre?»:
+</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;"># EN LA TARJETA: los CRC que esperan TODOS los módulos que ya funcionan
+find /lib/modules/$(uname -r) -name '*.ko' \
+     -exec modprobe --dump-modversions {} \; | sort -u &gt; volcado.txt
+
+# EN EL PC: compararlos con los del kernel recién compilado
+awk 'NR==FNR { crc[$2]=$1; next }
+     { n++; if (!($2 in crc)) aus++; else if (crc[$2] != $1) dif++ }
+     END { printf "símbolos usados por los módulos vivos: %d\n", n
+           printf "presentes en el kernel nuevo: %d   ausentes: %d\n", n-aus, aus+0
+           printf "CRC distintos: %d\n", dif+0 }' Module.symvers volcado.txt</pre>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1b7a1b;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">símbolos usados por los módulos vivos: 1874      (de 260 módulos)
+presentes en el kernel nuevo: 1874   ausentes: 0
+CRC distintos: 0</pre>
+
+<p>
+<b>Cero diferencias en 1874 símbolos.</b> Eso nos permitió instalar solo
+<code>brcmfmac.ko</code> y <code>brcmutil.ko</code> en el kernel vivo, sin cambiar
+el <code>zImage</code> ni tocar U-Boot. Teníamos el kernel completo compilado, pero
+no hizo falta usarlo. Si hubiera salido algún CRC distinto, la conclusión habría
+sido la contraria: no mezclar, y arrancar el kernel nuevo entero.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A7. Empaquetar sin ensuciar el PC</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">make modules_install INSTALL_MOD_PATH=../salida/modules INSTALL_MOD_STRIP=1
+rm -f ../salida/modules/lib/modules/*/build ../salida/modules/lib/modules/*/source</pre>
+
+<ul>
+<li><b><code>INSTALL_MOD_PATH</code></b>: sin él, <code>modules_install</code> intentaría escribir en el <code>/lib/modules</code> <b>de tu PC</b>.</li>
+<li><b><code>INSTALL_MOD_STRIP=1</code></b>: quita los símbolos de depuración. En la eMMC el espacio importa.</li>
+<li>Se borran los enlaces <code>build</code> y <code>source</code>, que apuntan a rutas de tu PC que no existen en la tarjeta.</li>
+<li>Guarda también <code>.config</code>, <code>Module.symvers</code> y <code>System.map</code>. Sin ellos, dentro de un año no podrás compilar otro módulo compatible.</li>
+</ul>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">A8. Todo junto: <code>build-kernel.sh</code></h3>
+
+<p>Lo anterior quedó en un script de tres pasos, para que sea repetible:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:13px;line-height:1.4;color:#1f2328;">#!/bin/bash
+# Recompila el kernel 5.10.72 de la Pico-Pi-i.MX7D añadiendo el WiFi (brcmfmac)
+# y conservando RPMsg.
+#   ./scripts/build-kernel.sh prepare    -&gt; extrae fuentes, aplica el .config de la tarjeta
+#   ./scripts/build-kernel.sh build      -&gt; zImage + módulos + dtbs
+#   ./scripts/build-kernel.sh package    -&gt; empaqueta en ~/kernel-wifi/salida/
+# NO instala nada en la tarjeta.
+set -euo pipefail
+
+WORK=$HOME/kernel-wifi
+TARBALL=$WORK/linux-tn-imx-5.10.72.tar.gz
+SRC=$WORK/linux-tn-imx
+OUT=$WORK/salida
+CFG_VIVO=$WORK/config-vivo                      # sacado de /proc/config.gz
+
+export ARCH=arm
+export CROSS_COMPILE=$HOME/opt/gcc-6.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-
+RELEASE_SUFFIX="-g7966a667bd89-dirty"           # EXACTAMENTE el del kernel vivo
+J=$(nproc)
+
+need() { command -v "$1" &gt;/dev/null || { echo "FALTA: $1  (sudo apt install $2)" &gt;&amp;2; MISSING=1; }; }
+check_host() {
+    MISSING=0
+    need bison bison; need flex flex; need lzop lzop; need bc bc
+    [ -f /usr/include/openssl/ssl.h ] || { echo "FALTA: libssl-dev" &gt;&amp;2; MISSING=1; }
+    [ -x "${CROSS_COMPILE}gcc" ] || { echo "FALTA el compilador cruzado" &gt;&amp;2; MISSING=1; }
+    [ "$MISSING" = 0 ] || exit 1
+}
+
+case "${1:-}" in
+prepare)
+    check_host
+    [ -d "$SRC" ] || { mkdir -p "$SRC"; tar xzf "$TARBALL" -C "$SRC" --strip-components=1; }
+    cd "$SRC"
+    cp "$CFG_VIVO" .config
+    scripts/config --module BRCMFMAC --enable BRCMFMAC_SDIO
+    scripts/config --enable RPMSG_CHAR
+    scripts/config --disable LOCALVERSION_AUTO --set-str LOCALVERSION "$RELEASE_SUFFIX"
+    make olddefconfig
+    echo "== release =="; make -s kernelrelease
+    echo "== diferencias contra el kernel vivo =="; scripts/diffconfig "$CFG_VIVO" .config || true
+    echo "== ¿RPMsg sigue activo? =="
+    grep -E "^CONFIG_(RPMSG|RPMSG_VIRTIO|IMX_REMOTEPROC|IMX_RPMSG_TTY|BRCMFMAC|BRCMUTIL)=" .config
+    ;;
+build)
+    check_host
+    cd "$SRC"
+    make -j"$J" zImage modules dtbs 2&gt;&amp;1 | tee "$WORK/build.log" | tail -30
+    ;;
+package)
+    cd "$SRC"
+    REL=$(make -s kernelrelease)
+    rm -rf "$OUT"; mkdir -p "$OUT/modules" "$OUT/boot"
+    make -s modules_install INSTALL_MOD_PATH="$OUT/modules" INSTALL_MOD_STRIP=1
+    rm -f "$OUT/modules/lib/modules/$REL/build" "$OUT/modules/lib/modules/$REL/source"
+    cp arch/arm/boot/zImage "$OUT/boot/zImage-wifi"
+    cp arch/arm/boot/dts/imx7d-pico-pi*.dtb "$OUT/boot/" 2&gt;/dev/null || true
+    cp .config "$OUT/config-$REL-wifi"; cp Module.symvers System.map "$OUT/"
+    ( cd "$OUT" &amp;&amp; sha256sum boot/* &gt; SHA256SUMS &amp;&amp; tar czf "$WORK/kernel-wifi-$REL.tar.gz" . )
+    ;;
+*)  sed -n 2,7p "$0"; exit 1 ;;
+esac</pre>
+
+<p style="font-size:15px;color:#555555;">
+Detalle de diseño: el script <b>se niega a instalar</b>. Compilar es inocuo;
+instalar en una tarjeta sin consola serie no lo es, y ese paso se hizo a mano,
+con respaldo y comprobando cada cosa.
+</p>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">PARTE B · El firmware del Cortex-M4</h2>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">B1. El BSP y la placa correcta</h3>
+
+<p>
+El BSP es el fork de TechNexion del <b>FreeRTOS BSP 1.0.1 de NXP</b>:
+<code>github.com/TechNexion/freertos-tn</code>, rama
+<code>freertos_1.0.1_imx7d</code>. Trae cuatro placas en <code>examples/</code>:
+<code>imx7d_edm1_m4</code>, <code>imx7d_pico_m4</code>, <code>imx7d_sdb_m4</code>
+e <code>imx7d_val_m4</code>.
+</p>
+
+<div style="background:#fdecea;border-left:4px solid #c0392b;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>La nuestra es <code>imx7d_pico_m4</code>.</b> La <code>sdb</code> es la tarjeta
+de referencia de NXP, y un post antiguo de este blog la usaba por error.
+Compilar contra la placa equivocada <b>enlaza sin una queja</b>, pero deja mal el
+pin mux, los relojes y la memoria: el UART de depuración es UART6 en la Pico y
+UART2 en la SDB, y la memoria de RPMsg está calculada para 512 MB en la Pico y
+para 1 GB en la SDB. Falla en silencio.
+</div>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">B2. El toolchain y CMake</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">cd ~/opt
+curl -LO https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+md5sum gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+#  2383e4eb4ea23f248d33adc70dc3227e   (157 089 706 bytes; ARM publica el md5)
+tar xjf gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2
+
+$ arm-none-eabi-gcc --version
+arm-none-eabi-gcc (GNU Arm Embedded Toolchain 10.3-2021.10) 10.3.1 20210824 (release)</pre>
+
+<p>El script de entorno, <code>env-m4.sh</code>, que se carga con <code>source</code> antes de compilar:</p>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">export ARMGCC_DIR=$HOME/opt/gcc-arm-none-eabi-10.3-2021.10   # lo EXIGE el BSP
+export PATH="$ARMGCC_DIR/bin:$PATH"
+export BSP_DIR=$HOME/Pico-pi/freertos-tn
+export BOARD_DIR=$BSP_DIR/examples/imx7d_pico_m4             # ¡no sdb!</pre>
+
+<p>
+El fichero <code>tools/cmake_toolchain_files/armgcc.cmake</code> del BSP lee la
+variable de entorno <b><code>ARMGCC_DIR</code></b>. Si no existe, CMake no
+encuentra el compilador, y el error no dice claramente por qué.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">B3. Dos mitos de versiones, comprobados</h3>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:15px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;"><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Herramienta</th><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">¿Hay que fijar la versión?</th><th style="padding:8px;text-align:left;border:1px solid #1a4d80;">Lo comprobado</th></tr>
+<tr><td style="padding:8px;border:1px solid #cccccc;"><b>CMake</b></td><td style="padding:8px;border:1px solid #cccccc;color:#c0392b;"><b>Sí, a 3.x</b></td><td style="padding:8px;border:1px solid #cccccc;">Con CMake 4.0.3 la configuración <b>aborta</b> en <code>CMakeLists.txt:5</code>: el BSP pide <code>cmake_minimum_required(VERSION 2.6)</code>, y CMake 4 eliminó la compatibilidad con versiones anteriores a 3.5. Con 3.28.3 (la de Ubuntu 24.04) funciona.</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:8px;border:1px solid #cccccc;"><b>GCC para el M4</b></td><td style="padding:8px;border:1px solid #cccccc;color:#1b7a1b;"><b>No es obligatorio</b></td><td style="padding:8px;border:1px solid #cccccc;">Circulaba que el BSP exigía un GCC antiguo porque usa <code>-mapcs</code>, «rechazado por GCC ≥ 12». <b>Es falso</b>: GCC 13.2.Rel1 lo acepta y compila <code>hello_world</code> sin errores. Tampoco hace falta <code>-fcommon</code>, porque el <code>CMakeLists.txt</code> ya pasa <code>-fno-common</code>. Usamos 10.3 por prudencia, no por necesidad.</td></tr>
+</table>
+
+<p style="font-size:15px;color:#555555;">
+Si tu CMake es 4.x y no quieres cambiarlo, existe la opción
+<code>-DCMAKE_POLICY_VERSION_MINIMUM=3.5</code>. Nosotros preferimos fijar 3.28
+y no tocar el BSP.
+</p>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">B4. Compilar un ejemplo</h3>
+
+<pre style="background:#f4f6f8;border:1px solid #d0d7de;border-left:4px solid #1a4d80;padding:12px;overflow-x:auto;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.45;color:#1f2328;">source scripts/env-m4.sh
+cd $BOARD_DIR/demo_apps/rpmsg/str_echo_freertos/armgcc
+sh ./clean.sh
+sh ./build_release.sh                 # o build_debug.sh
+
+ls release/
+rpmsg_str_echo_freertos_example.bin   ← lo que carga U-Boot (21 372 B)
+rpmsg_str_echo_freertos_example.elf   ← con símbolos (para gdb / arm-none-eabi-size)
+rpmsg_str_echo_freertos_example.hex
+rpmsg_str_echo_freertos_example.map   ← dónde quedó cada cosa en memoria
+
+arm-none-eabi-readelf -h release/*.elf | grep Entry
+  Entry point address: 0x1FFF82FD</pre>
+
+<ul>
+<li><b>¿Por qué el punto de entrada es impar?</b> El bit 0 a 1 indica modo <b>Thumb</b>, el único que tiene un Cortex-M. La dirección real es <code>0x1FFF82FC</code>.</li>
+<li><b>Dos vistas de la misma memoria.</b> Los ejemplos se enlazan en la <b>TCM</b>, en <code>0x1FFF8000</code> vista desde el M4. El A7 y U-Boot ven esa misma memoria en <code>0x007F8000</code>, y por eso U-Boot hace <code>fatload … 0x7F8000</code> y <code>bootaux 0x7F8000</code>. Hay variantes en OCRAM (<code>0x00910000</code>) y en DDR (<code>0x9FF00000</code>).</li>
+<li>Arm Development Studio llamaría <code>.axf</code> al <code>.elf</code>. Es el mismo formato.</li>
+</ul>
+
+<h3 style="font-family:Arial,Helvetica,sans-serif;color:#333333;margin-top:24px;">B5. Lo que compilamos y en qué nivel quedó</h3>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;"><th style="padding:7px;text-align:left;border:1px solid #1a4d80;">Ejemplo</th><th style="padding:7px;text-align:left;border:1px solid #1a4d80;">Nivel</th><th style="padding:7px;text-align:left;border:1px solid #1a4d80;">Nota</th></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;"><code>rpmsg/str_echo_freertos</code></td><td style="padding:7px;border:1px solid #cccccc;color:#1b7a1b;"><b>verificado</b></td><td style="padding:7px;border:1px solid #cccccc;">104/104 ecos con Linux</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;"><code>blinking_imx_demo</code> (con <code>vTaskDelay</code>)</td><td style="padding:7px;border:1px solid #cccccc;color:#1b7a1b;"><b>verificado</b></td><td style="padding:7px;border:1px solid #cccccc;">LED observado desde Linux, ±1 ms</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;"><code>rpmsg/pingpong_freertos</code>, <code>pingpong_bm</code>, <code>str_echo_bm</code></td><td style="padding:7px;border:1px solid #cccccc;">compiló</td><td style="padding:7px;border:1px solid #cccccc;"><code>bm</code> = <i>bare metal</i>, sin FreeRTOS</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;"><code>hello_world</code> (TCM, OCRAM, DDR)</td><td style="padding:7px;border:1px solid #cccccc;">compiló</td><td style="padding:7px;border:1px solid #cccccc;">Salen por UART6; sin consola serie no se ven</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;"><code>sema4_demo</code></td><td style="padding:7px;border:1px solid #cccccc;">compiló</td><td style="padding:7px;border:1px solid #cccccc;">Semáforos hardware entre núcleos</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;"><code>low_power_imx7d</code> (<code>rand_wfi</code>)</td><td style="padding:7px;border:1px solid #cccccc;">compiló</td><td style="padding:7px;border:1px solid #cccccc;">Usa el GPT, con el problema de reloj que se describe abajo</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;"><code>sensor_demo</code></td><td style="padding:7px;border:1px solid #cccccc;color:#c0392b;"><b>no compila</b></td><td style="padding:7px;border:1px solid #cccccc;">El <code>board.h</code> de la Pico no define los sensores FXAS/FXOS (son de la SDB)</td></tr>
+</table>
+
+<div style="background:#fff8e1;border-left:4px solid #e0a800;padding:10px 14px;margin:18px 0;font-size:16px;">
+<b>Trampa de hardware que no se ve compilando:</b> el <code>blinking_imx_demo</code>
+original usa <code>Hw_Timer_Delay()</code> sobre el temporizador <b>GPT3</b>, y daba
+intervalos erráticos de 0,5 a 36 s en lugar de 100–1000 ms. La causa está en
+<code>/sys/kernel/debug/clk/clk_summary</code>: <b>Linux mantiene apagado el reloj
+del GPT3</b> (<code>gpt3_root_clk enable_count=0</code>). Cambiándolo por
+<code>vTaskDelay()</code>, que usa el SysTick interno del M4, la precisión pasó a
+±1 ms. Lección: en un SoC con dos sistemas operativos, <b>los relojes de los
+periféricos los gestiona Linux</b>, aunque el periférico lo use el M4.
+</div>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">Detalles menudos que nos costaron tiempo</h2>
+
+<ol>
+<li><b>Un bucle de espera que se espera a sí mismo.</b> Para esperar a que terminara una descarga usamos <code>while pgrep -f curl; do sleep 5; done</code>. <code>pgrep -f</code> busca en la línea de comandos completa, y la del propio <code>while</code>… contiene «curl». El bucle no terminaba nunca. Solución: <code>pgrep -x curl</code>, o esperar por el PID.</li>
+<li><b>Ficheros de firmware que se mudan.</b> En <code>linux-firmware</code>, el <code>brcm/brcmfmac4339-sdio.bin</code> ya no está. Hoy es <code>cypress/cyfmac4339-sdio.bin</code>, desde que Cypress compró la división de Broadcom. Se descarga y se renombra a lo que pide el driver.</li>
+<li><b>El fichero <code>.txt</code> de calibración del WiFi no se puede descargar.</b> Es propio de cada placa. Búscalo en la imagen original de tu tarjeta y guárdalo antes de reinstalar nada.</li>
+<li><b>Las comprobaciones de versión que valen:</b> <code>make -s kernelrelease</code> antes de compilar, y <code>modinfo … | grep vermagic</code> después. Si el <i>vermagic</i> no coincide con el del kernel vivo, el módulo no carga.</li>
+<li><b>Que el <code>.config</code> diga «y» no significa que la opción exista.</b> Lo que manda es lo que imprime <code>scripts/diffconfig</code> tras <code>olddefconfig</code>: si una dependencia falta, Kconfig apaga la opción en silencio.</li>
+<li><b>Ancho de banda.</b> Las fuentes del kernel son ~190 MB comprimidas y el toolchain del M4 ~157 MB. Usa <code>curl -C - --retry</code> para que una conexión que se corta no te obligue a empezar de cero.</li>
+</ol>
+
+<!-- ====================================================== -->
+<h2 style="font-family:Arial,Helvetica,sans-serif;color:#1a4d80;border-bottom:2px solid #1a4d80;padding-bottom:4px;margin-top:34px;">Resumen de versiones</h2>
+
+<table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin:12px 0 20px 0;">
+<tr style="background:#1a4d80;color:#ffffff;"><th style="padding:7px;text-align:left;border:1px solid #1a4d80;">Pieza</th><th style="padding:7px;text-align:left;border:1px solid #1a4d80;">Versión / origen</th></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;">Kernel</td><td style="padding:7px;border:1px solid #cccccc;">TechNexion <code>linux-tn-imx</code>, rama <code>tn-imx_5.10.72_2.2.0-stable</code> → <code>5.10.72-g7966a667bd89-dirty</code></td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;">Compilador del kernel</td><td style="padding:7px;border:1px solid #cccccc;">kernel.org crosstool <code>x86_64-gcc-6.5.0-nolibc-arm-linux-gnueabi</code> (GCC 6.5.0, binutils 2.32)</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;">Compilador original (referencia)</td><td style="padding:7px;border:1px solid #cccccc;">Linaro GCC 6.5-2018.12 gnueabihf, binutils 2.27</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;">BSP del M4</td><td style="padding:7px;border:1px solid #cccccc;">TechNexion <code>freertos-tn</code>, rama <code>freertos_1.0.1_imx7d</code> (FreeRTOS BSP 1.0.1 de NXP)</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;">Compilador del M4</td><td style="padding:7px;border:1px solid #cccccc;">GNU Arm Embedded 10.3-2021.10 (GCC 10.3.1 20210824); 13.2.Rel1 también compila</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;">CMake</td><td style="padding:7px;border:1px solid #cccccc;">3.28.3 (4.x rompe la configuración del BSP)</td></tr>
+<tr><td style="padding:7px;border:1px solid #cccccc;">Firmware WiFi</td><td style="padding:7px;border:1px solid #cccccc;"><code>linux-firmware</code> <code>cypress/cyfmac4339-sdio.bin</code>, versión 6.37.39.113 (2019)</td></tr>
+<tr style="background:#f7f9fc;"><td style="padding:7px;border:1px solid #cccccc;">Host</td><td style="padding:7px;border:1px solid #cccccc;">Ubuntu 24.04.5 LTS en WSL2 · Make 4.3 · GCC 13.3.0 · bison 3.8.2 · flex 2.6.4 · OpenSSL 3.0.13</td></tr>
+</table>
+
+<p style="font-size:14px;color:#666666;border-top:1px solid #dddddd;padding-top:10px;margin-top:30px;">
+TechNexion Pico-Pi-i.MX7D (NXP i.MX7 Dual: 2× Cortex-A7 + Cortex-M4F, 512 MB DDR, eMMC).
+Todo lo marcado «verificado» se ejecutó en la tarjeta y se observó el resultado; lo
+marcado «compiló» solo se compiló.
+</p>
+
+</div>

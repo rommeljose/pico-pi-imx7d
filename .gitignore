@@ -1,0 +1,22 @@
+# BSP de TechNexion: se clona aparte (ver bsp/LEEME.md)
+/freertos-tn/
+
+# Artefactos de compilación del BSP
+**/armgcc/CMakeCache.txt
+**/armgcc/CMakeFiles/
+**/armgcc/Makefile
+**/armgcc/cmake_install.cmake
+**/armgcc/release/
+**/armgcc/debug/
+
+# Imágenes y respaldos de la tarjeta: pesados y con secretos
+*.img
+*.img.gz
+*.img.zst
+etc-*.tar.gz
+
+# Basura de Windows / WSL2
+*:Zone.Identifier
+Thumbs.db
+desktop.ini
+*.orig
