@@ -94,3 +94,19 @@ WiFi/BT BCM4339 (AP6335), pantalla de 800×480. Ubuntu 22.04 de TechNexion,
 kernel `5.10.72-g7966a667bd89-dirty` (`TechNexion/linux-tn-imx`, rama
 `tn-imx_5.10.72_2.2.0-stable`), U-Boot 2021.04, BSP FreeRTOS 1.0.1
 (`TechNexion/freertos-tn`).
+
+## Licencia
+
+Uso libre, **mencionando la fuente**:
+
+- **Código y scripts**: [MIT](LICENSE). Conserva el aviso de copyright.
+- **Documentación** (`docs/`, `blog/`, los README): [CC BY 4.0](LICENSE-docs).
+  Cita el autor y el enlace a este repositorio.
+- Los **binarios del M4** y los ficheros de `kernel/` conservan la licencia del
+  software del que derivan (BSD-3-Clause de NXP, FreeRTOS con excepción GPL,
+  GPL-2.0 del kernel): ver [`LICENCIAS-TERCEROS.md`](LICENCIAS-TERCEROS.md).
+
+Cómo citarlo:
+
+    rommeljose, «Pico-Pi-i.MX7D: guía práctica»,
+    https://github.com/rommeljose/pico-pi-imx7d

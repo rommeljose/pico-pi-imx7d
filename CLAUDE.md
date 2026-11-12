@@ -76,3 +76,4 @@ FreeRTOS). Lo general de la placa; no está ligado a ninguna aplicación concret
     kernel/      config-vivo, config-wifi, Module.symvers, DTB vivo, calibración WiFi
     tarjeta/     configuración instalada en la placa (LEEME.md)
     bsp/         cómo obtener freertos-tn + el parche
+    LICENSE, LICENSE-docs, LICENCIAS-TERCEROS.md   MIT, CC BY 4.0, terceros
