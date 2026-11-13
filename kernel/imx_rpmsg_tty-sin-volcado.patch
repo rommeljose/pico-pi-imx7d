@@ -1,0 +1,14 @@
+--- drivers/rpmsg/imx_rpmsg_tty.c.orig
++++ drivers/rpmsg/imx_rpmsg_tty.c
+@@ -41,7 +41,10 @@
+ 
+ 	dev_dbg(&rpdev->dev, "msg(<- src 0x%x) len %d\n", src, len);
+ 
+-	print_hex_dump(KERN_DEBUG, __func__, DUMP_PREFIX_NONE, 16, 1,
++	/* Pico-Pi 2026-11-12: era print_hex_dump(KERN_DEBUG, ...), que volcaba
++	 * cada mensaje al log del kernel (journal y syslog en la eMMC). Con
++	 * _debug solo se compila si hay DEBUG o DYNAMIC_DEBUG. */
++	print_hex_dump_debug(__func__, DUMP_PREFIX_NONE, 16, 1,
+ 			data, len,  true);
+ 
+ 	spin_lock_bh(&cport->rx_lock);
