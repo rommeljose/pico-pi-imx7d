@@ -179,6 +179,32 @@ cada mensaje lleva la dirección de origen. **El firmware debe responder a la
 dirección origen de lo que recibe** (en el ejemplo, 0x401), no a una fija. Con el
 BSP FreeRTOS de NXP, esa dirección es el argumento `src` de `rpmsg_rtos_recv()`.
 
+**Permisos: `udev` no basta para `/dev/rpmsg_ctrl0`.** En este kernel, el nodo
+de control nace **sin clase** en sysfs (`SUBSYSTEM==""`, sin enlace
+`subsystem`), y `udevadm test` falla con `Failed to clone sd_device object`. Una
+regla de udev sí vale para los `/dev/rpmsgN`, que tienen clase:
+
+    # /etc/udev/rules.d/60-rpmsg.rules  (solo KERNEL: el SUBSYSTEM no ayuda)
+    KERNEL=="rpmsg[0-9]*", GROUP="dialout", MODE="0660"
+
+Para el de control funciona un servicio *oneshot* que, tras
+`systemd-modules-load`, espera al nodo y le hace `chgrp dialout` y
+`chmod 0660`.
+
+**Si tu programa muere sin despedirse**, por ejemplo con un `kill -9`:
+
+- **El M4 llena el log.** El endpoint se destruye al cerrarse el descriptor. A
+  partir de ahí, cada mensaje que el M4 envía a esa dirección produce un
+  `msg received with no recipient`, que en `virtio_rpmsg_bus` es un `dev_warn`
+  **sin límite de frecuencia**. La solución está en el protocolo: un **latido**.
+  El programa de Linux envía `bin` cada 0,5 s, y si pasan 2 s sin latido el M4
+  deja de enviar a esa dirección. Medido: 19 avisos y silencio.
+- **Queda un nodo huérfano.** `/dev/rpmsgN` sigue existiendo: el endpoint muere,
+  pero el nodo no. Si el programa crea uno nuevo cada vez que arranca, acumula
+  `/dev/rpmsg1`, `/dev/rpmsg2`… Es mejor buscar primero en
+  `/sys/class/rpmsg/rpmsg*/name` uno con tu nombre y reutilizarlo, y al salir
+  limpiamente destruirlo con `RPMSG_DESTROY_EPT_IOCTL`.
+
 **Reparto recomendado**, el que se usa en este proyecto:
 
 | Canal | Para qué | Por qué |
@@ -205,3 +231,5 @@ BSP FreeRTOS de NXP, esa dirección es el argumento `src` de `rpmsg_rtos_recv()`
   funcionan sobre el kernel de fábrica.
 - **Responde a la dirección origen de cada mensaje.** Si respondes a una
   dirección fija, las respuestas pueden acabar en otro endpoint.
+- **Pon un latido en el protocolo.** Si el programa de Linux muere, el M4 no se
+  entera, y cada mensaje sin destinatario deja una línea en el log.
