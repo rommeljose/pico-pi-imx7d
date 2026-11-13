@@ -37,6 +37,7 @@ Que algo compile no prueba que funcione.
 
 | Quiero… | Lee |
 |---|---|
+| **usar el M4, RPMsg (texto y binario) y el SPI en mi propio proyecto**, paso a paso | [`docs/Guia_M4_RPMsg_SPI.md`](docs/Guia_M4_RPMsg_SPI.md) |
 | conocer la placa: pines de J8, buses, qué periférico es de quién | [`docs/Tarjeta_Inventario.md`](docs/Tarjeta_Inventario.md) |
 | cargar firmware en el M4 y comprobar que corre, **sin consola serie** | [`docs/M4_Despliegue_y_Verificacion.md`](docs/M4_Despliegue_y_Verificacion.md) |
 | hablar entre Linux y el M4 por RPMsg | [`docs/RPMsg_Verificacion.md`](docs/RPMsg_Verificacion.md), [`docs/Seccion_README_RPMsg.md`](docs/Seccion_README_RPMsg.md) |
