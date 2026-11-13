@@ -68,6 +68,11 @@ derivan del kernel Linux de TechNexion (`TechNexion/linux-tn-imx`, rama
 `tn-imx_5.10.72_2.2.0-stable`), bajo **GPL-2.0**. Las fuentes están en ese
 repositorio.
 
+`modulos/*.ko` y `config-modulos-rpmsg`: módulos binarios compilados de ese
+mismo fuente, bajo **GPL-2.0**. `rpmsg_char` y `rpmsg_ctrl` van sin cambios;
+`imx_rpmsg_tty` lleva solo `imx_rpmsg_tty-sin-volcado.patch`. La configuración
+exacta y el método para reproducirlos están en `kernel/modulos/LEEME.md`.
+
 `brcmfmac4339-sdio.txt` es el fichero de calibración del fabricante del módulo
 WiFi, extraído de la placa. Se incluye solo como referencia técnica; sus
 derechos son de su titular.

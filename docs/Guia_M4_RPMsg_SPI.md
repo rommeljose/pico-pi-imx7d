@@ -70,8 +70,8 @@ noviembre de 2026.
 | Que U-Boot cargue el M4 | ✅ sí: `m4image`, `loadm4image` y `m4boot` ya están en su entorno | Copiar tu `.bin` a la FAT y apuntar `m4image` en `uEnv.txt` (§3) |
 | Device tree con el M4 y RPMsg | ✅ sí: `imx7d-pico-pi-qca-m4.dtb` (el único de la FAT) | Nada |
 | `/dev/ttyRPMSG0` | ✅ sí: módulo `imx_rpmsg_tty` | `modprobe imx_rpmsg_tty`; para cada arranque, `/etc/modules-load.d/` |
-| Un log que no se llene con cada mensaje | ❌ el `imx_rpmsg_tty` de fábrica **vuelca cada mensaje** al log del kernel | Recompilar ese módulo con el parche de una línea (§5.3) |
-| `/dev/rpmsg_ctrl0` y `/dev/rpmsgN` (binario) | ❌ el kernel los espera pero no trae los drivers | Compilar `rpmsg_char` y `rpmsg_ctrl` como módulos (§6.1) |
+| Un log que no se llene con cada mensaje | ❌ el `imx_rpmsg_tty` de fábrica **vuelca cada mensaje** al log del kernel | Sustituir el módulo: **precompilado** en [`kernel/modulos/`](../kernel/modulos/LEEME.md) (§5.3) |
+| `/dev/rpmsg_ctrl0` y `/dev/rpmsgN` (binario) | ❌ el kernel los espera pero no trae los drivers | Instalar `rpmsg_char` y `rpmsg_ctrl`: **precompilados** en [`kernel/modulos/`](../kernel/modulos/LEEME.md) (§6.1) |
 | `/dev/spidev2.0` | ✅ sí: ECSPI3 con `spidev`, que no usa nadie | Nada, para usarlo desde Linux |
 | SPI para el M4 | — | Desligar el driver en caliente, sin tocar el device tree (§8) |
 
@@ -274,8 +274,9 @@ grupo `dialout`.
 El `imx_rpmsg_tty` de fábrica escribe **cada mensaje recibido** en el log del
 kernel, en hexadecimal. A 10 mensajes por segundo fueron **1583 líneas en
 35 s**, guardadas dos veces (journal y syslog) en la eMMC. La corrección es una
-línea ([`kernel/imx_rpmsg_tty-sin-volcado.patch`](../kernel/imx_rpmsg_tty-sin-volcado.patch)),
-y el módulo se recompila dentro del árbol del kernel de fábrica
+línea ([`kernel/imx_rpmsg_tty-sin-volcado.patch`](../kernel/imx_rpmsg_tty-sin-volcado.patch)).
+**El módulo ya corregido está en [`kernel/modulos/`](../kernel/modulos/LEEME.md)**,
+listo para el kernel de fábrica. Si tienes otro kernel, se recompila dentro del árbol del kernel de fábrica
 ([`Seccion_README_RPMsg.md`](Seccion_README_RPMsg.md),
 [`Kernel_Recompilacion.md`](Kernel_Recompilacion.md)). Verificado: 25 s a 250
 muestras/s, **0 líneas** en el log.
@@ -290,12 +291,18 @@ sus bytes tal cual. Así no se convierten números a texto y de vuelta.
 
 ### 6.1 Los dos módulos que faltan
 
+> **Atajo:** si `uname -r` da `5.10.72-g7966a667bd89-dirty`, el kernel de
+> fábrica, están **precompilados** en [`kernel/modulos/`](../kernel/modulos/LEEME.md),
+> junto con el `imx_rpmsg_tty` corregido y las instrucciones para instalarlos.
+> Son los mismos que corren en la placa de este proyecto. Lo que sigue es para
+> compilarlos tú.
+
 El kernel de fábrica ya crea el dispositivo `virtio0.rpmsg_ctrl.0.0`, pero lo
 deja sin driver. Hay que compilar `rpmsg_char` y `rpmsg_ctrl` como módulos
 contra el árbol del kernel de fábrica, con el mismo `.config` y el mismo
 `LOCALVERSION`:
 
-    scripts/config --module RPMSG_CHAR --module RPMSG_CTRL
+    scripts/config --module RPMSG_CHAR --module RPMSG_CTRL   # o usa kernel/config-modulos-rpmsg
     make olddefconfig && make -j$(nproc)     # → drivers/rpmsg/rpmsg_char.ko, rpmsg_ctrl.ko
 
 Comprobado: `vermagic` idéntico al del kernel vivo, y **los 94 símbolos que

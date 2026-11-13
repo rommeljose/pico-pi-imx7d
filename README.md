@@ -43,6 +43,7 @@ Que algo compile no prueba que funcione.
 | hablar entre Linux y el M4 por RPMsg | [`docs/RPMsg_Verificacion.md`](docs/RPMsg_Verificacion.md), [`docs/Seccion_README_RPMsg.md`](docs/Seccion_README_RPMsg.md) |
 | usar el SPI desde el M4 y conectar un ADC | [`docs/SPI_M4_ECSPI3.md`](docs/SPI_M4_ECSPI3.md) |
 | ver un proyecto completo: el M4 adquiere, Linux analiza | [`docs/M4_Instrumento_Bitacora.md`](docs/M4_Instrumento_Bitacora.md), [`a7/`](a7/LEEME.md) |
+| instalar ya compilados `rpmsg_char`, `rpmsg_ctrl` y el `imx_rpmsg_tty` sin volcado al log | [`kernel/modulos/`](kernel/modulos/LEEME.md) |
 | compilar el kernel o módulos compatibles con el de fábrica | [`docs/Kernel_Recompilacion.md`](docs/Kernel_Recompilacion.md), [`blog/…Compilacion_Kernel_y_M4.html`](blog/) |
 | activar el WiFi y montar un punto de acceso | [`docs/WiFi_Diagnostico.md`](docs/WiFi_Diagnostico.md) |
 | poner al día el Ubuntu de la placa | [`docs/Ruta_Actualizacion_SO.md`](docs/Ruta_Actualizacion_SO.md) |
@@ -122,6 +123,7 @@ nivel de verificación, están en [`firmware-m4/`](firmware-m4/LEEME.md).
     firmware-m4/   binarios del M4 (.bin/.elf/.map) + SHA256SUMS + nivel de cada uno,
                    incluido el «instrumento» (v0.1 a v0.5)
     kernel/        .config de fábrica y con WiFi, Module.symvers, DTB, calibración WiFi
+                   + modulos/: rpmsg_char, rpmsg_ctrl e imx_rpmsg_tty precompilados
     tarjeta/       ficheros de configuración instalados en la placa
     bsp/           cómo obtener el BSP de FreeRTOS + el parche (LED y firmware del instrumento)
 
