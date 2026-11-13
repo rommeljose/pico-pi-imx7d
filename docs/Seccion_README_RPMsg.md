@@ -113,6 +113,79 @@ con una orden y, al cerrar, el programa de Linux le envía la orden de parar ant
 de soltar el tty. El M4 sigue trabajando, pero no escribe en un canal que nadie
 lee.
 
+### Más allá del tty: `/dev/rpmsg0` sobre el kernel de fábrica (2026)
+
+El tty sirve para empezar, pero **no conserva las fronteras de los mensajes**:
+lo que el M4 envía como un bloque de 120 bytes puede leerse en Linux partido o
+pegado al siguiente, y por eso hay que hablar en texto, con un `\n` al final de
+cada línea. Para datos binarios, la vía estándar del kernel es **`rpmsg_char`**:
+cada endpoint aparece como un `/dev/rpmsgN` donde **un `read()` devuelve
+exactamente un mensaje** y un `write()` envía exactamente uno.
+
+**El kernel de fábrica no lo trae, pero lo espera.** En la configuración del
+kernel vivo, `CONFIG_RPMSG_CHAR` y `CONFIG_RPMSG_CTRL` están desactivadas y
+ninguno de sus símbolos aparece en `/proc/kallsyms`. Sin embargo
+`virtio_rpmsg_bus` ya crea el dispositivo `virtio0.rpmsg_ctrl.0.0`, con
+`modalias rpmsg:rpmsg_ctrl`, y lo deja **sin driver**:
+
+    ls /sys/bus/rpmsg/devices/            # …rpmsg_ctrl.0.0 aparece
+    readlink /sys/bus/rpmsg/devices/virtio0.rpmsg_ctrl.0.0/driver    # vacío
+
+Basta con compilar los dos drivers **como módulos** contra el árbol del kernel de
+fábrica, con el mismo método que el WiFi
+([`docs/Kernel_Recompilacion.md`](Kernel_Recompilacion.md)):
+
+    scripts/config --module RPMSG_CHAR --module RPMSG_CTRL
+    make olddefconfig && make -j$(nproc)        # incremental: ~20 s
+    # drivers/rpmsg/rpmsg_char.ko y rpmsg_ctrl.ko
+
+Comprobado el 2026-11-12: `vermagic` idéntico al del kernel vivo, `intree: Y`,
+y **los 94 símbolos que importan, con el mismo CRC** que el kernel vivo. Se
+copian a `/lib/modules/$(uname -r)/kernel/drivers/rpmsg/`, `depmod -a`,
+`modprobe rpmsg_ctrl` (carga antes `rpmsg_char`, del que depende), y aparece
+**`/dev/rpmsg_ctrl0`**, sin reiniciar y sin tocar el `zImage`. Para que se cargue
+al arrancar, añade `rpmsg_ctrl` a `/etc/modules-load.d/`.
+
+> ⚠️ Si tu árbol se preparó para compilar un kernel completo, revisa estas dos
+> opciones: es fácil tenerlas a `=y`. Así, `rpmsg_char` acaba dentro del
+> `vmlinux` que no vas a instalar, y no obtienes el `.ko`.
+
+**Crear un endpoint** (como root, o con una regla de udev para
+`/dev/rpmsg_ctrl0`):
+
+```python
+import os, fcntl, struct
+RPMSG_CREATE_EPT_IOCTL  = 0x4028b501   # _IOW(0xb5, 1, struct rpmsg_endpoint_info)
+RPMSG_DESTROY_EPT_IOCTL = 0xb502       # _IO(0xb5, 2)
+
+ctrl = os.open("/dev/rpmsg_ctrl0", os.O_RDWR)
+# struct rpmsg_endpoint_info { char name[32]; u32 src; u32 dst; }
+fcntl.ioctl(ctrl, RPMSG_CREATE_EPT_IOCTL,
+            struct.pack("32sII", b"mi-endpoint", 0x401, 0x0))
+ep = os.open("/dev/rpmsg0", os.O_RDWR)     # src 0x401 (Linux) -> dst 0x0 (M4)
+os.write(ep, b"\x01\x02\x03")               # un write = un mensaje
+msg = os.read(ep, 512)                     # un read = un mensaje
+fcntl.ioctl(ep, RPMSG_DESTROY_EPT_IOCTL)   # /dev/rpmsg0 desaparece
+```
+
+`/sys/class/rpmsg/rpmsg0/{name,src,dst}` confirman lo creado. La dirección `dst`
+del M4 sale del `dmesg` al anunciarse el canal: `new channel: 0x400 -> 0x0`
+significa Linux 0x400, M4 0x0.
+
+**La trampa de la vuelta.** Probado con un firmware que respondía siempre a la
+dirección del canal (`canal->dst`, la del tty): el mensaje enviado por
+`/dev/rpmsg0` **llegó** al M4, pero la respuesta salió **por el tty**. En RPMsg
+cada mensaje lleva la dirección de origen. **El firmware debe responder a la
+dirección origen de lo que recibe** (en el ejemplo, 0x401), no a una fija. Con el
+BSP FreeRTOS de NXP, esa dirección es el argumento `src` de `rpmsg_rtos_recv()`.
+
+**Reparto recomendado**, el que se usa en este proyecto:
+
+| Canal | Para qué | Por qué |
+|---|---|---|
+| `/dev/ttyRPMSG0` (texto) | órdenes y respuestas | legibles y fáciles de depurar con `echo` y `cat` |
+| `/dev/rpmsg0` (binario) | bloques de datos, con cabecera fija | fronteras intactas, sin convertir números a texto y de vuelta |
+
 ### Lecciones para quien use RPMsg en el i.MX7
 
 - **Mira el log del kernel en cuanto pongas el canal a trabajar de verdad.** Con
@@ -127,3 +200,8 @@ lee.
   funciona en 5.10, pero la práctica habitual hoy es leer `/dev/ttyRPMSG0` desde
   un programa de usuario. Además, las versiones recientes del kernel eliminaron
   `set_fs()`/`KERNEL_DS`, que este tipo de escritura usaba.
+- **`imx_rpmsg_tty` no conserva las fronteras de los mensajes.** Para datos
+  binarios, compila `rpmsg_char` y `rpmsg_ctrl` como módulos (ver arriba):
+  funcionan sobre el kernel de fábrica.
+- **Responde a la dirección origen de cada mensaje.** Si respondes a una
+  dirección fija, las respuestas pueden acabar en otro endpoint.
