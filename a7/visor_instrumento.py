@@ -33,6 +33,7 @@ import array
 import collections
 import fcntl
 import glob
+import math
 import json
 import os
 import signal
@@ -53,14 +54,21 @@ RPMSG_ADDR_ANY = 0xFFFFFFFF
 BIN_BLOQUE = 0xB1                       # primer byte de un bloque binario
 LATIDO_S = 0.5                          # el M4 deja el binario tras 2 s sin latido
 GPIO_LED = "/sys/class/gpio/gpio38"     # USER LED = GPIO2_IO06; SOLO LECTURA
-VENTANA_S = 30                          # segundos de traza en pantalla
+VENTANA_S = 30                          # segundos de traza en pantalla, al abrir
+HIST_S = 300                            # segundos de historia para congelar y desplazar
 PANEL_XFCE = 26     # px: el panel de XFCE se dibuja encima sin reservar su franja
 SPI_M4 = "/usr/local/sbin/spi-m4"                   # cede/devuelve ECSPI3 (sudo)
 SPI_LIGADO = "/sys/bus/platform/drivers/spi_imx/30840000.spi"
 CONF = os.path.expanduser("~/.config/instrumento.conf")
-CONF_DEF = {"fuente": "sint", "entrada": "ain01", "pga": 64, "sps": 90}
-ENTRADAS = [("ain01", "geófono (AIN0−AIN1)"), ("corto", "entradas en corto"),
+CONF_DEF = {"fuente": "sint", "entrada": "ain01", "pga": 64, "sps": 90,
+            "filtro": 0, "unidades": "cuentas", "ventana_s": VENTANA_S,
+            "sens_v_ms": 20.9}  # V/(m/s): SM-6 (28,8) con el shunt de 1 kΩ
+ENTRADAS = [("ain01", "geófono"), ("corto", "corto"),
             ("avdd", "AVDD/4"), ("temp", "temperatura")]
+FILTROS = [(0, "sin filtro"), (60, "red 60 Hz"), (50, "red 50 Hz")]
+UNIDADES = [("cuentas", "cuentas"), ("uv", "µV"), ("ums", "µm/s")]
+VENTANAS = [1, 2, 5, 10, 20, 30, 60, 120, 300]   # s de traza en pantalla
+VREF = 2.048                                      # V, referencia interna del ADS1220
 PGAS = [1, 2, 4, 8, 16, 32, 64, 128]
 SPSS = [20, 45, 90, 175, 330, 600]
 
@@ -231,12 +239,16 @@ def exporta_led():
 class Estado:
     def __init__(self):
         self.fs = 100
-        # Muestras con su índice del M4. Las pausas se «comprimen»: la traza
-        # anterior queda pegada a la nueva y la unión se marca en pantalla.
-        self.datos = collections.deque(maxlen=VENTANA_S * 250)   # (i, v)
-        self.ultima = -1            # índice de la última muestra recibida
-        self.base = None            # índice que ocupa la posición 0
+        # Muestras en posiciones consecutivas k: las pausas y las pérdidas se
+        # «comprimen» (la traza anterior queda pegada a la nueva y la unión se
+        # marca en pantalla). vals[j] es la muestra de la posición k0 + j.
+        self.vals = array.array("i")
+        self.k0 = 0
+        self.ultima = -1            # índice del M4 de la última muestra recibida
+        self.base = None            # índice del M4 de la posición 0
         self.saltos = []            # (última antes, muestras saltadas, por_pausa)
+        self.plegado = 0            # muestras de saltos ya olvidados
+        self.t_ultima = 0.0         # hora (Unix) de llegada de la última muestra
         self.tras_pausa = False     # el próximo salto se debe a una pausa
         self.huecos = 0             # muestras PERDIDAS (no cuenta las pausas)
         self.eventos = []           # [inicio, fin|None, ratio, pico]
@@ -254,8 +266,10 @@ class Estado:
     def bloque(self, ini, fs, vals, seq=None):
         if fs != self.fs:           # otra base de tiempo: se empieza de cero
             self.fs = fs
-            self.datos.clear()
+            del self.vals[:]
+            self.k0 = 0
             self.saltos.clear()
+            self.plegado = 0
             self.eventos.clear()
             self.base = None
             self.seq = None
@@ -273,11 +287,18 @@ class Estado:
         self.tras_pausa = False
         if seq is not None:
             self.seq = seq
-        self.datos.extend((ini + k, v) for k, v in enumerate(vals))
+        self.vals.extend(vals)
         self.ultima = ini + len(vals) - 1
-        # los saltos que ya salieron de la ventana pasan a la base
-        while self.saltos and self.saltos[0][0] < self.datos[0][0]:
-            self.base += self.saltos.pop(0)[1]
+        self.t_ultima = time.time()
+        # Historia limitada: se recorta de golpe (con margen) para no mover el
+        # array en cada bloque; los saltos olvidados pasan a «plegado».
+        maxn = HIST_S * self.fs
+        if len(self.vals) > maxn + 10 * self.fs:
+            cut = len(self.vals) - maxn
+            del self.vals[:cut]
+            self.k0 += cut
+            while self.saltos and self.pos(self.saltos[0][0]) < self.k0:
+                self.plegado += self.saltos.pop(0)[1]
         self.bloques += 1
 
     def binario(self, m):
@@ -332,8 +353,12 @@ class Estado:
         del self.eventos[:-50]
 
     def pos(self, i):
-        """Posición en la traza del índice i del M4, con las pausas comprimidas."""
-        return i - (self.base or 0) - sum(g for r, g, _ in self.saltos if i > r)
+        """Posición k en la traza del índice i del M4, con los saltos comprimidos."""
+        return i - (self.base or 0) - self.plegado - sum(g for r, g, _ in self.saltos if i > r)
+
+    def ktot(self):
+        """Posición que ocupará la próxima muestra."""
+        return self.k0 + len(self.vals)
 
 
 # --------------------------------------------------------------------------
@@ -386,7 +411,7 @@ def consola(segundos, ordenes):
     print("\n--- resumen ---")
     print(f"duración {dur:.1f} s, líneas {st.lineas}, bloques {st.bloques} "
           f"(binarios {st.bloques_bin}), "
-          f"muestras {len(st.datos)} en memoria, huecos {st.huecos}, "
+          f"muestras {len(st.vals)} en memoria, huecos {st.huecos}, "
           f"pausas {sum(1 for *_, pp in st.saltos if pp)}")
     if st.s:
         print("último estado:", " ".join(f"{k}={v}" for k, v in st.s.items()))
@@ -397,10 +422,42 @@ def consola(segundos, ordenes):
 # --------------------------------------------------------------------------
 # Modo gráfico
 
+def unidades_de(s, unidades, sens_v_ms):
+    """(factor por cuenta, nombre) según la entrada activa y las unidades pedidas.
+    La entrada y la ganancia se leen del estado del M4 (adc_r0, adc_r1)."""
+    if s.get("fuente") != "adc":
+        return 1.0, "cuentas"
+    r0, r1 = int(s.get("adc_r0", 0)), int(s.get("adc_r1", 0))
+    mux, ts = r0 >> 4, (r1 >> 1) & 1
+    g = 1 if r0 & 1 else 1 << ((r0 >> 1) & 7)
+    v_cuenta = VREF / (g * 2 ** 23)
+    if ts:
+        return 0.03125 / 1024, "°C"         # 14 bits alineados a la izquierda
+    if mux == 0xD:
+        return 4 * v_cuenta, "V (AVDD)"
+    if unidades == "ums" and mux == 0x0:
+        return v_cuenta / sens_v_ms * 1e6, "µm/s"
+    if unidades in ("uv", "ums"):
+        return v_cuenta * 1e6, "µV"
+    return 1.0, "cuentas"
+
+
+def bonito(x):
+    """Número con 3 cifras significativas, sin notación científica."""
+    a = abs(x)
+    if a >= 100:
+        return f"{x:.0f}"
+    if a >= 10:
+        return f"{x:.1f}"
+    if a >= 1:
+        return f"{x:.2f}"
+    return f"{x:.3g}"
+
+
 def grafico(pantalla_completa):
     import gi
     gi.require_version("Gtk", "3.0")
-    from gi.repository import Gtk, GLib
+    from gi.repository import Gtk, GLib, Gdk
 
     c = Canal()
     cb, por_que = abre_bin()
@@ -408,6 +465,7 @@ def grafico(pantalla_completa):
     if not cb:
         st.respuestas.append("sin binario: " + por_que[:40])
     exporta_led()
+    conf, habia_conf = lee_conf()
 
     def leer(*_):
         for l in c.lee_lineas():
@@ -422,16 +480,47 @@ def grafico(pantalla_completa):
                 st.procesa(m)
         return True
 
+    # Vista: qué tramo de la historia se dibuja
+    vista = {
+        "vivo": True,           # el borde derecho sigue a la última muestra
+        "k_der": 0,             # posición del borde derecho si está congelada
+        "vent": conf["ventana_s"] if conf["ventana_s"] in VENTANAS else VENTANA_S,
+        "amp": None,            # semiescala fija en cuentas, o None = automática
+        "esc": 100.0,           # última semiescala usada (para pasar a fija)
+        "marcas": [],           # posiciones k de P y S
+        "arrastre": None,       # (x inicial, k_der inicial, se movió)
+    }
+
+    def n_vent():
+        return max(2, int(vista["vent"] * st.fs))
+
+    def k_derecha():
+        ult = st.ktot() - 1
+        if vista["vivo"]:
+            return ult
+        k = min(vista["k_der"], ult)
+        return max(k, st.k0 + min(n_vent(), len(st.vals)) - 1)
+
+    def fs_real():
+        try:
+            return int(st.s["fs_real_mhz"]) / 1000.0 or st.fs
+        except (KeyError, ValueError):
+            return float(st.fs)
+
     win = Gtk.Window(title="Instrumento M4")
     win.set_default_size(800, 480)
-    caja = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+    caja = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
     win.add(caja)
 
     area = Gtk.DrawingArea()
     area.set_vexpand(True)
+    area.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK |
+                    Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.SCROLL_MASK)
     caja.pack_start(area, True, True, 0)
 
     sup = PANEL_XFCE if pantalla_completa else 0
+    CAB = 46            # alto de la cabecera
+    EJE = 16            # alto del eje de tiempo
 
     def dibuja(w, cr):
         W, H = w.get_allocated_width(), w.get_allocated_height()
@@ -439,70 +528,75 @@ def grafico(pantalla_completa):
         cr.paint()
         cr.translate(0, sup)
         H -= sup
-        cab = 46
-        # Cabecera: estado del M4
-        led = lee_led()
         s = st.s
+        led = lee_led()
+        fac, uni = unidades_de(s, conf["unidades"], conf["sens_v_ms"])
+        fr = fs_real()
+
+        # Cabecera: estado del M4
+        if s.get("fuente") == "adc":
+            fuente = "ADC " + (aplicada["txt"] or "")
+        else:
+            fuente = "sintética"
+        filtro = int(s.get("filtro", 0) or 0)
+        if not filtro:
+            ftxt = "sin filtro"
+        elif s.get("filtro_hw") == "1":
+            ftxt = f"red {filtro} Hz (ADS1220)"
+        elif int(s.get("notch_mhz", 0) or 0):
+            ftxt = f"red {filtro} Hz → notch {int(s['notch_mhz']) / 1000:.2f} Hz"
+        else:
+            ftxt = f"red {filtro} Hz: no aplicable"
         cr.set_source_rgb(0.1, 0.1, 0.1)
         cr.select_font_face("Sans")
-        cr.set_font_size(15)
-        cr.move_to(8, 18)
-        fuente = s.get("fuente", "?")
-        if fuente == "adc":
-            fuente = "ADC " + aplicada["txt"]
-        cr.show_text(f"{fuente}   fs={st.fs} SPS   "
-                     f"tx={'sí' if s.get('tx') == '1' else 'no'}   "
-                     f"sismos={s.get('sismos', '?')}  eventos={s.get('eventos', '?')}  "
-                     f"perdidos={s.get('perdidos', '?')}   vía {st.via}"
+        cr.set_font_size(14)
+        cr.move_to(8, 17)
+        cr.show_text(f"{fuente}   {fr:.2f} SPS   {ftxt}   "
+                     f"eventos={s.get('eventos', '?')}  perdidos={s.get('perdidos', '?')}"
                      + ("  calentando" if st.via == "binario" and st.flags & 2 else ""))
+        cr.set_font_size(12)
+        cr.move_to(8, 36)
+        carga = int(s["carga_ppm"]) / 1e4 if "carga_ppm" in s else int(s.get("carga_pm", 0)) / 10
+        cr.show_text(f"carga M4 {carga:.2f} %   peor {s.get('peor_us', '?')} µs   "
+                     f"umbral {int(s.get('umbral_on', 0)) / 10:.1f}/"
+                     f"{int(s.get('umbral_off', 0)) / 10:.1f}   "
+                     f"tx={'sí' if s.get('tx') == '1' else 'no'}   vía {st.via}")
         if st.respuestas:                       # última respuesta del M4
             cr.set_font_size(11)
             cr.set_source_rgb(0.1, 0.45, 0.1)
-            cr.move_to(W - 260, 18)
-            cr.show_text(st.respuestas[-1][:36])
-            cr.set_source_rgb(0.1, 0.1, 0.1)
-            cr.set_font_size(15)
-        cr.move_to(8, 38)
-        carga = int(s["carga_ppm"]) / 1e4 if "carga_ppm" in s else int(s.get("carga_pm", 0)) / 10
-        cr.show_text(f"carga M4={carga:.2f} %   "
-                     f"peor muestra={s.get('peor_us', '?')} µs   "
-                     f"jitter={s.get('jitter_us', '?')} µs   "
-                     f"umbral={int(s.get('umbral_on', 0)) / 10:.1f}/"
-                     f"{int(s.get('umbral_off', 0)) / 10:.1f}   "
-                     f"ruido={s.get('ruido', '?')}")
-        # LED (leído del GPIO, no del protocolo)
+            cr.move_to(W - 250, 36)
+            cr.show_text(st.respuestas[-1][:34])
         cr.set_source_rgb(*((0.9, 0.1, 0.1) if led else (0.85, 0.85, 0.85)))
-        cr.arc(W - 22, 22, 13, 0, 6.2832)
+        cr.arc(W - 20, 16, 11, 0, 6.2832)
         cr.fill()
-        cr.set_source_rgb(0.3, 0.3, 0.3)
-        cr.set_font_size(10)
-        cr.move_to(W - 40, 44)
-        cr.show_text("LED" if led is not None else "LED n/d")
 
-        # Traza: min/máx por columna
-        y0, h = cab + 4, H - cab - 26
-        cr.set_source_rgb(0.97, 0.97, 0.97)
+        # Ventana visible, en posiciones k
+        y0, h = CAB, H - CAB - EJE
+        n = n_vent()
+        kd = k_derecha()
+        ki = kd - n + 1                         # posición en x = 0
+        def x_de_k(k):
+            return (k - ki + 0.5) * W / n
+        def x_de(i):
+            return x_de_k(st.pos(i))
+        cr.set_source_rgb(0.97, 0.97, 0.97) if vista["vivo"] else cr.set_source_rgb(0.95, 0.96, 1.0)
         cr.rectangle(0, y0, W, h)
         cr.fill()
-        n_vent = VENTANA_S * st.fs
-        primera = st.pos(st.ultima) - n_vent + 1  # posición en x=0
-        def x_de(i):
-            return (st.pos(i) - primera) * W / n_vent
-        m = [(i, v) for i, v in st.datos if st.pos(i) >= primera]
+
         # eventos sombreados
         for ini, fin, ratio, pico in st.eventos:
             f = fin if fin is not None else st.ultima
-            if x_de(f) < 0:
+            if x_de(f) < 0 or x_de(ini) > W:
                 continue
             cr.set_source_rgba(1, 0.55, 0.1, 0.25)
             xa = max(0, x_de(ini))
-            cr.rectangle(xa, y0, max(2, x_de(f) - xa), h)
+            cr.rectangle(xa, y0, max(2, min(W, x_de(f)) - xa), h)
             cr.fill()
         # uniones: pausas (gris) y pérdidas (rojo)
         cr.set_font_size(11)
         for r, g, por_pausa in st.saltos:
-            x = x_de(r) + 0.5
-            if x < 0:
+            x = x_de(r) + 0.5 * W / n
+            if x < 0 or x > W:
                 continue
             cr.set_source_rgb(*((0.55, 0.55, 0.55) if por_pausa else (0.85, 0.1, 0.1)))
             cr.set_dash([4, 3])
@@ -512,42 +606,160 @@ def grafico(pantalla_completa):
             cr.set_dash([])
             cr.move_to(min(x + 3, W - 80), y0 + 26)
             cr.show_text(f"pausa {g / st.fs:.0f} s" if por_pausa else f"perdidas {g}")
-        if m:
-            esc = max(100, max(abs(v) for _, v in m)) * 1.1
+
+        # traza
+        a = max(ki, st.k0) - st.k0              # índices en vals
+        b = kd - st.k0 + 1
+        if b - a >= 2:
+            tramo = st.vals[a:b]
+            media = sum(tramo) / len(tramo)
+            x_a = x_de_k(a + st.k0)
+            cols = []                           # (x, mín, máx) en cuentas
+            m = len(tramo)
+            px = W * m / n                      # píxeles que ocupa el tramo
+            if m > 2 * px:                      # muchas muestras por píxel
+                ncol = max(1, int(px))
+                for cx in range(ncol):
+                    t = tramo[cx * m // ncol:(cx + 1) * m // ncol]
+                    if t:
+                        cols.append((x_a + cx * px / ncol, min(t), max(t)))
+                lo_g = min(cl[1] for cl in cols); hi_g = max(cl[2] for cl in cols)
+            else:
+                lo_g, hi_g = min(tramo), max(tramo)
+            esc_auto = max(abs(hi_g - media), abs(media - lo_g), 1) * 1.1
+            esc = vista["amp"] or esc_auto
+            vista["esc"] = esc
+            def y_de(v):
+                return y0 + h / 2 - (v - media) / esc * h / 2
+            cr.save()
+            cr.rectangle(0, y0, W, h)
+            cr.clip()
             cr.set_source_rgb(0.05, 0.2, 0.6)
             cr.set_line_width(1)
-            cols = {}
-            for i, v in m:
-                cx = int(x_de(i))
-                lo, hi = cols.get(cx, (v, v))
-                cols[cx] = (min(lo, v), max(hi, v))
-            for cx in sorted(cols):
-                lo, hi = cols[cx]
-                cr.move_to(cx + 0.5, y0 + h / 2 - hi / esc * h / 2)
-                cr.line_to(cx + 0.5, y0 + h / 2 - lo / esc * h / 2 + 1)
+            if cols:
+                for x, lo, hi in cols:
+                    cr.move_to(int(x) + 0.5, y_de(hi))
+                    cr.line_to(int(x) + 0.5, y_de(lo) + 1)
+            else:
+                paso = W / n
+                cr.move_to(x_a, y_de(tramo[0]))
+                for j in range(1, m):
+                    cr.line_to(x_a + j * paso, y_de(tramo[j]))
+                if paso > 6:                    # muy ampliado: se ven las muestras
+                    cr.stroke()
+                    for j in range(m):
+                        cr.arc(x_a + j * paso, y_de(tramo[j]), 1.6, 0, 6.2832)
+                        cr.fill()
             cr.stroke()
-            cr.set_source_rgb(0.4, 0.4, 0.4)
+            cr.restore()
+            cr.set_source_rgb(0.3, 0.3, 0.3)
             cr.set_font_size(11)
             cr.move_to(4, y0 + 12)
-            cr.show_text(f"±{int(esc)} cuentas")
-        # eje de tiempo
+            cr.show_text(f"±{bonito(esc * fac)} {uni}"
+                         + ("" if vista["amp"] else " (auto)")
+                         + f"   media {bonito(media * fac)} {uni}")
+
+        # marcas P y S
+        nombres = ("P", "S")
+        for j, km in enumerate(vista["marcas"]):
+            x = x_de_k(km)
+            if 0 <= x <= W:
+                cr.set_source_rgb(*((0.8, 0.0, 0.0) if j == 0 else (0.0, 0.55, 0.0)))
+                cr.set_line_width(1.5)
+                cr.move_to(x, y0)
+                cr.line_to(x, y0 + h)
+                cr.stroke()
+                cr.set_font_size(14)
+                cr.move_to(x + 3, y0 + h - 6)
+                cr.show_text(nombres[j])
+        if len(vista["marcas"]) == 2:
+            dt = abs(vista["marcas"][1] - vista["marcas"][0]) / fr
+            cr.set_source_rgb(0.1, 0.1, 0.1)
+            cr.set_font_size(13)
+            cr.move_to(W / 2 - 120, y0 + 14)
+            cr.show_text(f"S−P = {dt:.2f} s   ≈ {8 * dt:.0f} km")
+
+        # eje de tiempo: segundos respecto a la última muestra recibida
+        ult = st.ktot() - 1
         cr.set_source_rgb(0.4, 0.4, 0.4)
         cr.set_font_size(11)
-        for seg in range(0, VENTANA_S + 1, 5):
-            x = W - seg * W / VENTANA_S
-            cr.move_to(min(max(x - 10, 2), W - 30), y0 + h + 14)
-            cr.show_text(f"-{seg} s" if seg else "0")
+        span = n / fr
+        paso = next((p for p in (0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 30, 60) if span / p <= 7), 60)
+        t_der = (kd - ult) / fr
+        t = paso * math.floor(t_der / paso)
+        while t >= t_der - span:
+            x = x_de_k(ult + t * fr)
+            cr.move_to(x, y0 + h)
+            cr.line_to(x, y0 + h + 4)
+            cr.stroke()
+            etiqueta = "0" if abs(t) < 1e-9 else f"{t:g} s"
+            cr.move_to(min(max(x - 12, 2), W - 40), y0 + h + 14)
+            cr.show_text(etiqueta)
+            t -= paso
+        if not vista["vivo"]:                   # hora aproximada del borde derecho
+            hora = time.strftime("%H:%M:%S", time.localtime(st.t_ultima + t_der))
+            cr.set_source_rgb(0.2, 0.2, 0.7)
+            cr.move_to(W - 150, y0 + 26)
+            cr.show_text(f"congelada · {hora}")
 
     area.connect("draw", dibuja)
 
-    barra = Gtk.Box(spacing=4)
-    caja.pack_start(barra, False, False, 2)
+    # Ratón o dedo sobre la traza: arrastrar desplaza; un toque pone P y S;
+    # la rueda cambia la escala de tiempo.
+    def pulsa(w, ev):
+        if ev.type != Gdk.EventType.BUTTON_PRESS:  # dobles y triples: solo cuentan los simples
+            return True
+        vista["arrastre"] = (ev.x, k_derecha(), False)
+        return True
 
-    def boton(texto, orden_fn):
+    def mueve(w, ev):
+        ar = vista["arrastre"]
+        if not ar:
+            return False
+        dx = ev.x - ar[0]
+        if abs(dx) > 8 or ar[2]:
+            vista["arrastre"] = (ar[0], ar[1], True)
+            vista["vivo"] = False
+            vista["k_der"] = int(ar[1] - dx * n_vent() / max(1, w.get_allocated_width()))
+            area.queue_draw()
+        return True
+
+    def suelta(w, ev):
+        ar = vista["arrastre"]
+        vista["arrastre"] = None
+        if ar and not ar[2]:                    # toque sin arrastre: marca
+            W = max(1, w.get_allocated_width())
+            k = k_derecha() - n_vent() + 1 + int(ev.x * n_vent() / W)
+            if len(vista["marcas"]) >= 2:
+                vista["marcas"] = []
+            vista["marcas"].append(k)
+            area.queue_draw()
+        return True
+
+    def rueda(w, ev):
+        if ev.direction == Gdk.ScrollDirection.UP:
+            zoom_t(-1)
+        elif ev.direction == Gdk.ScrollDirection.DOWN:
+            zoom_t(+1)
+        return True
+
+    area.connect("button-press-event", pulsa)
+    area.connect("motion-notify-event", mueve)
+    area.connect("button-release-event", suelta)
+    area.connect("scroll-event", rueda)
+
+    # --- Fila 1: órdenes al M4 -------------------------------------------
+    barra = Gtk.Box(spacing=3)
+    caja.pack_start(barra, False, False, 1)
+
+    def boton(fila_, texto, accion, expandir=True):
         b = Gtk.Button(label=texto)
-        b.connect("clicked", lambda *_: c.envia(orden_fn()))
-        barra.pack_start(b, True, True, 0)
+        b.connect("clicked", lambda *_: accion())
+        fila_.pack_start(b, expandir, expandir, 0)
         return b
+
+    def orden(texto_fn):
+        return lambda: c.envia(texto_fn())
 
     def pausa_sigue():
         return "pausa" if st.s.get("tx") == "1" else "inicia"
@@ -561,42 +773,38 @@ def grafico(pantalla_completa):
         r = int(st.s.get("ruido", 20))
         return f"ruido {max(0, min(100000, int(r * f) if r else 10))}"
 
-    solo_sint = [boton("¡Sismo!", lambda: "sismo")]
-    b_pausa = boton("Pausa", pausa_sigue)
-    solo_sint += [boton("10", lambda: "fs 10"),
-                  boton("100", lambda: "fs 100"),
-                  boton("250 SPS", lambda: "fs 250")]
-    boton("Umbral−", lambda: umbral(-5))
-    boton("Umbral+", lambda: umbral(+5))
-    solo_sint += [boton("Ruido×2", lambda: ruido(2)),
-                  boton("Ruido÷2", lambda: ruido(0.5))]
+    solo_sint = [boton(barra, "¡Sismo!", orden(lambda: "sismo"))]
+    b_pausa = boton(barra, "Pausa", orden(pausa_sigue))
+    solo_sint += [boton(barra, "10", orden(lambda: "fs 10")),
+                  boton(barra, "100", orden(lambda: "fs 100")),
+                  boton(barra, "250 SPS", orden(lambda: "fs 250"))]
+    boton(barra, "Umbral−", orden(lambda: umbral(-5)))
+    boton(barra, "Umbral+", orden(lambda: umbral(+5)))
+    solo_sint += [boton(barra, "Ruido×2", orden(lambda: ruido(2))),
+                  boton(barra, "Ruido÷2", orden(lambda: ruido(0.5)))]
+    boton(barra, "✕", Gtk.main_quit)
 
-    # Segunda fila: la fuente del M4 y el reparto del SPI
-    fila = Gtk.Box(spacing=4)
-    caja.pack_start(fila, False, False, 2)
+    # --- Fila 2: la fuente del M4, el filtro y el reparto del SPI ---------
+    fila = Gtk.Box(spacing=3)
+    caja.pack_start(fila, False, False, 1)
 
-    def combo(opciones):
+    def combo(fila_, opciones, activo):
         cb_ = Gtk.ComboBoxText()
         for ident, texto in opciones:
             cb_.append(str(ident), texto)
-        fila.pack_start(cb_, False, False, 0)
+        cb_.set_active_id(str(activo))
+        fila_.pack_start(cb_, False, False, 0)
         return cb_
 
-    fila.pack_start(Gtk.Label(label=" Fuente"), False, False, 0)
-    c_fuente = combo([("sint", "sintética"), ("adc", "ADS1220")])
-    c_entrada = combo(ENTRADAS)
-    c_pga = combo([(g, f"×{g}") for g in PGAS])
-    c_sps = combo([(v, f"{v} SPS") for v in SPSS])
+    c_fuente = combo(fila, [("sint", "sintética"), ("adc", "ADS1220")], conf["fuente"])
+    c_entrada = combo(fila, ENTRADAS, conf["entrada"])
+    c_pga = combo(fila, [(g, f"×{g}") for g in PGAS], conf["pga"])
+    c_sps = combo(fila, [(v, f"{v} SPS") for v in SPSS], conf["sps"])
     b_aplicar = Gtk.Button(label="Aplicar")
     fila.pack_start(b_aplicar, False, False, 0)
+    c_filtro = combo(fila, FILTROS, conf["filtro"])
     l_spi = Gtk.Label(label="")
     fila.pack_start(l_spi, True, True, 0)
-
-    conf, habia_conf = lee_conf()
-    c_fuente.set_active_id(conf["fuente"])
-    c_entrada.set_active_id(conf["entrada"])
-    c_pga.set_active_id(str(conf["pga"]))
-    c_sps.set_active_id(str(conf["sps"]))
 
     aplicada = {"txt": "", "fuente": None}      # lo último que se pidió al M4
     espera = {"adc": 0.0}                       # comprobar que el ADC respondió
@@ -618,17 +826,17 @@ def grafico(pantalla_completa):
         return False
 
     def aplicar(*_):
-        d = {"fuente": c_fuente.get_active_id(), "entrada": c_entrada.get_active_id(),
-             "pga": int(c_pga.get_active_id()), "sps": int(c_sps.get_active_id())}
-        guarda_conf(d)
-        if d["fuente"] == "adc":
+        conf.update(fuente=c_fuente.get_active_id(), entrada=c_entrada.get_active_id(),
+                    pga=int(c_pga.get_active_id()), sps=int(c_sps.get_active_id()))
+        guarda_conf(conf)
+        if conf["fuente"] == "adc":
             err = spi_m4("ceder")               # primero soltar Linux
             if err:
                 st.respuestas.append("ERR spi-m4: " + err)
                 return
-            g = d["pga"] if d["entrada"] in ("ain01", "corto") else 1
-            c.envia(f"fuente adc {d['entrada']} {g} {d['sps']}")
-            aplicada["txt"] = f"{d['entrada']} ×{g} {d['sps']} SPS"
+            g = conf["pga"] if conf["entrada"] in ("ain01", "corto") else 1
+            c.envia(f"fuente adc {conf['entrada']} {g} {conf['sps']}")
+            aplicada["txt"] = f"{conf['entrada']} ×{g}"
             espera["adc"] = time.time()
             GLib.timeout_add(700, lambda: (c.envia("estado"), False)[1])
         else:
@@ -636,20 +844,102 @@ def grafico(pantalla_completa):
             aplicada["txt"] = ""
             espera["adc"] = 0.0
             GLib.timeout_add(600, devolver)     # ...y entonces vuelve a Linux
-        aplicada["fuente"] = d["fuente"]
+        aplicada["fuente"] = conf["fuente"]
+        vista["marcas"] = []
+
+    def cambia_filtro(*_):
+        conf["filtro"] = int(c_filtro.get_active_id())
+        guarda_conf(conf)
+        c.envia(f"filtro {conf['filtro']}")
+        GLib.timeout_add(500, lambda: (c.envia("estado"), False)[1])
 
     b_aplicar.connect("clicked", aplicar)
-    salir = Gtk.Button(label="✕")
-    salir.connect("clicked", lambda *_: Gtk.main_quit())
-    barra.pack_start(salir, True, True, 0)
+    c_filtro.connect("changed", cambia_filtro)
+
+    # --- Fila 3: navegación por la traza ----------------------------------
+    nav = Gtk.Box(spacing=3)
+    caja.pack_start(nav, False, False, 1)
+
+    def en_vivo():
+        vista["vivo"] = True
+        area.queue_draw()
+
+    def congela_vivo():
+        if vista["vivo"]:
+            vista["k_der"] = k_derecha()
+            vista["vivo"] = False
+        else:
+            vista["vivo"] = True
+        area.queue_draw()
+
+    def desplaza(fraccion):
+        if vista["vivo"]:
+            vista["k_der"] = k_derecha()
+            vista["vivo"] = False
+        vista["k_der"] = int(k_derecha() + fraccion * n_vent())
+        if vista["k_der"] >= st.ktot() - 1 and fraccion > 0:
+            vista["vivo"] = True                # llegó al presente
+        area.queue_draw()
+
+    def zoom_t(paso):
+        i = VENTANAS.index(vista["vent"]) if vista["vent"] in VENTANAS else 5
+        i = min(max(i + paso, 0), len(VENTANAS) - 1)
+        if not vista["vivo"]:                   # congelada: conserva el centro
+            centro = k_derecha() - n_vent() // 2
+            vista["vent"] = VENTANAS[i]
+            vista["k_der"] = centro + n_vent() // 2
+        else:
+            vista["vent"] = VENTANAS[i]
+        conf["ventana_s"] = vista["vent"]
+        guarda_conf(conf)
+        area.queue_draw()
+
+    def zoom_a(f):
+        vista["amp"] = (vista["amp"] or vista["esc"]) * f
+        area.queue_draw()
+
+    def amp_auto():
+        vista["amp"] = None
+        area.queue_draw()
+
+    def borra_marcas():
+        vista["marcas"] = []
+        area.queue_draw()
+
+    def cambia_unidades(*_):
+        conf["unidades"] = c_uni.get_active_id()
+        guarda_conf(conf)
+        area.queue_draw()
+
+    b_vivo = boton(nav, "Congelar", congela_vivo)
+    boton(nav, "◀◀", lambda: desplaza(-1.0))
+    boton(nav, "◀", lambda: desplaza(-0.25))
+    boton(nav, "▶", lambda: desplaza(+0.25))
+    boton(nav, "▶▶", lambda: desplaza(+1.0))
+    nav.pack_start(Gtk.Label(label=" t"), False, False, 0)
+    boton(nav, "+", lambda: zoom_t(-1))
+    boton(nav, "−", lambda: zoom_t(+1))
+    l_vent = Gtk.Label(label="")
+    nav.pack_start(l_vent, False, False, 0)
+    nav.pack_start(Gtk.Label(label=" A"), False, False, 0)
+    boton(nav, "+", lambda: zoom_a(0.5))
+    boton(nav, "−", lambda: zoom_a(2.0))
+    boton(nav, "auto", amp_auto)
+    boton(nav, "✕P/S", borra_marcas)
+    c_uni = combo(nav, UNIDADES, conf["unidades"])
+    c_uni.connect("changed", cambia_unidades)
 
     GLib.io_add_watch(c.fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN, leer)
     if cb:
         GLib.io_add_watch(cb.fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN, leer_bin)
         GLib.timeout_add(int(LATIDO_S * 1000), cb.latido)
+
     def refresca():
         area.queue_draw()
         b_pausa.set_label("Pausa" if st.s.get("tx", "1") == "1" else "Sigue")
+        b_vivo.set_label("Congelar" if vista["vivo"] else "En vivo")
+        v = vista["vent"]
+        l_vent.set_text(f"{v // 60} min" if v >= 60 else f"{v} s")
         adc = st.s.get("fuente") == "adc"
         for b in solo_sint:
             b.set_sensitive(not adc)
@@ -665,7 +955,7 @@ def grafico(pantalla_completa):
         return True
 
     GLib.timeout_add(100, refresca)
-    for o in ("hola", "inicia", "estado"):
+    for o in ("hola", "inicia", f"filtro {conf['filtro']}", "estado"):
         c.envia(o)
     if habia_conf:
         GLib.timeout_add(300, lambda: (aplicar(), False)[1])
@@ -675,7 +965,6 @@ def grafico(pantalla_completa):
     if pantalla_completa:
         # xfwm deja el panel de XFCE por encima de una ventana a pantalla
         # completa: mejor ocupar exactamente el área útil, sin bordes.
-        from gi.repository import Gdk
         mon = Gdk.Display.get_default().get_primary_monitor() or \
             Gdk.Display.get_default().get_monitor(0)
         a = mon.get_workarea()

@@ -73,7 +73,8 @@ for t in resp:
 if ss:
     d = dict(kv.split("=", 1) for kv in ss[-1].split()[1:] if "=" in kv)
     print("<< M4:", " ".join(f"{k}={d.get(k)}" for k in
-          ("fuente", "fs", "adc_saltos", "adc_err", "perdidos", "carga_ppm", "peor_us")))
+          ("fuente", "fs", "fs_real_mhz", "filtro", "notch_mhz", "filtro_hw",
+           "adc_saltos", "adc_err", "perdidos", "carga_ppm", "peor_us")))
 if not v:
     sys.exit("sin muestras")
 if a.guarda:
@@ -84,7 +85,8 @@ N = len(v); m = sum(v) / N
 sd = math.sqrt(sum((x - m) ** 2 for x in v) / N)
 lsb = VREF / pga / (1 << 23)
 print(f"\nentrada={a.entrada} pga={pga} sps={a.sps}: {N} muestras, saltos de seq={saltos_seq}, bloques con evento={flags_ev}")
-print(f"tasa medida ≈ {(ultimo[0]-primero[0])/(ultimo[1]-primero[1]):.2f} muestras/s (reloj del A7)")
+print(f"tasa medida ≈ {(ultimo[0]-primero[0])/(ultimo[1]-primero[1]):.2f} muestras/s (reloj del A7, "
+      "aproximada; la buena es fs_real_mhz del M4)")
 if a.entrada == "temp":
     print(f"temperatura media {(m / 1024) * 0.03125:.3f} °C   (desv. {sd/1024*0.03125*1000:.1f} m°C)")
 elif a.entrada == "avdd":

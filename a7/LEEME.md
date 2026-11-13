@@ -7,7 +7,7 @@ Cópialos todos al mismo directorio de la placa (por ejemplo `~`).
 
 | Fichero | Qué hace |
 |---|---|
-| `visor_instrumento.py` | Visor GTK de la traza en vivo, con los eventos que detecta el M4 y botones para darle órdenes. Su segunda fila elige la fuente (sintética o ADS1220, entrada, ganancia, SPS), reparte el SPI y recuerda la última configuración en `~/.config/instrumento.conf`. `--consola` lo usa sin pantalla; con `VISOR_GUARDA=fichero` registra cada muestra (`t_unix índice valor`) |
+| `visor_instrumento.py` | Visor GTK de la traza en vivo, con los eventos que detecta el M4 y botones para darle órdenes. Su segunda fila elige la fuente (sintética o ADS1220, entrada, ganancia, SPS) y el filtro de red, y reparte el SPI. La tercera navega por 5 min de historia: congelar, desplazar, zoom de tiempo y amplitud, y unidades (cuentas, µV, µm/s). Tocar la traza pone las marcas **P** y **S** y da `S−P` en segundos y kilómetros. Recuerda la configuración en `~/.config/instrumento.conf`. `--consola` lo usa sin pantalla; con `VISOR_GUARDA=fichero` registra cada muestra (`t_unix índice valor`) |
 | `visor.sh` | Lanza el visor a pantalla completa en el display de la placa (`visor.sh parar` lo cierra) |
 | `spi-m4`, `spi-m4.sudoers` | Ayudante que cede el ECSPI3 al M4 o lo devuelve a Linux, y la regla de `sudoers` que deja usarlo sin contraseña. Lo llama el visor |
 | `instrumento.desktop`, `instrumento.svg` | Acceso directo e icono para el escritorio de la placa |

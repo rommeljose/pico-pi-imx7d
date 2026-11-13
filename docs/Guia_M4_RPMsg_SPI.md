@@ -641,9 +641,9 @@ Lo que funcionó:
   - **número de secuencia** en cada bloque, para que Linux detecte huecos;
   - **latido** si hay canal binario (§6.5).
 - **Mide el tiempo con el M4.** El oscilador de un ADC puede desviarse más del
-  1 %: con el ADS1220 se midieron ~88 muestras/s a 90 nominales. Cuenta las
-  muestras durante unos segundos con el contador de ciclos (DWT) y usa esa
-  tasa, no la nominal.
+  1 %: el ejemplo midió 88,08 muestras/s a 90 nominales, contando muestras
+  durante 10 s del contador de ciclos. Un filtro calculado con la tasa nominal
+  falla: el notch de red pasa de más de 100 dB a solo 1,4 dB.
 
 ---
 
@@ -682,6 +682,7 @@ en [`a7/`](../a7/LEEME.md):
 | ECSPI3: reloj, toma, byte, lazo interno | `instrumento.c`: `ecspi3_reloj()`, `ecspi3_toma()`, `ecspi3_byte()`, `spi_lazo()` |
 | Un dispositivo SPI concreto (ADS1220) | `instrumento.c`: `ads_toma()`, `ads_lee()`, `ads_suelta()`, `ads_drdy_alto()` |
 | Contador de ciclos, carga, jitter | `instrumento.c`: `ciclos_init()`, final de `TareaAdq()` |
+| Filtro digital en el M4 (notch IIR) y tasa real | `instrumento.c`: `notch_prepara()`, `notch_aplica()`, `TareaAdq()` |
 | Probar la lógica en el PC, sin placa | `prueba_host.c` |
 | Tty en Linux (crudo, sin eco) | `a7/visor_instrumento.py`: clase `Canal` |
 | Endpoint binario (crear, reutilizar, latido, cerrar) | `a7/visor_instrumento.py`: clase `CanalBin` |

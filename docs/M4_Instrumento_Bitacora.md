@@ -15,7 +15,7 @@ fuera de la placa.
 |---|---|
 | 0 — señal sintética, STA/LTA en el M4, visor | ✅ verificada (2026-11-12) |
 | 1 — bloques binarios por `/dev/rpmsg0`, latido | ✅ verificada (2026-11-12) |
-| 2 — ECSPI3 en el M4 y ADC real (**ADS1220**) | ✅ verificada (2026-11-13), con un **geófono SM-6** conectado directo. El visor elige la fuente y reparte el SPI (paso 5, en manual). Falta el rechazo de 50/60 Hz y una alimentación analógica propia |
+| 2 — ECSPI3 en el M4 y ADC real (**ADS1220**) | ✅ verificada (2026-11-13), con un **geófono SM-6** conectado directo. El visor elige la fuente y reparte el SPI (paso 5, en manual). Filtro de red en el M4 desde la v0.6 (notch sobre el alias). Visor v2 verificado por el usuario. Falta una alimentación analógica propia |
 | 3 — PPS de un GPS en el M4 | pendiente |
 | 4 — varias placas en red | pendiente |
 
@@ -859,3 +859,102 @@ el módulo.
 
 Con ×64 los golpes cercanos aún llegan a la saturación (±8,39 M cuentas): para
 golpes, ×16 o ×32.
+
+## 2026-11-13 — Firmware v0.6: filtro de red, tasa real y visor navegable
+
+### Firmware (v0.6, `firmware-m4/instrumento.bin`)
+
+**Orden nueva `filtro 0|50|60`.** Aplica un **notch IIR de 2.º orden** (ancho de
+1 Hz) sobre la frecuencia **aparente** de la red. A 90 SPS, 60 Hz no se ve en
+60 Hz sino plegada: 90 − 60 = 30 Hz. El filtro va antes del STA/LTA y del envío,
+así que lo ven el detector y el visor.
+
+- **A 20 SPS no hay notch:** 60 Hz se pliega sobre la continua. Allí el filtro
+  lo hace el **propio ADS1220** (registro 2, bits 5:4 = `11` para 60 Hz y `10`
+  para 50 Hz), que solo rechaza la red a esa tasa. Cambiar el filtro a 20 SPS
+  reconfigura el ADC.
+- **Tasa real.** El oscilador interno del ADS1220 se desvía: a 90 SPS nominales
+  da **88,082**. El M4 la mide contando muestras durante 10 s de su contador de
+  ciclos (DWT, 240 MHz), y recalcula el notch sin transitorio. La prueba en el PC
+  (`prueba_host.c`) muestra por qué hace falta: diseñado a 90 SPS con el ADC a
+  88,8 reales, el notch solo quita **1,4 dB**; a la tasa real, más de 100 dB.
+- **Línea `S` nueva:** `filtro`, `notch_mhz` (centro del notch; 0 = sin él),
+  `filtro_hw` y `fs_real_mhz`.
+
+**Prueba en el PC** (`prueba_host.c`), ganancia del notch de 60 Hz:
+
+| Tasa | Centro | Red (60 Hz) | 1 Hz | 10 Hz |
+|---|---|---|---|---|
+| 45 SPS | 15,00 Hz | −115 dB | 0,00 dB | −0,04 dB |
+| 88,8 SPS | 28,80 Hz | −113 dB | 0,00 dB | 0,00 dB |
+| 175 / 330 / 600 SPS | 60,00 Hz | −112 / −103 / −66 dB | 0,00 dB | 0,00 dB |
+
+**Verificado funcionando en la placa** (2026-11-13):
+
+- **Con la fuente sintética:** un seno de 60 Hz a 100 SPS cae plegado en 40 Hz.
+  Con `filtro 60`, el M4 pone el notch en `notch_mhz=40000`, y el rms de los
+  últimos 5 s pasa de **2121 cuentas a 0,0**.
+- **Con el geófono:** a ×64 y 90 SPS, `fs_real_mhz=88082` y
+  `notch_mhz=28082`. En el espectro, la línea de la red está en **28,06 Hz**,
+  justo 88,082 − 60, lo que confirma la tasa medida por el M4. Con el filtro,
+  esa línea **desaparece** (de 6,7 veces la mediana a 0,0).
+- La tasa que estimaba el A7 por la hora de llegada (88,34) era la menos fiable.
+  `adc_captura.py` muestra ahora `fs_real_mhz`.
+
+### Corrección: el pico dominante no era la red
+
+La línea más fuerte del espectro está en **30,3–30,9 Hz** y su frecuencia
+varía: 207 veces la mediana en el registro de reposo de ayer y 36 hoy. No es la
+red, que está en 28,06 Hz. Plegada desde 88,08 SPS, corresponde a una vibración
+real de **57–58 Hz**: un motor de 2 polos (compresor, bomba o ventilador) que
+gira algo por debajo de 60 Hz por el deslizamiento. Ayer se atribuyó al
+«zumbido de 60 Hz»; era **ruido mecánico del suelo**, plegado porque el filtro
+sinc del ADS1220 a 90 SPS no basta para frenar 57 Hz (*aliasing*). El
+«pico a ~60 Hz» medido a 600 SPS era probablemente el mismo motor.
+
+**Consecuencia:** el notch no lo quita, ni debe: es señal real del suelo. Lo
+que corresponde es **no plegarla**:
+
+- adquirir a 330 o 600 SPS;
+- en el M4, un filtro paso bajo y diezmado a 100 o 50 SPS (sobremuestreo con
+  diezmado, como los digitalizadores sísmicos).
+
+Queda como siguiente paso del firmware.
+
+### Visor: historia, navegación, marcas P/S y unidades
+
+- **Historia de 5 min** (`HIST_S`) en un `array` indexado por posición. Cada
+  fotograma trocea solo la ventana visible (mín./máx. por columna con `min` y
+  `max` de C), en vez de recorrer toda la historia.
+- **Tercera fila:**
+  - **Congelar / En vivo**, y desplazamiento ◀◀ ◀ ▶ ▶▶ (una ventana o un
+    cuarto). Al llegar al presente con ▶, vuelve a «en vivo».
+  - Zoom de **tiempo** de 1 s a 5 min (`t + −`), y de **amplitud** (`A + −`,
+    `auto`).
+  - Borrar marcas (`✕P/S`) y **unidades**: cuentas, µV o µm/s.
+- **Sobre la traza:**
+  - arrastrar la desplaza (y la congela); la rueda cambia la escala de tiempo;
+  - **un toque pone la marca P, otro la S**, y el visor muestra
+    `S−P = x s ≈ 8·x km` con la tasa real del M4. Un tercer toque empieza de
+    nuevo;
+  - muy ampliado, se ven las muestras sueltas.
+- La traza se centra en la **media de la ventana** visible; el rótulo da la
+  semiescala y la media en las unidades elegidas. Congelada, el fondo se tiñe
+  y muestra la **hora aproximada** del borde derecho (reloj del A7 sin RTC ni
+  PPS: orientativa).
+- **µm/s** = V / sensibilidad. `sens_v_ms` = 20,9 V/(m/s) por defecto: el SM-6
+  con el shunt de 1 kΩ. Se puede cambiar en `~/.config/instrumento.conf`. Solo
+  vale **por encima de 10 Hz**, la frecuencia natural del geófono; por debajo,
+  la respuesta cae.
+- **Filtro de red** en la segunda fila: se envía al momento, sin «Aplicar».
+- La configuración guarda ahora también el filtro, las unidades y la ventana.
+
+Probado en la placa: arranca, aplica la configuración guardada y las tres filas
+caben en 800×480 (captura).
+
+**Verificado por el usuario en la pantalla (2026-11-13)**: todas las opciones
+del panel, la navegación (congelar, desplazar, zoom) y las marcas P y S. Con el
+geófono **sobre la mesa de trabajo**, ×32 se satura con cualquier movimiento; el
+usuario trabaja a **×16**. Fondo de escala del ADS1220 = ±2,048 V / PGA: a ×16,
+±128 mV, que son ~6 mm/s con los 20,9 V/(m/s) del SM-6 con su shunt. Para medir
+golpes cerca, el PGA bajo; para el ruido de fondo de un sitio tranquilo, el alto.

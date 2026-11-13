@@ -258,17 +258,18 @@ index 0000000..094b843
 + ******************************************************************************/
 diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c b/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c
 new file mode 100644
-index 0000000..d4e4769
+index 0000000..e36e76c
 --- /dev/null
 +++ b/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c
-@@ -0,0 +1,1129 @@
+@@ -0,0 +1,1234 @@
 +/*
-+ * Instrumento — proyecto «M4 instrumento, Linux analista», etapas 0 a 2 (v0.5).
++ * Instrumento — proyecto «M4 instrumento, Linux analista», etapas 0 a 2 (v0.6).
 + *
 + * El Cortex-M4 hace el trabajo continuo, sin depender de Linux:
 + *   - adquiere fs muestras/s de una de dos fuentes: el ADS1220 por ECSPI3
 + *     («fuente adc», el ADC marca el ritmo) o una señal sintética (ruido + seno
-+ *     + «sismos» con fase P y S); procesa: quita la media y aplica STA/LTA;
++ *     + «sismos» con fase P y S); procesa: filtro de red opcional (notch sobre
++ *     el alias de 50/60 Hz), quita la media y aplica STA/LTA;
 + *   - enciende el USER LED (GPIO2_IO06) mientras dura un evento;
 + *   - mide su propia carga y el jitter de su periodo de muestreo.
 + *
@@ -285,6 +286,7 @@ index 0000000..d4e4769
 + *   Linux -> M4   hola | estado | inicia | pausa | bin [0] | fs <Hz> | ruido <c>
 + *                 seno <c> <mHz> | amp <c> | sismo [c] | auto 0|1 | umbral <on> <off>
 + *                 fuente sint | fuente adc [corto|ain01|avdd|temp] [pga] [sps]
++ *                 filtro 0|50|60          notch de red (a 20 SPS, el del ADS1220)
 + *                 spi lazo | spi suelta | adc prueba     (pruebas; solo en «sint»)
 + * Basado en str_echo_freertos (BSP FreeRTOS 1.0.1 de NXP/TechNexion, BSD-3).
 + * Lo nuevo: Copyright (c) 2026 rommeljose y colaboradores, licencia MIT.
@@ -312,7 +314,7 @@ index 0000000..d4e4769
 +#endif
 +
 +#define NOMBRE              "instrumento"
-+#define VERSION             "0.5"
++#define VERSION             "0.6"
 +
 +#define APP_MU_IRQ_PRIORITY 3
 +#define PILA_ADQ            512     /* palabras */
@@ -350,12 +352,14 @@ index 0000000..d4e4769
 +    int32_t adc_r0, adc_r1; /* registros 0 y 1 del ADS1220                 */
 +    int32_t adc_sps;        /* muestras/s nominales del ADS1220            */
 +    int32_t adc_gen;        /* sube en cada cambio: la adquisición reconfigura */
++    int32_t filtro;         /* 0, 50 o 60: frecuencia de red a eliminar    */
 +} par = {
 +    .fs = 100, .ruido = 20, .seno_amp = 0, .seno_mhz = 200,
 +    .sismo_amp = 3000, .automatico = 1,
 +    .umbral_on = 30, .umbral_off = 15,
 +    .transmitir = 0, .sismo_pedido = 0,
 +    .fuente = 0, .adc_r0 = 0xEE, .adc_r1 = 0x44, .adc_sps = 90, .adc_gen = 0,
++    .filtro = 0,
 +};
 +enum { FUENTE_SINT = 0, FUENTE_ADC = 1 };
 +
@@ -369,6 +373,9 @@ index 0000000..d4e4769
 +static volatile int32_t  est_fuente;        /* fuente activa de verdad        */
 +static volatile uint32_t est_adc_saltos;    /* datos del ADC no leídos a tiempo */
 +static volatile int32_t  est_adc_err;       /* 0, o el error de la última toma */
++static volatile int32_t  est_fs_real_mhz;   /* tasa real medida con el DWT, mHz */
++static volatile int32_t  est_notch_mhz;     /* centro del notch, mHz; 0 = sin él */
++static volatile int32_t  est_filtro_hw;     /* 1: rechazo 50/60 Hz del propio ADS1220 */
 +
 +/* ------------------------------------------------------------------------- */
 +/* Mensajes de la adquisición a la comunicación.                              */
@@ -568,6 +575,53 @@ index 0000000..d4e4769
 +}
 +
 +/* ------------------------------------------------------------------------- */
++/* Filtro de red: notch IIR de 2.º orden. La red no se ve a 50/60 Hz sino     */
++/* plegada por el muestreo (a 90 SPS, 60 Hz aparece en 30 Hz), y la tasa que  */
++/* cuenta es la REAL del ADS1220 (su oscilador se desvía ~1 %).               */
++
++#define NOTCH_BW    1.0f    /* Hz de ancho a −3 dB */
++
++static struct { int on; float b1, a1, a2, k, z1, z2; } notch;
++
++static float pliega(float f, float fs)          /* frecuencia aparente, [0, fs/2] */
++{
++    f -= fs * (float)(int32_t)(f / fs);
++    return f > 0.5f * fs ? fs - f : f;
++}
++
++/* Calcula los coeficientes; devuelve el centro (Hz) o 0 si no procede: sin red
++ * elegida, o el alias cae junto a continua o a Nyquist (p. ej. 60 Hz a 20 SPS).
++ * Con reinicia = 0 conserva el estado: para seguir la tasa sin transitorios. */
++static float notch_prepara(int32_t red, float fs, int reinicia)
++{
++    float f, c, r;
++    if (reinicia) notch.z1 = notch.z2 = 0.0f;
++    notch.on = 0;
++    if (red <= 0) return 0.0f;
++    f = pliega((float)red, fs);
++    if (f < 1.5f || f > 0.5f * fs - 0.5f) return 0.0f;
++    c = seno(PI2 * f / fs + 1.57079633f);       /* cos(w0) */
++    r = 1.0f - 3.14159265f * NOTCH_BW / fs;
++    notch.b1 = -2.0f * c;
++    notch.a1 = -2.0f * r * c;
++    notch.a2 = r * r;
++    notch.k  = (1.0f + notch.a1 + notch.a2) / (2.0f + notch.b1);   /* ganancia 1 en continua */
++    notch.on = 1;
++    return f;
++}
++
++static float notch_aplica(float x)              /* forma directa II transpuesta */
++{
++    float y;
++    if (!notch.on) return x;
++    x *= notch.k;
++    y = x + notch.z1;
++    notch.z1 = notch.b1 * x - notch.a1 * y + notch.z2;
++    notch.z2 = x - notch.a2 * y;
++    return y;
++}
++
++/* ------------------------------------------------------------------------- */
 +/* Detector STA/LTA recursivo                                                 */
 +
 +static struct {
@@ -657,7 +711,7 @@ index 0000000..d4e4769
 +    return n;
 +}
 +
-+static int     ads_toma(uint8_t r0, uint8_t r1);
++static int     ads_toma(uint8_t r0, uint8_t r1, uint8_t r2);
 +static void    ads_suelta(void);
 +static int     ads_drdy_alto(void);
 +static int32_t ads_lee(void);
@@ -671,8 +725,10 @@ index 0000000..d4e4769
 +    uint16_t   seq = 0;
 +    msg_t      b;
 +    float      x;
-+    int32_t    fuente = FUENTE_SINT, gen = -1;
++    int32_t    fuente = FUENTE_SINT, gen = -1, filtro = -1;
 +    uint32_t   per_us = 0, t_lect = 0;
++    uint32_t   t_vent = 0, k_vent = 0;  /* ventana para medir la tasa real */
++    float      fs_real = 0.0f, f_notch;
 +    (void)pv;
 +
 +    b.n = 0;
@@ -685,10 +741,14 @@ index 0000000..d4e4769
 +            if (fuente == FUENTE_ADC) ads_suelta();
 +            fuente = FUENTE_SINT;
 +            if (par.fuente == FUENTE_ADC) {
-+                int r = ads_toma((uint8_t)par.adc_r0, (uint8_t)par.adc_r1);
++                /* A 20 SPS el ADS1220 rechaza la red él mismo (registro 2) */
++                uint8_t r2 = (par.adc_sps == 20 && par.filtro) ?
++                             (par.filtro == 50 ? 0x20 : 0x30) : 0x00;
++                int r = ads_toma((uint8_t)par.adc_r0, (uint8_t)par.adc_r1, r2);
++                est_filtro_hw = r > 0 && r2 != 0;
 +                est_adc_err = r > 0 ? 0 : (r < 0 ? 2 : 1);
 +                if (r > 0) fuente = FUENTE_ADC;
-+                else { ads_suelta(); par.fuente = FUENTE_SINT; }
++                else { ads_suelta(); par.fuente = FUENTE_SINT; est_filtro_hw = 0; }
 +            }
 +            est_fuente = fuente;
 +            fs = 0;                     /* fuerza el reinicio de abajo */
@@ -704,6 +764,15 @@ index 0000000..d4e4769
 +            b.n     = 0;
 +            prox    = xTaskGetTickCount();
 +            c_ant   = 0;
++            fs_real = (float)fs;
++            est_fs_real_mhz = fs * 1000;
++            t_vent  = k_vent = 0;
++            filtro  = -1;               /* fuerza el cálculo del notch */
++        }
++        if (par.filtro != filtro) {     /* a 20 SPS con el ADC, lo hace el ADS1220 */
++            filtro  = par.filtro;
++            f_notch = notch_prepara(fuente == FUENTE_ADC && fs == 20 ? 0 : filtro, fs_real, 1);
++            est_notch_mhz = (int32_t)(f_notch * 1000.0f);
 +        }
 +
 +        if (fuente == FUENTE_ADC) {
@@ -718,15 +787,37 @@ index 0000000..d4e4769
 +            x = (float)ads_lee();
 +            if (t_lect) {               /* lectura tardía: se perdió algún dato */
 +                uint32_t dt = (c0 - t_lect) / CICLOS_POR_US;
-+                if (dt > per_us + per_us / 2) est_adc_saltos += (dt + per_us / 2) / per_us - 1;
++                if (dt > per_us + per_us / 2) {
++                    uint32_t s = (dt + per_us / 2) / per_us - 1;
++                    est_adc_saltos += s;
++                    k_vent += s;
++                }
 +            }
 +            t_lect = c0;
++            /* Tasa real: muestras en ~10 s de reloj del núcleo (el CYCCNT da la
++             * vuelta a los 17,9 s). El retraso del sondeo, ≤ 1 ms, solo afecta
++             * a los extremos: 0,01 %.                                       */
++            if (!t_vent) {
++                t_vent = c0; k_vent = 0;
++            } else if (++k_vent, c0 - t_vent >= 10u * configCPU_CLOCK_HZ) {
++                float m = (float)k_vent * (float)configCPU_CLOCK_HZ / (float)(c0 - t_vent);
++                if (m > 0.9f * fs && m < 1.1f * fs) {
++                    fs_real = m;
++                    est_fs_real_mhz = (int32_t)(m * 1000.0f + 0.5f);
++                    if (filtro > 0 && fs != 20) {   /* sigue la tasa sin transitorio */
++                        f_notch = notch_prepara(filtro, fs_real, 0);
++                        est_notch_mhz = (int32_t)(f_notch * 1000.0f);
++                    }
++                }
++                t_vent = c0; k_vent = 0;
++            }
 +        } else {
 +            vTaskDelayUntil(&prox, periodo);
 +            c0 = DWT->CYCCNT;
 +            t_lect = 0;
 +            x = genera(fs);
 +        }
++        x = notch_aplica(x);
 +
 +        /* Jitter: desvío entre muestras consecutivas y el periodo nominal.
 +         * Con el ADC mide la latencia del sondeo, no el muestreo (que es del ADC). */
@@ -958,7 +1049,7 @@ index 0000000..d4e4769
 +
 +/* Toma el ADS1220: ECSPI3, CS bajo fijo, RESET y configuración.
 + * r0, r1: MUX/PGA y DR/MODE/CM/TS; r3 lleva siempre DRDYM = 1.          */
-+static int ads_toma(uint8_t r0, uint8_t r1)
++static int ads_toma(uint8_t r0, uint8_t r1, uint8_t r2)
 +{
 +    uint8_t w[5], l[5] = { 0 };
 +    if (!ecspi3_toma()) return 0;
@@ -971,12 +1062,12 @@ index 0000000..d4e4769
 +    w[0] = ADS_RESET;
 +    if (!ads_xfer(w, 0, 1)) return 0;
 +    espera_us(100);                             /* 50 µs + 32 tCLK */
-+    w[0] = ADS_WREG(0, 4); w[1] = r0; w[2] = r1; w[3] = 0x00; w[4] = 0x02;
++    w[0] = ADS_WREG(0, 4); w[1] = r0; w[2] = r1; w[3] = r2; w[4] = 0x02;
 +    if (!ads_xfer(w, 0, 5)) return 0;
 +    w[0] = ADS_RREG(0, 4); w[1] = w[2] = w[3] = w[4] = 0;
 +    if (!ads_xfer(w, l, 5)) return 0;
 +    memcpy(ads_regs, l + 1, 4);
-+    if (l[1] != r0 || l[2] != r1 || l[3] != 0x00 || l[4] != 0x02) return -1;
++    if (l[1] != r0 || l[2] != r1 || l[3] != r2 || l[4] != 0x02) return -1;
 +    w[0] = ADS_START;
 +    return ads_xfer(w, 0, 1) ? 1 : 0;
 +}
@@ -1011,7 +1102,7 @@ index 0000000..d4e4769
 +    int32_t primero = 0, ultimo = 0;
 +    TickType_t t0;
 +
-+    r = ads_toma(0x00, 0x06);                   /* r1: 20 SPS, continuo, TS */
++    r = ads_toma(0x00, 0x06, 0x00);                   /* r1: 20 SPS, continuo, TS */
 +    if (r <= 0) {
 +        p = pon_txt(p, r < 0 ? "ERR adc registros" : "ERR adc spi");
 +        for (i = 0; i < 4; i++) p = pon_par(p, i == 0 ? "r0" : i == 1 ? "r1" : i == 2 ? "r2" : "r3", ads_regs[i]);
@@ -1113,6 +1204,10 @@ index 0000000..d4e4769
 +    p = pon_par(p, "adc_sps", par.adc_sps);
 +    p = pon_par(p, "adc_saltos", (int32_t)est_adc_saltos);
 +    p = pon_par(p, "adc_err", est_adc_err);
++    p = pon_par(p, "filtro", par.filtro);
++    p = pon_par(p, "notch_mhz", est_notch_mhz);
++    p = pon_par(p, "filtro_hw", est_filtro_hw);
++    p = pon_par(p, "fs_real_mhz", est_fs_real_mhz);
 +    p = pon_par(p, "ruido", par.ruido);
 +    p = pon_par(p, "seno", par.seno_amp);
 +    p = pon_par(p, "seno_mhz", par.seno_mhz);
@@ -1272,6 +1367,16 @@ index 0000000..d4e4769
 +        }
 +        return;
 +    }
++    if (empieza(s, "filtro", &r)) {
++        if (!lee_int(&r, &a)) a = -1;
++        if (a == 0 || a == 50 || a == 60) {
++            par.filtro = a;
++            /* a 20 SPS el filtro es un registro del ADS1220: hay que retomarlo */
++            if (par.fuente == FUENTE_ADC && par.adc_sps == 20) par.adc_gen++;
++            responde("OK", s); return;
++        }
++        responde("ERR filtro 0|50|60;", s); return;
++    }
 +    if (empieza(s, "inicia", &r)) { par.transmitir = 1; responde("OK", s); return; }
 +    if (empieza(s, "pausa", &r))  { par.transmitir = 0; responde("OK", s); return; }
 +    if (empieza(s, "fs", &r) && lee_int(&r, &a) &&
@@ -1393,10 +1498,10 @@ index 0000000..d4e4769
 +#endif /* !PRUEBA_HOST */
 diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c
 new file mode 100644
-index 0000000..39e958b
+index 0000000..7f97fcb
 --- /dev/null
 +++ b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,87 @@
 +/* Prueba en el PC del generador y del detector de instrumento.c.
 + *   cc -O2 -DPRUEBA_HOST -o /tmp/prueba prueba_host.c -lm && /tmp/prueba
 + * Comprueba: (1) sin sismos no hay falsos disparos; (2) con sismos
@@ -1440,8 +1545,42 @@ index 0000000..39e958b
 +    return 0;
 +}
 +
++/* Notch de red: ganancia (dB) de un seno de f Hz muestreado a fs, en régimen.
++ * El filtro se diseña para la tasa fs_diseno (la «real» medida).           */
++static double ganancia_notch(int32_t red, float fs, float fs_diseno, float f)
++{
++    double e_in = 0, e_out = 0;
++    int i, N = (int)(fs * 60);
++    notch_prepara(red, fs_diseno, 1);
++    for (i = 0; i < N; i++) {
++        float x = 1000.0f * (float)sin(2 * M_PI * f * i / fs), y = notch_aplica(x);
++        if (i > N / 2) { e_in += (double)x * x; e_out += (double)y * y; }
++    }
++    return 10 * log10(e_out / e_in);
++}
++
++static void prueba_notch(void)
++{
++    static const float tasas[] = { 45, 88.8f, 90, 175, 330, 600, 100, 250 };
++    unsigned i;
++    printf("notch 60 Hz: tasa → centro, red, 1 Hz, 10 Hz, centro±1 Hz (dB)\n");
++    for (i = 0; i < sizeof tasas / sizeof tasas[0]; i++) {
++        float fs = tasas[i], fc = notch_prepara(60, fs, 1);
++        double r = ganancia_notch(60, fs, fs, 60.0f);   /* la red de verdad, plegada */
++        printf("  %6.1f SPS → %6.2f Hz  red %6.1f  1 Hz %5.2f  10 Hz %5.2f  ±1 Hz %5.1f/%5.1f\n",
++               fs, fc, r, ganancia_notch(60, fs, fs, 1.0f),
++               ganancia_notch(60, fs, fs, 10.0f),
++               ganancia_notch(60, fs, fs, fc - 1.0f), ganancia_notch(60, fs, fs, fc + 1.0f));
++    }
++    printf("  diseñado a 90 SPS nominal con el ADC a 88,8 reales: red %.1f dB\n",
++           ganancia_notch(60, 88.8f, 90.0f, 60.0f));
++    printf("  20 SPS: centro %.2f Hz (0 = sin notch: lo hace el ADS1220)\n",
++           notch_prepara(60, 20.0f, 1));
++}
++
 +int main(void)
 +{
++    prueba_notch();
 +    printf("error máximo de seno() en [-200, 200] rad: %.2e\n", max_err_seno());
 +    corre(100, 3600, 0, 20);     /* una hora de ruido: falsos disparos */
 +    corre(100, 3600, 1, 20);

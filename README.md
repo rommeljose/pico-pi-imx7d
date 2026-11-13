@@ -26,10 +26,12 @@ Que algo compile no prueba que funcione.
 | **SPI (ECSPI3) desde el M4**, quitado a Linux en caliente | ✅ verificado: lazo interno 256/256 bytes; vuelve a Linux con `bind` |
 | **ADC ADS1220** leído por el M4 | ✅ verificado: 20–600 SPS sin pérdidas; ruido en corto de 0,19 µV rms (×128, 90 SPS) |
 | **Geófono** conectado al ADS1220 con una interfaz pasiva | ✅ verificado: golpes en el visor, reposo ~3,3 µm/s |
+| **Filtro de red** en el M4 (notch sobre el alias) y tasa real del ADC medida por el M4 | ✅ verificado (v0.6): la línea de la red desaparece; 88,082 SPS reales a 90 nominales |
+| **Visor navegable**: congelar, desplazar, zoom, marcas P y S, µm/s | ✅ verificado en la pantalla de la placa |
 | **WiFi** BCM4339 (`wlan0`) | ✅ verificado: `brcmfmac.ko` compilado aquí y cargado **sobre el kernel de fábrica**, sin cambiarlo |
 | **Punto de acceso** con DHCP y NAT a Internet | ✅ verificado: un teléfono navega a través de la placa; vuelve solo tras reiniciar |
 | Red cableada con NetworkManager e IP de rescate que se autorrepara | ✅ verificado, incluido un arranque con el cable desconectado |
-| Respaldo completo de la eMMC en caliente | ✅ verificado: imagen íntegra y `e2fsck` limpio |
+| Respaldo completo de la eMMC en caliente | ✅ verificado: imagen íntegra y `e2fsck` limpio. La del 2026-11-13 (instrumento v0.6) [**se puede descargar**](https://drive.google.com/drive/folders/1ziX42hyLd_w4frYzmNlMxvgjcyu9rBTp?usp=sharing), con su LÉEME. Al restaurarla, cambia la contraseña, las claves SSH y las del WiFi |
 | Temporizador **GPT3** desde el M4 | ❌ Linux apaga su reloj. Usar `vTaskDelay` (SysTick) |
 | Demás ejemplos del M4 (`hello_world`, `pingpong`, `sema4`…) | ⚙️ compilaron; no probados en la placa |
 
@@ -121,7 +123,7 @@ nivel de verificación, están en [`firmware-m4/`](firmware-m4/LEEME.md).
     blog/          entradas HTML del blog (WiFi+AP+RPMsg; compilación paso a paso)
     scripts/       env-m4.sh, build-m4.sh, build-kernel.sh
     firmware-m4/   binarios del M4 (.bin/.elf/.map) + SHA256SUMS + nivel de cada uno,
-                   incluido el «instrumento» (v0.1 a v0.5)
+                   incluido el «instrumento» (v0.1 a v0.6)
     kernel/        .config de fábrica y con WiFi, Module.symvers, DTB, calibración WiFi
                    + modulos/: rpmsg_char, rpmsg_ctrl e imx_rpmsg_tty precompilados
     tarjeta/       ficheros de configuración instalados en la placa

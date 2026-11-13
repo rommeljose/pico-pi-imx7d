@@ -704,7 +704,7 @@ LOAD /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eab
                 0x000000001fff8000                __isr_vector
                 0x000000001fff8240                . = ALIGN (0x4)
 
-.text           0x000000001fff8240     0x5e94
+.text           0x000000001fff8240     0x6204
                 0x000000001fff8240                . = ALIGN (0x4)
  *(.text)
  .text          0x000000001fff8240       0x40 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
@@ -911,823 +911,825 @@ LOAD /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eab
  .text.seno     0x000000001fff8724       0xb4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.sismo_inicia
                 0x000000001fff87d8       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.pon_txt  0x000000001fff8828       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.pon_int  0x000000001fff8838       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.pon_par  0x000000001fff8882       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- *fill*         0x000000001fff889e        0x2 
+ .text.notch_prepara
+                0x000000001fff8828       0xe8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.pon_txt  0x000000001fff8910       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.pon_int  0x000000001fff8920       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.pon_par  0x000000001fff896a       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ *fill*         0x000000001fff8986        0x2 
  .text.ecspi3_byte
-                0x000000001fff88a0       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8988       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.ads_drdy_alto
-                0x000000001fff88dc       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff89c4       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.ads_xfer
-                0x000000001fff890c       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.ads_lee  0x000000001fff8938       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.lee_int  0x000000001fff8970       0x52 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- *fill*         0x000000001fff89c2        0x2 
- .text.led      0x000000001fff89c4       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.fallo    0x000000001fff89d8       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .text.empieza  0x000000001fff8a10       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff89f4       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.ads_lee  0x000000001fff8a20       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.lee_int  0x000000001fff8a58       0x52 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ *fill*         0x000000001fff8aaa        0x2 
+ .text.led      0x000000001fff8aac       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.fallo    0x000000001fff8ac0       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .text.empieza  0x000000001fff8af8       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.lee_palabra
-                0x000000001fff8a44       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8b2c       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.ecspi3_toma
-                0x000000001fff8a68      0x10c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8b50      0x10c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.envia.constprop.0
-                0x000000001fff8b74       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8c5c       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.envia_estado
-                0x000000001fff8bac      0x1b0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8c94      0x1f4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.responde
-                0x000000001fff8d5c       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8e88       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.envia_msg
-                0x000000001fff8d90      0x118 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8ebc      0x118 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.ads_suelta
-                0x000000001fff8ea8       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff8fd4       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.ads_toma
-                0x000000001fff8ef0      0x118 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff901c      0x120 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.TareaCom
-                0x000000001fff9008      0x870 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff913c      0x8c0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.TareaAdq
-                0x000000001fff9878      0x794 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fff99fc      0x944 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .text.vApplicationStackOverflowHook
-                0x000000001fffa00c        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                0x000000001fffa00c                vApplicationStackOverflowHook
+                0x000000001fffa340        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffa340                vApplicationStackOverflowHook
  .text.vApplicationMallocFailedHook
-                0x000000001fffa018        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                0x000000001fffa018                vApplicationMallocFailedHook
+                0x000000001fffa34c        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffa34c                vApplicationMallocFailedHook
  .text.__assert_func
-                0x000000001fffa024        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                0x000000001fffa024                __assert_func
+                0x000000001fffa358        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffa358                __assert_func
  .text.MU_M4_Handler
-                0x000000001fffa030        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                0x000000001fffa030                MU_M4_Handler
+                0x000000001fffa364        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffa364                MU_M4_Handler
  .text.startup.main
-                0x000000001fffa034       0xd0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                0x000000001fffa034                main
+                0x000000001fffa368       0xd0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffa368                main
  .text.GPIO_Init
-                0x000000001fffa104       0x86 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
-                0x000000001fffa104                GPIO_Init
- *fill*         0x000000001fffa18a        0x2 
+                0x000000001fffa438       0x86 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
+                0x000000001fffa438                GPIO_Init
+ *fill*         0x000000001fffa4be        0x2 
  .text.GPIO_WritePinOutput
-                0x000000001fffa18c       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
-                0x000000001fffa18c                GPIO_WritePinOutput
+                0x000000001fffa4c0       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
+                0x000000001fffa4c0                GPIO_WritePinOutput
  .text.ECSPI_SetBaudRate
-                0x000000001fffa1c0       0xae CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ecspi.c.obj
-                0x000000001fffa1c0                ECSPI_SetBaudRate
+                0x000000001fffa4f4       0xae CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ecspi.c.obj
+                0x000000001fffa4f4                ECSPI_SetBaudRate
  .text.ECSPI_Init
-                0x000000001fffa26e       0x80 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ecspi.c.obj
-                0x000000001fffa26e                ECSPI_Init
- *fill*         0x000000001fffa2ee        0x2 
+                0x000000001fffa5a2       0x80 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ecspi.c.obj
+                0x000000001fffa5a2                ECSPI_Init
+ *fill*         0x000000001fffa622        0x2 
  .text.configure_gpio_pin
-                0x000000001fffa2f0       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
-                0x000000001fffa2f0                configure_gpio_pin
+                0x000000001fffa624       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
+                0x000000001fffa624                configure_gpio_pin
  .text.rpmsg_read_rtos_cb
-                0x000000001fffa31c       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa650       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .text.rpmsg_channel_deleted_rtos
-                0x000000001fffa370       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa6a4       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .text.rpmsg_channel_created_rtos
-                0x000000001fffa398       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa6cc       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .text.rpmsg_rtos_init
-                0x000000001fffa3e8       0xc4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
-                0x000000001fffa3e8                rpmsg_rtos_init
+                0x000000001fffa71c       0xc4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa71c                rpmsg_rtos_init
  .text.rpmsg_rtos_recv
-                0x000000001fffa4ac       0x74 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
-                0x000000001fffa4ac                rpmsg_rtos_recv
+                0x000000001fffa7e0       0x74 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa7e0                rpmsg_rtos_recv
  .text.rpmsg_rtos_send
-                0x000000001fffa520       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
-                0x000000001fffa520                rpmsg_rtos_send
+                0x000000001fffa854       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffa854                rpmsg_rtos_send
  .text._shutdown_cpu
-                0x000000001fffa550       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa884       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .text._boot_cpu
-                0x000000001fffa56c       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
- .text._notify  0x000000001fffa588       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa8a0       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+ .text._notify  0x000000001fffa8bc       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .text._enable_interrupt
-                0x000000001fffa598       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa8cc       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .text.platform_isr
-                0x000000001fffa5c0        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa5c0                platform_isr
- *fill*         0x000000001fffa5c6        0x2 
+                0x000000001fffa8f4        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa8f4                platform_isr
+ *fill*         0x000000001fffa8fa        0x2 
  .text.rpmsg_handler
-                0x000000001fffa5c8       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa5c8                rpmsg_handler
+                0x000000001fffa8fc       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa8fc                rpmsg_handler
  .text.platform_in_isr
-                0x000000001fffa5e8       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa5e8                platform_in_isr
+                0x000000001fffa91c       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa91c                platform_in_isr
  .text.platform_interrupt_enable
-                0x000000001fffa5fc       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa5fc                platform_interrupt_enable
+                0x000000001fffa930       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa930                platform_interrupt_enable
  .text.platform_interrupt_disable
-                0x000000001fffa650       0x58 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa650                platform_interrupt_disable
+                0x000000001fffa984       0x58 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa984                platform_interrupt_disable
  .text.platform_interrupt_enable_all
-                0x000000001fffa6a8       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa6a8                platform_interrupt_enable_all
+                0x000000001fffa9dc       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffa9dc                platform_interrupt_enable_all
  .text.platform_interrupt_disable_all
-                0x000000001fffa6e4       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa6e4                platform_interrupt_disable_all
+                0x000000001fffaa18       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa18                platform_interrupt_disable_all
  .text.platform_map_mem_region
-                0x000000001fffa718        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa718                platform_map_mem_region
+                0x000000001fffaa4c        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa4c                platform_map_mem_region
  .text.platform_vatopa
-                0x000000001fffa71a        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa71a                platform_vatopa
+                0x000000001fffaa4e        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa4e                platform_vatopa
  .text.platform_patova
-                0x000000001fffa71c        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa71c                platform_patova
+                0x000000001fffaa50        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa50                platform_patova
  .text.platform_init
-                0x000000001fffa71e        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa71e                platform_init
+                0x000000001fffaa52        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa52                platform_init
  .text.platform_deinit
-                0x000000001fffa722        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x000000001fffa722                platform_deinit
- *fill*         0x000000001fffa726        0x2 
+                0x000000001fffaa56        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffaa56                platform_deinit
+ *fill*         0x000000001fffaa5a        0x2 
  .text.platform_get_processor_info
-                0x000000001fffa728       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c.obj
-                0x000000001fffa728                platform_get_processor_info
+                0x000000001fffaa5c       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c.obj
+                0x000000001fffaa5c                platform_get_processor_info
  .text.hil_create_proc
-                0x000000001fffa75c       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa75c                hil_create_proc
- .text.hil_isr  0x000000001fffa7b8        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7b8                hil_isr
+                0x000000001fffaa90       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffaa90                hil_create_proc
+ .text.hil_isr  0x000000001fffaaec        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffaaec                hil_isr
  .text.hil_get_chnl_info
-                0x000000001fffa7be        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7be                hil_get_chnl_info
+                0x000000001fffaaf2        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffaaf2                hil_get_chnl_info
  .text.hil_get_vring_info
-                0x000000001fffa7c6        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7c6                hil_get_vring_info
+                0x000000001fffaafa        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffaafa                hil_get_vring_info
  .text.hil_get_shm_info
-                0x000000001fffa7ce        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7ce                hil_get_shm_info
+                0x000000001fffab02        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffab02                hil_get_shm_info
  .text.hil_enable_vring_notifications
-                0x000000001fffa7d2       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7d2                hil_enable_vring_notifications
+                0x000000001fffab06       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffab06                hil_enable_vring_notifications
  .text.hil_vring_notify
-                0x000000001fffa7f2       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa7f2                hil_vring_notify
+                0x000000001fffab26       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffab26                hil_vring_notify
  .text.hil_get_status
-                0x000000001fffa80c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa80c                hil_get_status
+                0x000000001fffab40        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffab40                hil_get_status
  .text.hil_set_status
-                0x000000001fffa810        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000001fffa810                hil_set_status
+                0x000000001fffab44        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x000000001fffab44                hil_set_status
  .text.add_to_list
-                0x000000001fffa814       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/llist/llist.c.obj
-                0x000000001fffa814                add_to_list
+                0x000000001fffab48       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/llist/llist.c.obj
+                0x000000001fffab48                add_to_list
  .text.remove_from_list
-                0x000000001fffa832       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/llist/llist.c.obj
-                0x000000001fffa832                remove_from_list
+                0x000000001fffab66       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/llist/llist.c.obj
+                0x000000001fffab66                remove_from_list
  .text.sh_mem_create_pool
-                0x000000001fffa850       0x84 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
-                0x000000001fffa850                sh_mem_create_pool
+                0x000000001fffab84       0x84 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
+                0x000000001fffab84                sh_mem_create_pool
  .text.sh_mem_free_buffer
-                0x000000001fffa8d4       0x56 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
-                0x000000001fffa8d4                sh_mem_free_buffer
+                0x000000001fffac08       0x56 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
+                0x000000001fffac08                sh_mem_free_buffer
  .text.sh_mem_delete_pool
-                0x000000001fffa92a       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
-                0x000000001fffa92a                sh_mem_delete_pool
- *fill*         0x000000001fffa942        0x2 
+                0x000000001fffac5e       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
+                0x000000001fffac5e                sh_mem_delete_pool
+ *fill*         0x000000001fffac76        0x2 
  .text.get_first_zero_bit
-                0x000000001fffa944       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
-                0x000000001fffa944                get_first_zero_bit
+                0x000000001fffac78       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
+                0x000000001fffac78                get_first_zero_bit
  .text.sh_mem_get_buffer
-                0x000000001fffa988       0x6e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
-                0x000000001fffa988                sh_mem_get_buffer
+                0x000000001fffacbc       0x6e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/shm/sh_mem.c.obj
+                0x000000001fffacbc                sh_mem_get_buffer
  .text.rpmsg_rdev_get_status
-                0x000000001fffa9f6        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffa9f6                rpmsg_rdev_get_status
+                0x000000001fffad2a        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad2a                rpmsg_rdev_get_status
  .text.rpmsg_rdev_set_status
-                0x000000001fffa9fa        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffa9fa                rpmsg_rdev_set_status
+                0x000000001fffad2e        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad2e                rpmsg_rdev_set_status
  .text.rpmsg_rdev_get_feature
-                0x000000001fffa9fc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffa9fc                rpmsg_rdev_get_feature
+                0x000000001fffad30        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad30                rpmsg_rdev_get_feature
  .text.rpmsg_rdev_set_feature
-                0x000000001fffaa00        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffaa00                rpmsg_rdev_set_feature
+                0x000000001fffad34        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad34                rpmsg_rdev_set_feature
  .text.rpmsg_rdev_negotiate_feature
-                0x000000001fffaa08        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffaa08                rpmsg_rdev_negotiate_feature
+                0x000000001fffad3c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad3c                rpmsg_rdev_negotiate_feature
  .text.rpmsg_rdev_read_config
-                0x000000001fffaa0c        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffaa0c                rpmsg_rdev_read_config
+                0x000000001fffad40        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad40                rpmsg_rdev_read_config
  .text.rpmsg_rdev_reset
-                0x000000001fffaa0e        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffaa0e                rpmsg_rdev_reset
+                0x000000001fffad42        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad42                rpmsg_rdev_reset
  .text.rpmsg_rdev_create_virtqueues
-                0x000000001fffaa10      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffaa10                rpmsg_rdev_create_virtqueues
+                0x000000001fffad44      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffad44                rpmsg_rdev_create_virtqueues
  .text.rpmsg_rdev_write_config
-                0x000000001fffab18        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffab18                rpmsg_rdev_write_config
- *fill*         0x000000001fffab1a        0x2 
+                0x000000001fffae4c        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffae4c                rpmsg_rdev_write_config
+ *fill*         0x000000001fffae4e        0x2 
  .text.rpmsg_rdev_init
-                0x000000001fffab1c       0xdc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffab1c                rpmsg_rdev_init
+                0x000000001fffae50       0xdc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffae50                rpmsg_rdev_init
  .text.rpmsg_rdev_get_chnl_node_from_id
-                0x000000001fffabf8       0x2a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffabf8                rpmsg_rdev_get_chnl_node_from_id
+                0x000000001fffaf2c       0x2a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffaf2c                rpmsg_rdev_get_chnl_node_from_id
  .text.rpmsg_rdev_get_endpoint_from_addr
-                0x000000001fffac22       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffac22                rpmsg_rdev_get_endpoint_from_addr
+                0x000000001fffaf56       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffaf56                rpmsg_rdev_get_endpoint_from_addr
  .text.rpmsg_rdev_deinit
-                0x000000001fffac48       0x74 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffac48                rpmsg_rdev_deinit
+                0x000000001fffaf7c       0x74 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffaf7c                rpmsg_rdev_deinit
  .text.rpmsg_rdev_notify
-                0x000000001fffacbc       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x000000001fffacbc                rpmsg_rdev_notify
+                0x000000001fffaff0       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x000000001fffaff0                rpmsg_rdev_notify
  .text.rpmsg_deinit
-                0x000000001ffface4       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
-                0x000000001ffface4                rpmsg_deinit
+                0x000000001fffb018       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
+                0x000000001fffb018                rpmsg_deinit
  .text.rpmsg_init
-                0x000000001fffacf6       0x42 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
-                0x000000001fffacf6                rpmsg_init
+                0x000000001fffb02a       0x42 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
+                0x000000001fffb02a                rpmsg_init
  .text.rpmsg_send_offchannel_raw
-                0x000000001fffad38      0x12c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
-                0x000000001fffad38                rpmsg_send_offchannel_raw
+                0x000000001fffb06c      0x12c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
+                0x000000001fffb06c                rpmsg_send_offchannel_raw
  .text.rpmsg_create_ept
-                0x000000001fffae64       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
-                0x000000001fffae64                rpmsg_create_ept
+                0x000000001fffb198       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
+                0x000000001fffb198                rpmsg_create_ept
  .text.rpmsg_destroy_ept
-                0x000000001fffae7c        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
-                0x000000001fffae7c                rpmsg_destroy_ept
+                0x000000001fffb1b0        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg.c.obj
+                0x000000001fffb1b0                rpmsg_destroy_ept
  .text.rpmsg_hold_rx_buffer
-                0x000000001fffae8a       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_ext.c.obj
-                0x000000001fffae8a                rpmsg_hold_rx_buffer
+                0x000000001fffb1be       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_ext.c.obj
+                0x000000001fffb1be                rpmsg_hold_rx_buffer
  .text.rpmsg_release_rx_buffer
-                0x000000001fffae9c       0x2e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_ext.c.obj
-                0x000000001fffae9c                rpmsg_release_rx_buffer
+                0x000000001fffb1d0       0x2e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_ext.c.obj
+                0x000000001fffb1d0                rpmsg_release_rx_buffer
  .text._rpmsg_create_channel
-                0x000000001fffaeca       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffaeca                _rpmsg_create_channel
+                0x000000001fffb1fe       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb1fe                _rpmsg_create_channel
  .text._rpmsg_delete_channel
-                0x000000001fffaf2a       0x3e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffaf2a                _rpmsg_delete_channel
+                0x000000001fffb25e       0x3e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb25e                _rpmsg_delete_channel
  .text.rpmsg_ns_callback
-                0x000000001fffaf68       0x82 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffaf68                rpmsg_ns_callback
+                0x000000001fffb29c       0x82 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb29c                rpmsg_ns_callback
  .text.rpmsg_enqueue_buffer
-                0x000000001fffafea       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffafea                rpmsg_enqueue_buffer
+                0x000000001fffb31e       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb31e                rpmsg_enqueue_buffer
  .text.rpmsg_return_buffer
-                0x000000001fffb01a       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb01a                rpmsg_return_buffer
+                0x000000001fffb34e       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb34e                rpmsg_return_buffer
  .text.rpmsg_get_tx_buffer
-                0x000000001fffb04a       0x32 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb04a                rpmsg_get_tx_buffer
+                0x000000001fffb37e       0x32 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb37e                rpmsg_get_tx_buffer
  .text.rpmsg_send_ns_message
-                0x000000001fffb07c       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb07c                rpmsg_send_ns_message
+                0x000000001fffb3b0       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb3b0                rpmsg_send_ns_message
  .text.rpmsg_tx_callback
-                0x000000001fffb0dc       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb410       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
  .text.rpmsg_get_rx_buffer
-                0x000000001fffb108       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb108                rpmsg_get_rx_buffer
+                0x000000001fffb43c       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb43c                rpmsg_get_rx_buffer
  .text.rpmsg_rx_callback
-                0x000000001fffb12a       0xdc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb45e       0xdc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
  .text.rpmsg_free_buffer
-                0x000000001fffb206       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb206                rpmsg_free_buffer
+                0x000000001fffb53a       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb53a                rpmsg_free_buffer
  .text.rpmsg_get_address
-                0x000000001fffb216       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb216                rpmsg_get_address
+                0x000000001fffb54a       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb54a                rpmsg_get_address
  .text.rpmsg_release_address
-                0x000000001fffb24e       0x3e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb24e                rpmsg_release_address
+                0x000000001fffb582       0x3e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb582                rpmsg_release_address
  .text._destroy_endpoint
-                0x000000001fffb28c       0x42 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb28c                _destroy_endpoint
+                0x000000001fffb5c0       0x42 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb5c0                _destroy_endpoint
  .text.rpmsg_is_address_set
-                0x000000001fffb2ce       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb2ce                rpmsg_is_address_set
+                0x000000001fffb602       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb602                rpmsg_is_address_set
  .text.rpmsg_set_address
-                0x000000001fffb302       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb302                rpmsg_set_address
+                0x000000001fffb636       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb636                rpmsg_set_address
  .text._create_endpoint
-                0x000000001fffb33e       0x98 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb33e                _create_endpoint
- *fill*         0x000000001fffb3d6        0x2 
+                0x000000001fffb672       0x98 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb672                _create_endpoint
+ *fill*         0x000000001fffb70a        0x2 
  .text.rpmsg_start_ipc
-                0x000000001fffb3d8       0xa4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
-                0x000000001fffb3d8                rpmsg_start_ipc
+                0x000000001fffb70c       0xa4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffb70c                rpmsg_start_ipc
  .text.vq_ring_update_avail
-                0x000000001fffb47c       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb7b0       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
  .text.virtqueue_add_buffer
-                0x000000001fffb4a8       0x94 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb4a8                virtqueue_add_buffer
+                0x000000001fffb7dc       0x94 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb7dc                virtqueue_add_buffer
  .text.virtqueue_get_buffer
-                0x000000001fffb53c       0x8c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb53c                virtqueue_get_buffer
+                0x000000001fffb870       0x8c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb870                virtqueue_get_buffer
  .text.virtqueue_free
-                0x000000001fffb5c8       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb5c8                virtqueue_free
+                0x000000001fffb8fc       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb8fc                virtqueue_free
  .text.virtqueue_get_available_buffer
-                0x000000001fffb5da       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb5da                virtqueue_get_available_buffer
+                0x000000001fffb90e       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb90e                virtqueue_get_available_buffer
  .text.virtqueue_add_consumed_buffer
-                0x000000001fffb624       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb624                virtqueue_add_consumed_buffer
+                0x000000001fffb958       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb958                virtqueue_add_consumed_buffer
  .text.virtqueue_disable_cb
-                0x000000001fffb658       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb658                virtqueue_disable_cb
- *fill*         0x000000001fffb67e        0x2 
+                0x000000001fffb98c       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb98c                virtqueue_disable_cb
+ *fill*         0x000000001fffb9b2        0x2 
  .text.virtqueue_create
-                0x000000001fffb680       0xbc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb680                virtqueue_create
+                0x000000001fffb9b4       0xbc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffb9b4                virtqueue_create
  .text.virtqueue_kick
-                0x000000001fffb73c       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb73c                virtqueue_kick
+                0x000000001fffba70       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffba70                virtqueue_kick
  .text.virtqueue_notification
-                0x000000001fffb780        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
-                0x000000001fffb780                virtqueue_notification
+                0x000000001fffbab4        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/virtio/virtqueue.c.obj
+                0x000000001fffbab4                virtqueue_notification
  .text.env_init
-                0x000000001fffb788       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb788                env_init
+                0x000000001fffbabc       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbabc                env_init
  .text.env_deinit
-                0x000000001fffb7d0       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb7d0                env_deinit
+                0x000000001fffbb04       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb04                env_deinit
  .text.env_allocate_memory
-                0x000000001fffb814        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb814                env_allocate_memory
+                0x000000001fffbb48        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb48                env_allocate_memory
  .text.env_free_memory
-                0x000000001fffb818        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb818                env_free_memory
+                0x000000001fffbb4c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb4c                env_free_memory
  .text.env_memset
-                0x000000001fffb81c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb81c                env_memset
+                0x000000001fffbb50        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb50                env_memset
  .text.env_memcpy
-                0x000000001fffb820        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb820                env_memcpy
+                0x000000001fffbb54        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb54                env_memcpy
  .text.env_strncpy
-                0x000000001fffb824        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb824                env_strncpy
+                0x000000001fffbb58        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb58                env_strncpy
  .text.env_strncmp
-                0x000000001fffb828        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb828                env_strncmp
- .text.env_mb   0x000000001fffb82c        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb82c                env_mb
- .text.env_rmb  0x000000001fffb82e        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb82e                env_rmb
- .text.env_wmb  0x000000001fffb830        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb830                env_wmb
+                0x000000001fffbb5c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb5c                env_strncmp
+ .text.env_mb   0x000000001fffbb60        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb60                env_mb
+ .text.env_rmb  0x000000001fffbb62        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb62                env_rmb
+ .text.env_wmb  0x000000001fffbb64        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb64                env_wmb
  .text.env_map_vatopa
-                0x000000001fffb832        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb832                env_map_vatopa
+                0x000000001fffbb66        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb66                env_map_vatopa
  .text.env_map_patova
-                0x000000001fffb836        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb836                env_map_patova
+                0x000000001fffbb6a        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb6a                env_map_patova
  .text.env_create_mutex
-                0x000000001fffb83a       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb83a                env_create_mutex
+                0x000000001fffbb6e       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb6e                env_create_mutex
  .text.env_delete_mutex
-                0x000000001fffb850        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb850                env_delete_mutex
+                0x000000001fffbb84        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb84                env_delete_mutex
  .text.env_lock_mutex
-                0x000000001fffb854       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb854                env_lock_mutex
+                0x000000001fffbb88       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbb88                env_lock_mutex
  .text.env_unlock_mutex
-                0x000000001fffb876       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb876                env_unlock_mutex
+                0x000000001fffbbaa       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbbaa                env_unlock_mutex
  .text.env_create_sync_lock
-                0x000000001fffb898        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb898                env_create_sync_lock
+                0x000000001fffbbcc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbbcc                env_create_sync_lock
  .text.env_delete_sync_lock
-                0x000000001fffb89c        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb89c                env_delete_sync_lock
+                0x000000001fffbbd0        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbbd0                env_delete_sync_lock
  .text.env_acquire_sync_lock
-                0x000000001fffb8a4       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb8a4                env_acquire_sync_lock
+                0x000000001fffbbd8       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbbd8                env_acquire_sync_lock
  .text.env_release_sync_lock
-                0x000000001fffb8e0       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb8e0                env_release_sync_lock
+                0x000000001fffbc14       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbc14                env_release_sync_lock
  .text.env_sleep_msec
-                0x000000001fffb91c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb91c                env_sleep_msec
+                0x000000001fffbc50        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbc50                env_sleep_msec
  .text.env_register_isr
-                0x000000001fffb920       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb920                env_register_isr
+                0x000000001fffbc54       0x34 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbc54                env_register_isr
  .text.env_enable_interrupt
-                0x000000001fffb954       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb954                env_enable_interrupt
+                0x000000001fffbc88       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbc88                env_enable_interrupt
  .text.env_map_memory
-                0x000000001fffb994       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb994                env_map_memory
- .text.env_isr  0x000000001fffb9a4       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffb9a4                env_isr
+                0x000000001fffbcc8       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbcc8                env_map_memory
+ .text.env_isr  0x000000001fffbcd8       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbcd8                env_isr
  .text.env_create_queue
-                0x000000001fffba00       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffba00                env_create_queue
+                0x000000001fffbd34       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbd34                env_create_queue
  .text.env_put_queue
-                0x000000001fffba1a       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffba1a                env_put_queue
+                0x000000001fffbd4e       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbd4e                env_put_queue
  .text.env_get_queue
-                0x000000001fffba62       0x46 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
-                0x000000001fffba62                env_get_queue
+                0x000000001fffbd96       0x46 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffbd96                env_get_queue
  .text.vListInitialise
-                0x000000001fffbaa8       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
-                0x000000001fffbaa8                vListInitialise
+                0x000000001fffbddc       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
+                0x000000001fffbddc                vListInitialise
  .text.vListInitialiseItem
-                0x000000001fffbabe        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
-                0x000000001fffbabe                vListInitialiseItem
+                0x000000001fffbdf2        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
+                0x000000001fffbdf2                vListInitialiseItem
  .text.vListInsertEnd
-                0x000000001fffbac4       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
-                0x000000001fffbac4                vListInsertEnd
+                0x000000001fffbdf8       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
+                0x000000001fffbdf8                vListInsertEnd
  .text.vListInsert
-                0x000000001fffbada       0x2e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
-                0x000000001fffbada                vListInsert
+                0x000000001fffbe0e       0x2e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
+                0x000000001fffbe0e                vListInsert
  .text.uxListRemove
-                0x000000001fffbb08       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
-                0x000000001fffbb08                uxListRemove
+                0x000000001fffbe3c       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/list.c.obj
+                0x000000001fffbe3c                uxListRemove
  .text.prvCopyDataToQueue
-                0x000000001fffbb2a       0x5a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbe5e       0x5a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
  .text.prvCopyDataFromQueue
-                0x000000001fffbb84       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbeb8       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
  .text.prvUnlockQueue
-                0x000000001fffbba8       0x6c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbedc       0x6c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
  .text.xQueueGenericReset
-                0x000000001fffbc14       0x62 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbc14                xQueueGenericReset
+                0x000000001fffbf48       0x62 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbf48                xQueueGenericReset
  .text.xQueueGenericCreate
-                0x000000001fffbc76       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbc76                xQueueGenericCreate
+                0x000000001fffbfaa       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbfaa                xQueueGenericCreate
  .text.xQueueCreateCountingSemaphore
-                0x000000001fffbcb2       0x2a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbcb2                xQueueCreateCountingSemaphore
+                0x000000001fffbfe6       0x2a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffbfe6                xQueueCreateCountingSemaphore
  .text.xQueueGenericSend
-                0x000000001fffbcdc      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbcdc                xQueueGenericSend
+                0x000000001fffc010      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc010                xQueueGenericSend
  .text.xQueueGenericSendFromISR
-                0x000000001fffbde4       0x8a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbde4                xQueueGenericSendFromISR
+                0x000000001fffc118       0x8a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc118                xQueueGenericSendFromISR
  .text.xQueueGenericReceive
-                0x000000001fffbe6e      0x112 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbe6e                xQueueGenericReceive
+                0x000000001fffc1a2      0x112 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc1a2                xQueueGenericReceive
  .text.xQueueReceiveFromISR
-                0x000000001fffbf80       0x70 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbf80                xQueueReceiveFromISR
+                0x000000001fffc2b4       0x70 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc2b4                xQueueReceiveFromISR
  .text.vQueueUnregisterQueue
-                0x000000001fffbff0       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffbff0                vQueueUnregisterQueue
+                0x000000001fffc324       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc324                vQueueUnregisterQueue
  .text.vQueueDelete
-                0x000000001fffc014       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x000000001fffc014                vQueueDelete
+                0x000000001fffc348       0x22 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x000000001fffc348                vQueueDelete
  .text.prvIdleTask
-                0x000000001fffc036        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc36a        0x2 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .text.prvResetNextTaskUnblockTime
-                0x000000001fffc038       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc36c       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .text.prvAddCurrentTaskToDelayedList
-                0x000000001fffc05c       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc390       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .text.xTaskGenericCreate.part.0.isra.0
-                0x000000001fffc0ac      0x19c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc3e0      0x19c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .text.xTaskGenericCreate
-                0x000000001fffc248       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc248                xTaskGenericCreate
- *fill*         0x000000001fffc266        0x2 
+                0x000000001fffc57c       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc57c                xTaskGenericCreate
+ *fill*         0x000000001fffc59a        0x2 
  .text.vTaskStartScheduler
-                0x000000001fffc268       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc268                vTaskStartScheduler
+                0x000000001fffc59c       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc59c                vTaskStartScheduler
  .text.vTaskSuspendAll
-                0x000000001fffc2b8       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc2b8                vTaskSuspendAll
+                0x000000001fffc5ec       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc5ec                vTaskSuspendAll
  .text.xTaskGetTickCount
-                0x000000001fffc2c8       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc2c8                xTaskGetTickCount
+                0x000000001fffc5fc       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc5fc                xTaskGetTickCount
  .text.xTaskIncrementTick
-                0x000000001fffc2e4      0x124 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc2e4                xTaskIncrementTick
+                0x000000001fffc618      0x124 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc618                xTaskIncrementTick
  .text.xTaskResumeAll
-                0x000000001fffc408       0xc8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc408                xTaskResumeAll
+                0x000000001fffc73c       0xc8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc73c                xTaskResumeAll
  .text.vTaskDelayUntil
-                0x000000001fffc4d0       0x6c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc4d0                vTaskDelayUntil
+                0x000000001fffc804       0x6c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc804                vTaskDelayUntil
  .text.vTaskDelay
-                0x000000001fffc53c       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc53c                vTaskDelay
+                0x000000001fffc870       0x48 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc870                vTaskDelay
  .text.vTaskSwitchContext
-                0x000000001fffc584       0xa0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc584                vTaskSwitchContext
+                0x000000001fffc8b8       0xa0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc8b8                vTaskSwitchContext
  .text.vTaskPlaceOnEventList
-                0x000000001fffc624       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc624                vTaskPlaceOnEventList
+                0x000000001fffc958       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc958                vTaskPlaceOnEventList
  .text.xTaskRemoveFromEventList
-                0x000000001fffc670       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc670                xTaskRemoveFromEventList
+                0x000000001fffc9a4       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffc9a4                xTaskRemoveFromEventList
  .text.vTaskSetTimeOutState
-                0x000000001fffc6ec       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc6ec                vTaskSetTimeOutState
+                0x000000001fffca20       0x20 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffca20                vTaskSetTimeOutState
  .text.xTaskCheckForTimeOut
-                0x000000001fffc70c       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc70c                xTaskCheckForTimeOut
+                0x000000001fffca40       0x5c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffca40                xTaskCheckForTimeOut
  .text.vTaskMissedYield
-                0x000000001fffc768        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x000000001fffc768                vTaskMissedYield
+                0x000000001fffca9c        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffca9c                vTaskMissedYield
  .text.CCM_ANALOG_GetSysPllFreq
-                0x000000001fffc774       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
-                0x000000001fffc774                CCM_ANALOG_GetSysPllFreq
+                0x000000001fffcaa8       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
+                0x000000001fffcaa8                CCM_ANALOG_GetSysPllFreq
  .text.CCM_ANALOG_GetPfdFreq
-                0x000000001fffc7a4       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
-                0x000000001fffc7a4                CCM_ANALOG_GetPfdFreq
+                0x000000001fffcad8       0x44 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
+                0x000000001fffcad8                CCM_ANALOG_GetPfdFreq
  .text.CCM_GetRootDivider
-                0x000000001fffc7e8       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
-                0x000000001fffc7e8                CCM_GetRootDivider
+                0x000000001fffcb1c       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffcb1c                CCM_GetRootDivider
  .text.CCM_UpdateRoot
-                0x000000001fffc818       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
-                0x000000001fffc818                CCM_UpdateRoot
+                0x000000001fffcb4c       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffcb4c                CCM_UpdateRoot
  .text.debug_putc
-                0x000000001fffc864       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x000000001fffcb98       0x28 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
  .text.UART_ReceiveDataPolling
-                0x000000001fffc88c       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x000000001fffcbc0       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
  .text.UART_SendDataPolling
-                0x000000001fffc8b0       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x000000001fffcbe4       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
  .text.DbgConsole_Init
-                0x000000001fffc8f0       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
-                0x000000001fffc8f0                DbgConsole_Init
+                0x000000001fffcc24       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x000000001fffcc24                DbgConsole_Init
  .text.debug_printf
-                0x000000001fffc944       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
-                0x000000001fffc944                debug_printf
+                0x000000001fffcc78       0x38 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x000000001fffcc78                debug_printf
  .text.mknumstr
-                0x000000001fffc97c       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
+                0x000000001fffccb0       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
  .text.fput_pad.constprop.0
-                0x000000001fffc9f8       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
- *fill*         0x000000001fffca1e        0x2 
+                0x000000001fffcd2c       0x26 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
+ *fill*         0x000000001fffcd52        0x2 
  .text._doprint
-                0x000000001fffca20      0x40c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
-                0x000000001fffca20                _doprint
+                0x000000001fffcd54      0x40c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/print_scan.c.obj
+                0x000000001fffcd54                _doprint
  .text.SystemInit
-                0x000000001fffce2c      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/devices/MCIMX7D/startup/system_MCIMX7D_M4.c.obj
-                0x000000001fffce2c                SystemInit
+                0x000000001fffd160      0x108 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/devices/MCIMX7D/startup/system_MCIMX7D_M4.c.obj
+                0x000000001fffd160                SystemInit
  .text.configure_uart_pins
-                0x000000001fffcf34       0x78 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/pin_mux.c.obj
-                0x000000001fffcf34                configure_uart_pins
+                0x000000001fffd268       0x78 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/pin_mux.c.obj
+                0x000000001fffd268                configure_uart_pins
  .text.BOARD_ClockInit
-                0x000000001fffcfac       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
-                0x000000001fffcfac                BOARD_ClockInit
+                0x000000001fffd2e0       0x7c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
+                0x000000001fffd2e0                BOARD_ClockInit
  .text.dbg_uart_init
-                0x000000001fffd028       0x64 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
-                0x000000001fffd028                dbg_uart_init
+                0x000000001fffd35c       0x64 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
+                0x000000001fffd35c                dbg_uart_init
  .text.BOARD_RdcInit
-                0x000000001fffd08c       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
-                0x000000001fffd08c                BOARD_RdcInit
+                0x000000001fffd3c0       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/board.c.obj
+                0x000000001fffd3c0                BOARD_RdcInit
  .text.get_uart_clock_freq
-                0x000000001fffd09c       0xa4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/clock_freq.c.obj
-                0x000000001fffd09c                get_uart_clock_freq
+                0x000000001fffd3d0       0xa4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/clock_freq.c.obj
+                0x000000001fffd3d0                get_uart_clock_freq
  .text.hardware_init
-                0x000000001fffd140       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/hardware_init.c.obj
-                0x000000001fffd140                hardware_init
+                0x000000001fffd474       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/hardware_init.c.obj
+                0x000000001fffd474                hardware_init
  .text.UART_Deinit
-                0x000000001fffd17c       0x5e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
-                0x000000001fffd17c                UART_Deinit
- *fill*         0x000000001fffd1da        0x2 
+                0x000000001fffd4b0       0x5e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffd4b0                UART_Deinit
+ *fill*         0x000000001fffd50e        0x2 
  .text.UART_SetBaudRate
-                0x000000001fffd1dc       0xc0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
-                0x000000001fffd1dc                UART_SetBaudRate
+                0x000000001fffd510       0xc0 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffd510                UART_SetBaudRate
  .text.UART_Init
-                0x000000001fffd29c       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
-                0x000000001fffd29c                UART_Init
+                0x000000001fffd5d0       0x60 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffd5d0                UART_Init
  .text.UART_GetStatusFlag
-                0x000000001fffd2fc        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
-                0x000000001fffd2fc                UART_GetStatusFlag
- *fill*         0x000000001fffd30a        0x2 
+                0x000000001fffd630        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffd630                UART_GetStatusFlag
+ *fill*         0x000000001fffd63e        0x2 
  .text.MU_SendMsg
-                0x000000001fffd30c       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
-                0x000000001fffd30c                MU_SendMsg
+                0x000000001fffd640       0x30 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+                0x000000001fffd640                MU_SendMsg
  .text.MU_TryReceiveMsg
-                0x000000001fffd33c       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
-                0x000000001fffd33c                MU_TryReceiveMsg
- .text.fabsf    0x000000001fffd378       0x10 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-sf_fabs.o)
-                0x000000001fffd378                fabsf
- .text.expf     0x000000001fffd388       0x78 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-wf_exp.o)
-                0x000000001fffd388                expf
+                0x000000001fffd670       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+                0x000000001fffd670                MU_TryReceiveMsg
+ .text.fabsf    0x000000001fffd6ac       0x10 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-sf_fabs.o)
+                0x000000001fffd6ac                fabsf
+ .text.expf     0x000000001fffd6bc       0x78 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-wf_exp.o)
+                0x000000001fffd6bc                expf
  .text.__ieee754_expf
-                0x000000001fffd400      0x1e8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
-                0x000000001fffd400                __ieee754_expf
+                0x000000001fffd734      0x1e8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
+                0x000000001fffd734                __ieee754_expf
  .text.with_errnof
-                0x000000001fffd5e8       0x18 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
- .text.xflowf   0x000000001fffd600       0x20 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
+                0x000000001fffd91c       0x18 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
+ .text.xflowf   0x000000001fffd934       0x20 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
  .text.__math_uflowf
-                0x000000001fffd620        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
-                0x000000001fffd620                __math_uflowf
+                0x000000001fffd954        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
+                0x000000001fffd954                __math_uflowf
  .text.__math_oflowf
-                0x000000001fffd62c        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
-                0x000000001fffd62c                __math_oflowf
- .text.finitef  0x000000001fffd638       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-sf_finite.o)
-                0x000000001fffd638                finitef
- .text.__errno  0x000000001fffd654        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-errno.o)
-                0x000000001fffd654                __errno
- .text.exit     0x000000001fffd660       0x28 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-exit.o)
-                0x000000001fffd660                exit
+                0x000000001fffd960        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-math_errf.o)
+                0x000000001fffd960                __math_oflowf
+ .text.finitef  0x000000001fffd96c       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-sf_finite.o)
+                0x000000001fffd96c                finitef
+ .text.__errno  0x000000001fffd988        0xc /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-errno.o)
+                0x000000001fffd988                __errno
+ .text.exit     0x000000001fffd994       0x28 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-exit.o)
+                0x000000001fffd994                exit
  .text.__libc_init_array
-                0x000000001fffd688       0x48 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-init.o)
-                0x000000001fffd688                __libc_init_array
- .text.memcmp   0x000000001fffd6d0       0x20 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memcmp.o)
-                0x000000001fffd6d0                memcmp
- .text.memcpy   0x000000001fffd6f0       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memcpy-stub.o)
-                0x000000001fffd6f0                memcpy
- .text.memset   0x000000001fffd70c       0x10 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memset.o)
-                0x000000001fffd70c                memset
- .text.strncmp  0x000000001fffd71c       0x28 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncmp.o)
-                0x000000001fffd71c                strncmp
- .text.strncpy  0x000000001fffd744       0x26 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncpy.o)
-                0x000000001fffd744                strncpy
- *fill*         0x000000001fffd76a        0x2 
- .text._exit    0x000000001fffd76c        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libnosys.a(_exit.o)
-                0x000000001fffd76c                _exit
+                0x000000001fffd9bc       0x48 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-init.o)
+                0x000000001fffd9bc                __libc_init_array
+ .text.memcmp   0x000000001fffda04       0x20 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memcmp.o)
+                0x000000001fffda04                memcmp
+ .text.memcpy   0x000000001fffda24       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memcpy-stub.o)
+                0x000000001fffda24                memcpy
+ .text.memset   0x000000001fffda40       0x10 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memset.o)
+                0x000000001fffda40                memset
+ .text.strncmp  0x000000001fffda50       0x28 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncmp.o)
+                0x000000001fffda50                strncmp
+ .text.strncpy  0x000000001fffda78       0x26 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncpy.o)
+                0x000000001fffda78                strncpy
+ *fill*         0x000000001fffda9e        0x2 
+ .text._exit    0x000000001fffdaa0        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libnosys.a(_exit.o)
+                0x000000001fffdaa0                _exit
  *(.rodata)
  *(.rodata*)
  .rodata.fallo.str1.1
-                0x000000001fffd770        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffdaa4        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.envia_estado.str1.1
-                0x000000001fffd77e       0xc7 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                                         0xc9 (size before relaxing)
+                0x000000001fffdab2       0xee CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                                         0xf0 (size before relaxing)
  .rodata.envia_msg.str1.1
-                0x000000001fffd845        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffdba0        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.TareaCom.str1.1
-                0x000000001fffd84e      0x1ea CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
-                                        0x21a (size before relaxing)
+                0x000000001fffdba9      0x1fe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                                        0x22e (size before relaxing)
  .rodata.vApplicationStackOverflowHook.str1.1
-                0x000000001fffda38       0x17 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffdda7       0x17 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.vApplicationMallocFailedHook.str1.1
-                0x000000001fffda4f        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffddbe        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.__assert_func.str1.1
-                0x000000001fffda5b        0x7 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffddca        0x7 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.main.str1.1
-                0x000000001fffda62       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000001fffddd1       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .rodata.GPIO_WritePinOutput.str1.1
-                0x000000001fffda77       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
+                0x000000001fffdde6       0x4a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
  .rodata.__func__.2
-                0x000000001fffdac1       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
+                0x000000001fffde30       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/gpio_imx.c.obj
  .rodata.configure_gpio_pin.str1.1
-                0x000000001fffdad5       0x4b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
+                0x000000001fffde44       0x4b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
  .rodata.str1.1
-                0x000000001fffdb20        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
+                0x000000001fffde8f        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
  .rodata.__func__.0
-                0x000000001fffdb29       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
+                0x000000001fffde98       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
  .rodata.rpmsg_read_rtos_cb.str1.1
-                0x000000001fffdb3c       0x5f CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffdeab       0x5f CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .rodata.rpmsg_channel_created_rtos.str1.1
-                0x000000001fffdb9b       0x25 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffdf0a       0x25 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .rodata.__func__.1
-                0x000000001fffdbc0       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffdf2f       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .rodata.__func__.2
-                0x000000001fffdbdb       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffdf4a       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .rodata.__func__.3
-                0x000000001fffdbf6       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000001fffdf65       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .rodata._shutdown_cpu.str1.1
-                0x000000001fffdc09       0x5b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffdf78       0x5b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
                                          0x5d (size before relaxing)
  .rodata.platform_interrupt_enable.str1.1
-                0x000000001fffdc64       0x46 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffdfd3       0x46 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.platform_interrupt_disable.str1.1
-                0x000000001fffdcaa       0x21 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe019       0x21 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.platform_interrupt_enable_all.str1.1
-                0x000000001fffdccb       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe03a       0x18 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.platform_interrupt_disable_all.str1.1
-                0x000000001fffdce3       0x19 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe052       0x19 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.0
-                0x000000001fffdcfc       0x1f CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe06b       0x1f CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.1
-                0x000000001fffdd1b       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe08a       0x1e CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.2
-                0x000000001fffdd39       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe0a8       0x1b CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.3
-                0x000000001fffdd54       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe0c3       0x1a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.4
-                0x000000001fffdd6e        0xa CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe0dd        0xa CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.__func__.5
-                0x000000001fffdd78        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000001fffe0e7        0xe CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .rodata.rpmsg_start_ipc.str1.1
-                0x000000001fffdd86        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
+                0x000000001fffe0f5        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_core.c.obj
  .rodata.env_init.str1.1
-                0x000000001fffdd92       0x7a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe101       0x7a CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.env_deinit.str1.1
-                0x000000001fffde0c       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe17b       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.env_register_isr.str1.1
-                0x000000001fffde21       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe190       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.env_isr.str1.1
-                0x000000001fffde34       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1a3       0x12 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.__func__.0
-                0x000000001fffde46        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1b5        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.__func__.1
-                0x000000001fffde4e       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1bd       0x15 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.__func__.3
-                0x000000001fffde63       0x11 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1d2       0x11 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.__func__.4
-                0x000000001fffde74        0xb CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1e3        0xb CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.__func__.5
-                0x000000001fffde7f        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000001fffe1ee        0x9 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .rodata.vTaskStartScheduler.str1.1
-                0x000000001fffde88        0x5 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffe1f7        0x5 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .rodata.ucExpectedStackBytes.0
-                0x000000001fffde8d       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000001fffe1fc       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .rodata.CCM_ANALOG_GetPfdFreq.str1.1
-                0x000000001fffdea1       0x81 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
+                0x000000001fffe210       0x81 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
  .rodata.__func__.0
-                0x000000001fffdf22       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
+                0x000000001fffe291       0x16 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_analog_imx7d.c.obj
  .rodata.CCM_SetRootDivider.str1.1
-                0x000000001fffdf38       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffe2a7       0x54 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
  .rodata.CCM_GetRootDivider.str1.1
-                0x000000001fffdf8c        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffe2fb        0xc CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
  .rodata.__func__.0
-                0x000000001fffdf98        0xf CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffe307        0xf CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
  .rodata.__func__.1
-                0x000000001fffdfa7       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
+                0x000000001fffe316       0x13 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/ccm_imx7d.c.obj
  .rodata.UART_Init.str1.1
-                0x000000001fffdfba       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffe329       0x4c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
  .rodata.CSWTCH.7
-                0x000000001fffe006        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffe375        0x6 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
  .rodata.__func__.4
-                0x000000001fffe00c        0xa CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
+                0x000000001fffe37b        0xa CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/uart_imx.c.obj
  .rodata.MU_TrySendMsg.str1.1
-                0x000000001fffe016       0x56 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+                0x000000001fffe385       0x56 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
  .rodata.MU_TryReceiveMsg.str1.1
-                0x000000001fffe06c       0x17 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+                0x000000001fffe3db       0x17 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
  .rodata.__func__.1
-                0x000000001fffe083       0x11 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+                0x000000001fffe3f2       0x11 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
  .rodata.__func__.2
-                0x000000001fffe094        0xb CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
- *fill*         0x000000001fffe09f        0x1 
- .rodata.halF   0x000000001fffe0a0        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
- .rodata.ln2HI  0x000000001fffe0a8        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
- .rodata.ln2LO  0x000000001fffe0b0        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
+                0x000000001fffe403        0xb CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/drivers/src/mu_imx.c.obj
+ *fill*         0x000000001fffe40e        0x2 
+ .rodata.halF   0x000000001fffe410        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
+ .rodata.ln2HI  0x000000001fffe418        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
+ .rodata.ln2LO  0x000000001fffe420        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a(lib_a-ef_exp.o)
  .rodata._global_impure_ptr
-                0x000000001fffe0b8        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
-                0x000000001fffe0b8                _global_impure_ptr
+                0x000000001fffe428        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
+                0x000000001fffe428                _global_impure_ptr
  *(.glue_7)
- .glue_7        0x000000001fffe0bc        0x0 linker stubs
+ .glue_7        0x000000001fffe42c        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x000000001fffe0bc        0x0 linker stubs
+ .glue_7t       0x000000001fffe42c        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x000000001fffe0bc        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .eh_frame      0x000000001fffe42c        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.init)
- .init          0x000000001fffe0bc        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crti.o
-                0x000000001fffe0bc                _init
- .init          0x000000001fffe0c0        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtn.o
+ .init          0x000000001fffe42c        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crti.o
+                0x000000001fffe42c                _init
+ .init          0x000000001fffe430        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtn.o
  *(.fini)
- .fini          0x000000001fffe0c8        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crti.o
-                0x000000001fffe0c8                _fini
- .fini          0x000000001fffe0cc        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtn.o
-                0x000000001fffe0d4                . = ALIGN (0x4)
+ .fini          0x000000001fffe438        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crti.o
+                0x000000001fffe438                _fini
+ .fini          0x000000001fffe43c        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtn.o
+                0x000000001fffe444                . = ALIGN (0x4)
 
-.vfp11_veneer   0x000000001fffe0d4        0x0
- .vfp11_veneer  0x000000001fffe0d4        0x0 linker stubs
+.vfp11_veneer   0x000000001fffe444        0x0
+ .vfp11_veneer  0x000000001fffe444        0x0 linker stubs
 
-.v4_bx          0x000000001fffe0d4        0x0
- .v4_bx         0x000000001fffe0d4        0x0 linker stubs
+.v4_bx          0x000000001fffe444        0x0
+ .v4_bx         0x000000001fffe444        0x0 linker stubs
 
-.iplt           0x000000001fffe0d4        0x0
- .iplt          0x000000001fffe0d4        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+.iplt           0x000000001fffe444        0x0
+ .iplt          0x000000001fffe444        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x000000001fffe0d4        0x8
-                0x000000001fffe0d4                __exidx_start = .
+.ARM            0x000000001fffe444        0x8
+                0x000000001fffe444                __exidx_start = .
  *(.ARM.exidx*)
- .ARM.exidx     0x000000001fffe0d4        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/crt0.o
+ .ARM.exidx     0x000000001fffe444        0x8 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/crt0.o
                                          0x10 (size before relaxing)
-                0x000000001fffe0dc                __exidx_end = .
+                0x000000001fffe44c                __exidx_end = .
 
-.rel.dyn        0x000000001fffe0dc        0x0
- .rel.iplt      0x000000001fffe0dc        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+.rel.dyn        0x000000001fffe44c        0x0
+ .rel.iplt      0x000000001fffe44c        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.ctors          0x000000001fffe0dc        0x0
-                0x000000001fffe0dc                __CTOR_LIST__ = .
+.ctors          0x000000001fffe44c        0x0
+                0x000000001fffe44c                __CTOR_LIST__ = .
  *crtbegin.o(.ctors)
  *crtbegin?.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o *crtend?.o) .ctors)
  *(SORT_BY_NAME(.ctors.*))
  *(.ctors)
-                0x000000001fffe0dc                __CTOR_END__ = .
+                0x000000001fffe44c                __CTOR_END__ = .
 
-.dtors          0x000000001fffe0dc        0x0
-                0x000000001fffe0dc                __DTOR_LIST__ = .
+.dtors          0x000000001fffe44c        0x0
+                0x000000001fffe44c                __DTOR_LIST__ = .
  *crtbegin.o(.dtors)
  *crtbegin?.o(.dtors)
  *(EXCLUDE_FILE(*crtend.o *crtend?.o) .dtors)
  *(SORT_BY_NAME(.dtors.*))
  *(.dtors)
-                0x000000001fffe0dc                __DTOR_END__ = .
+                0x000000001fffe44c                __DTOR_END__ = .
 
-.preinit_array  0x000000001fffe0dc        0x0
-                0x000000001fffe0dc                PROVIDE (__preinit_array_start = .)
+.preinit_array  0x000000001fffe44c        0x0
+                0x000000001fffe44c                PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x000000001fffe0dc                PROVIDE (__preinit_array_end = .)
+                0x000000001fffe44c                PROVIDE (__preinit_array_end = .)
 
-.init_array     0x000000001fffe0dc        0x4
-                0x000000001fffe0dc                PROVIDE (__init_array_start = .)
+.init_array     0x000000001fffe44c        0x4
+                0x000000001fffe44c                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x000000001fffe0dc        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x000000001fffe0e0                PROVIDE (__init_array_end = .)
+ .init_array    0x000000001fffe44c        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x000000001fffe450                PROVIDE (__init_array_end = .)
 
-.fini_array     0x000000001fffe0e0        0x4
+.fini_array     0x000000001fffe450        0x4
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x000000001fffe0e0        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .fini_array    0x000000001fffe450        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x000000001fffe0e4                __etext = .
-                0x000000001fffe0e4                __DATA_ROM = .
+                0x000000001fffe454                __etext = .
+                0x000000001fffe454                __DATA_ROM = .
 
-.data           0x0000000020000000      0x22c load address 0x000000001fffe0e4
+.data           0x0000000020000000      0x230 load address 0x000000001fffe454
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                __DATA_RAM = .
                 0x0000000020000000                __data_start__ = .
@@ -1737,170 +1739,178 @@ LOAD /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eab
                 0x0000000020000000        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
  .data.xFreeBytesRemaining
                 0x0000000020000004        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
- .data.par      0x0000000020000008       0x3c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .data.semilla  0x0000000020000044        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .data.gpioLed  0x0000000020000048       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
-                0x0000000020000048                gpioLed
+ .data.par      0x0000000020000008       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .data.semilla  0x0000000020000048        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .data.gpioLed  0x000000002000004c       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/gpio_pins.c.obj
+                0x000000002000004c                gpioLed
  .data.proc_ops
-                0x0000000020000064       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
-                0x0000000020000064                proc_ops
+                0x0000000020000068       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x0000000020000068                proc_ops
  .data.proc_table
-                0x0000000020000080      0x120 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c.obj
-                0x0000000020000080                proc_table
+                0x0000000020000084      0x120 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c.obj
+                0x0000000020000084                proc_table
  .data.rpmsg_rdev_config_ops
-                0x00000000200001a0       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
-                0x00000000200001a0                rpmsg_rdev_config_ops
+                0x00000000200001a4       0x24 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/remote_device.c.obj
+                0x00000000200001a4                rpmsg_rdev_config_ops
  .data.xNextTaskUnblockTime
-                0x00000000200001c4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200001c8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .data._impure_ptr
-                0x00000000200001c8        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
-                0x00000000200001c8                _impure_ptr
+                0x00000000200001cc        0x4 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
+                0x00000000200001cc                _impure_ptr
  .data.impure_data
-                0x00000000200001cc       0x60 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
+                0x00000000200001d0       0x60 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-impure.o)
  *(.jcr*)
-                0x000000002000022c                . = ALIGN (0x4)
-                0x000000002000022c                __data_end__ = .
-                0x000000001fffe310                __DATA_END = (__DATA_ROM + (__data_end__ - __data_start__))
+                0x0000000020000230                . = ALIGN (0x4)
+                0x0000000020000230                __data_end__ = .
+                0x000000001fffe684                __DATA_END = (__DATA_ROM + (__data_end__ - __data_start__))
                 0x0000000020000000                text_end = (ORIGIN (m_text) + LENGTH (m_text))
                 0x0000000000000001                ASSERT ((__DATA_END <= text_end), region m_text overflowed with text and data)
 
-.igot.plt       0x000000002000022c        0x0 load address 0x000000001fffe310
- .igot.plt      0x000000002000022c        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+.igot.plt       0x0000000020000230        0x0 load address 0x000000001fffe684
+ .igot.plt      0x0000000020000230        0x0 /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.bss            0x000000002000022c     0x567c load address 0x000000001fffe310
-                0x000000002000022c                . = ALIGN (0x4)
-                0x000000002000022c                __START_BSS = .
-                0x000000002000022c                __bss_start__ = .
+.bss            0x0000000020000230     0x56a4 load address 0x000000001fffe684
+                0x0000000020000230                . = ALIGN (0x4)
+                0x0000000020000230                __START_BSS = .
+                0x0000000020000230                __bss_start__ = .
  *(.bss)
- .bss           0x000000002000022c       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .bss           0x0000000020000230       0x1c /home/rommel/opt/gcc-arm-none-eabi-10.3-2021.10/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.bss*)
  .bss.ucMaxSysCallPriority
-                0x0000000020000248        0x1 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
- *fill*         0x0000000020000249        0x3 
+                0x000000002000024c        0x1 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
+ *fill*         0x000000002000024d        0x3 
  .bss.ulMaxPRIGROUPValue
-                0x000000002000024c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
- .bss.ucHeap    0x0000000020000250     0x5000 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
- .bss.xEnd      0x0000000020005250        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
+                0x0000000020000250        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c.obj
+ .bss.ucHeap    0x0000000020000254     0x5000 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
+ .bss.xEnd      0x0000000020005254        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
  .bss.xHeapHasBeenInitialised.0
-                0x0000000020005258        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
- .bss.xStart    0x000000002000525c        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
- .bss.ads_regs  0x0000000020005264        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.canal     0x0000000020005268        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.cola      0x000000002000526c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.det       0x0000000020005270       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.dst_bin   0x000000002000529c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.dst_resp  0x00000000200052a0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x000000002000525c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
+ .bss.xStart    0x0000000020005260        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/portable/MemMang/heap_2.c.obj
+ .bss.ads_regs  0x0000000020005268        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.canal     0x000000002000526c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.cola      0x0000000020005270        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.det       0x0000000020005274       0x2c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.dst_bin   0x00000000200052a0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.dst_resp  0x00000000200052a4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .bss.est_adc_err
-                0x00000000200052a4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_adc_saltos
                 0x00000000200052a8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_carga_ppm
+ .bss.est_adc_saltos
                 0x00000000200052ac        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_evento_activo
+ .bss.est_carga_ppm
                 0x00000000200052b0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_eventos
+ .bss.est_evento_activo
                 0x00000000200052b4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_fs    0x00000000200052b8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_fuente
+ .bss.est_eventos
+                0x00000000200052b8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.est_filtro_hw
                 0x00000000200052bc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_jitter_us
-                0x00000000200052c0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_muestras
+ .bss.est_fs    0x00000000200052c0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.est_fs_real_mhz
                 0x00000000200052c4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_peor_us
+ .bss.est_fuente
                 0x00000000200052c8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_perdidos
+ .bss.est_jitter_us
                 0x00000000200052cc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.est_sismos
+ .bss.est_muestras
                 0x00000000200052d0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.fase_seno
+ .bss.est_notch_mhz
                 0x00000000200052d4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.proximo_auto
+ .bss.est_peor_us
                 0x00000000200052d8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.rx        0x00000000200052dc      0x200 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.sismo     0x00000000200054dc       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.spi_baud  0x00000000200054f0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.spi_hz    0x00000000200054f4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.spi_mux   0x00000000200054f8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
- .bss.tx        0x00000000200054fc      0x200 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.est_perdidos
+                0x00000000200052dc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.est_sismos
+                0x00000000200052e0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.fase_seno
+                0x00000000200052e4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.notch     0x00000000200052e8       0x1c CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.proximo_auto
+                0x0000000020005304        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.rx        0x0000000020005308      0x200 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.sismo     0x0000000020005508       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.spi_baud  0x000000002000551c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.spi_hz    0x0000000020005520        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.spi_mux   0x0000000020005524        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+ .bss.tx        0x0000000020005528      0x200 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .bss.ult_latido
-                0x00000000200056fc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
+                0x0000000020005728        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c.obj
  .bss.callback_sync
-                0x0000000020005700        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x000000002000572c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .bss.default_chnl
-                0x0000000020005704        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x0000000020005730        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .bss.default_q
-                0x0000000020005708        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x0000000020005734        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .bss.rpmsg_queue_size
-                0x000000002000570c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
+                0x0000000020005738        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c.obj
  .bss.disable_counter_all
-                0x0000000020005710        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+                0x000000002000573c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
  .bss.disable_counters
-                0x0000000020005714        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
- .bss.procs     0x000000002000571c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
-                0x000000002000571c                procs
+                0x0000000020005740        0x8 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/imx7d_m4/platform.c.obj
+ .bss.procs     0x0000000020005748        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/common/hil/hil.c.obj
+                0x0000000020005748                procs
  .bss.env_init_counter
-                0x0000000020005720        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x000000002000574c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .bss.isr_table
-                0x0000000020005724       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
+                0x0000000020005750       0x50 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c.obj
  .bss.xQueueRegistry
-                0x0000000020005774       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
-                0x0000000020005774                xQueueRegistry
+                0x00000000200057a0       0x40 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/queue.c.obj
+                0x00000000200057a0                xQueueRegistry
  .bss.pxCurrentTCB
-                0x00000000200057b4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
-                0x00000000200057b4                pxCurrentTCB
+                0x00000000200057e0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200057e0                pxCurrentTCB
  .bss.pxDelayedTaskList
-                0x00000000200057b8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200057e4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.pxOverflowDelayedTaskList
-                0x00000000200057bc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200057e8        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.pxReadyTasksLists
-                0x00000000200057c0       0x64 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200057ec       0x64 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.uxCurrentNumberOfTasks
-                0x0000000020005824        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x0000000020005850        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.uxPendedTicks
-                0x0000000020005828        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x0000000020005854        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.uxSchedulerSuspended
-                0x000000002000582c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x0000000020005858        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.uxTaskNumber
-                0x0000000020005830        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x000000002000585c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.uxTopReadyPriority
-                0x0000000020005834        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
- .bss.xDelayedTaskList1
-                0x0000000020005838       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
- .bss.xDelayedTaskList2
-                0x000000002000584c       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
- .bss.xNumOfOverflows
                 0x0000000020005860        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
- .bss.xPendingReadyList
+ .bss.xDelayedTaskList1
                 0x0000000020005864       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+ .bss.xDelayedTaskList2
+                0x0000000020005878       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+ .bss.xNumOfOverflows
+                0x000000002000588c        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+ .bss.xPendingReadyList
+                0x0000000020005890       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.xSchedulerRunning
-                0x0000000020005878        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200058a4        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.xSuspendedTaskList
-                0x000000002000587c       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200058a8       0x14 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.xTickCount
-                0x0000000020005890        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200058bc        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.xYieldPending
-                0x0000000020005894        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
+                0x00000000200058c0        0x4 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/rtos/FreeRTOS/Source/tasks.c.obj
  .bss.s_debugConsole
-                0x0000000020005898       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
+                0x00000000200058c4       0x10 CMakeFiles/instrumento.dir/home/rommel/Pico-pi/freertos-tn/platform/utilities/src/debug_console_imx.c.obj
  *(COMMON)
-                0x00000000200058a8                . = ALIGN (0x4)
-                0x00000000200058a8                __bss_end__ = .
-                0x00000000200058a8                __END_BSS = .
+                0x00000000200058d4                . = ALIGN (0x4)
+                0x00000000200058d4                __bss_end__ = .
+                0x00000000200058d4                __END_BSS = .
 
-.heap           0x00000000200058a8      0x400 load address 0x000000002000398c
-                0x00000000200058a8                . = ALIGN (0x8)
-                0x00000000200058a8                __end__ = .
+.heap           0x00000000200058d4      0x404 load address 0x0000000020003d28
+                0x00000000200058d8                . = ALIGN (0x8)
+ *fill*         0x00000000200058d4        0x4 
+                0x00000000200058d8                __end__ = .
                 [!provide]                        PROVIDE (end = .)
-                0x00000000200058a8                __HeapBase = .
-                0x0000000020005ca8                . = (. + HEAP_SIZE)
- *fill*         0x00000000200058a8      0x400 
-                0x0000000020005ca8                __HeapLimit = .
+                0x00000000200058d8                __HeapBase = .
+                0x0000000020005cd8                . = (. + HEAP_SIZE)
+ *fill*         0x00000000200058d8      0x400 
+                0x0000000020005cd8                __HeapLimit = .
 
-.stack          0x0000000020005ca8      0x400 load address 0x0000000020003d8c
-                0x0000000020005ca8                . = ALIGN (0x8)
-                0x00000000200060a8                . = (. + STACK_SIZE)
- *fill*         0x0000000020005ca8      0x400 
+.stack          0x0000000020005cd8      0x400 load address 0x000000002000412c
+                0x0000000020005cd8                . = ALIGN (0x8)
+                0x00000000200060d8                . = (. + STACK_SIZE)
+ *fill*         0x0000000020005cd8      0x400 
                 0x0000000020008000                __StackTop = (ORIGIN (m_data) + LENGTH (m_data))
                 0x0000000020007c00                __StackLimit = (__StackTop - STACK_SIZE)
                 0x0000000020008000                PROVIDE (__stack = __StackTop)

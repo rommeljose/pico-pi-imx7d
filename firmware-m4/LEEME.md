@@ -1,4 +1,4 @@
-# Firmwares del M4 compilados localmente — 2026-11-11 (instrumento: 2026-11-13)
+# Firmwares del M4 compilados localmente — 2026-11-11 (instrumento v0.6: 2026-11-13)
 
 Compilados en el PC de compilación con GNU Arm Embedded 10.3-2021.10, perfil `release`,
 placa `imx7d_pico_m4`. Cada uno trae `.bin` (lo que se carga), `.elf` (símbolos)
@@ -8,7 +8,8 @@ y `.map`. Sumas en `SHA256SUMS`.
 
 | Binario | Memoria | Nivel | Qué hace / cómo se observa |
 |---|---|---|---|
-| `instrumento.bin` | TCM | ✅ **verificado** 2026-11-13 (en la FAT, `m4image=instrumento.bin`) | **v0.5, etapa 2 paso 4b**: `fuente adc [corto|ain01|avdd|temp] [pga] [sps]` / `fuente sint`. El ADS1220 marca el ritmo (20–600 SPS) y sus muestras van por el mismo camino que las sintéticas: STA/LTA, bloques binarios, visor. Lado Linux: `a7/adc_captura.py`. Ver `docs/M4_Instrumento_Bitacora.md` |
+| `instrumento.bin` | TCM | ✅ **verificado** 2026-11-13 (en la FAT, `m4image=instrumento.bin`) | **v0.6**: como la v0.5, más `filtro 0\|50\|60` (notch sobre el alias de la red; a 20 SPS, el del ADS1220) y la tasa real del ADC medida con el DWT (`fs_real_mhz`). Ver `docs/M4_Instrumento_Bitacora.md` |
+| `instrumento-e2p4b.bin` | TCM | ✅ **verificado** 2026-11-13; en la FAT como `instrumento-e2p4b.bin` | v0.5, etapa 2 paso 4b: `fuente adc [corto\|ain01\|avdd\|temp] [pga] [sps]` / `fuente sint`. Lado Linux: `a7/adc_captura.py` |
 | `instrumento-e2p4a.bin` | TCM | ✅ **verificado** 2026-11-13 ; en la FAT como `instrumento-e2p4a.bin` | v0.4, etapa 2 paso 4a: `adc prueba` (lectura del ADS1220 por DRDYM) |
 | `instrumento-e2p2.bin` | TCM | ✅ **verificado** 2026-11-12 ; en la FAT como `instrumento-e2p2.bin` | v0.3, etapa 2 paso 2: `spi lazo` / `spi suelta` (lazo interno del ECSPI3) |
 | `instrumento-e1.bin` | TCM | ✅ **verificado** 2026-11-12 ; en la FAT como `instrumento-e1.bin` | Instrumento sintético, etapa 1 (v0.2): como la etapa 0, más bloques **binarios** por `/dev/rpmsgN` (`rpmsg_char`) con `seq` y flags, latido de 2 s, respuesta al origen. Lado Linux: `a7/visor_instrumento.py`. Ver `docs/M4_Instrumento_Bitacora.md` |
