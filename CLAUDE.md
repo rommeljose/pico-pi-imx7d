@@ -31,7 +31,12 @@ FreeRTOS). Lo general de la placa; no está ligado a ninguna aplicación concret
 - **Observar el M4 sin consola serie**: GPIO2_IO06 = sysfs **38**; leer
   `direction` (`out` = el M4 corre). **Nunca escribir en `direction`.**
 - **SPI**: solo **ECSPI3** llega a J8/JP1 (`/dev/spidev2.0` en Linux). ECSPI1/2
-  los ocupa el combo WiFi/BT; ECSPI4 no tiene pads.
+  los ocupa el combo WiFi/BT; ECSPI4 no tiene pads. Pines medidos: MOSI 19,
+  MISO 21, SCLK 23, **CS 26** (no 24). El M4 lo toma en caliente desligando
+  `spi_imx` (`unbind`/`bind`), sin tocar el device tree: `docs/SPI_M4_ECSPI3.md`.
+- **J8-36 y J8-11 solo sirven de salida**: la placa base empuja esas líneas. El
+  DRDY del ADS1220 se lee por MISO (modo DRDYM).
+- **Nunca leer registros del SoC con `/dev/mem` desde Linux**: colgó la placa.
 - **Consola del M4**: UART6, 115200 8N1, J8 pin 8 = TX, pin 10 = RX, pin 9 = GND.
   La de Linux es UART5 (`ttymxc4`), por el USB de depuración.
 - **RPMsg**: vrings en `0x9FFF0000`/`0x9FFF8000`, fuera de la RAM de Linux

@@ -210,22 +210,40 @@ del `3V`), **fila superior = pares**; los pines `2n−1` y `2n` comparten column
 | `ECSPI3.MOSI` | **19** | inferior | K1 | JP1 pin 6 |
 | `ECSPI3.MISO` | **21** | inferior | J2 | JP1 pin 5 |
 | `ECSPI3.SCLK` | **23** | inferior | K2 | JP1 pin 4 |
-| `ECSPI3.SS0` | **24** | superior | K3 | JP1 pin 3 |
-| `ECSPI3.SS1` | 26 | superior | M6 | — |
+| ~~`ECSPI3.SS0`~~ | ~~24~~ | superior | K3 | JP1 pin 3 |
+| **CS del SPI de Linux** (`GPIO4_IO11`, pad `I2C2_SDA`, gpio 107) | **26** | superior | — | — |
+| `GPIO2_IO00` (pad `EPDC_DATA00`, gpio 32, nombre DT `GPIO_P24`) — **solo salida** | **36** | superior | — | — |
+
+> ⚠️ **J8-36 y J8-11 no dejan entrar señales** (medido 2026-11-13). J8-36 sigue
+> a gpio 32 hacia fuera (parpadeo visible), pero con la línea en entrada y el
+> DRDY del ADS1220 unido, el nodo se queda en **3,3 V** y Linux lee 1 fijo: algo
+> de la placa base lo empuja con fuerza (hipótesis: un buffer o traductor de
+> sentido fijo SoC→J8; el pull-up del pad, de 47 kΩ, no podría). J8-11
+> (`EPDC_DATA11`, CTS de UART6) se comporta igual. Los pads de ECSPI3, que son
+> pads I2C, sí son bidireccionales: MISO entra por J8-21. **Antes de usar un
+> pin de J8 como entrada, comprobarlo con una señal real.**
 | `GND` | **20** o **25** | 20 arriba, 25 abajo | — | JP1 pin 8 |
 | `UART6.RTS` | 7 | inferior | L24 | — |
 | **`UART6.TX`** | **8** | superior | L25 | JP2 pin 4 |
 | **`UART6.RX`** | **10** | superior | M23 | JP2 pin 3 |
 | `UART6.CTS` | 11 | inferior | L23 | — |
 
+> ⚠️ **Corregido el 2026-11-13, medido con multímetro.** Esta tabla daba el chip
+> select en el **24**, y es falso. Con `spi_imx` desligado se puso el gpio 107
+> (el `cs-gpios` del device tree, pad `I2C2_SDA`) en bajo: **J8-24 siguió a
+> 3,3 V**. Haciéndolo parpadear a 1 Hz, la señal apareció en **J8-26**, que la
+> serigrafía rotula `CSPI2_CS1`. Qué hay en J8-24 sigue sin saberse: da 3,3 V
+> fijos. MOSI 19, MISO 21 y SCLK 23 quedaron **verificados funcionando** ese
+> mismo día con un ADS1220 (escritura y lectura de registros correctas).
+
 ⚠️ **La serigrafía miente**: esos pines de SPI están rotulados `CSPI2_MOSI_3V`,
 `CSPI2_SCLK_3V`, `CSPI2_CS1_3V`… pero el periférico es **ECSPI3**. Guiarse por el
 rótulo lleva a buscar el controlador equivocado.
 
 🔎 **UART6 sale a J8 pines 8 y 10** — la incógnita que este documento daba por
-«sin confirmar». Queda un cabo: el BSP muxea UART6 sobre `EPDC_DATA08/09`
-(`board.c:93`), no sobre los pads que llegan a J8. Reconciliarlo podría ser lo
-que **dé por fin consola al M4**, y con ella el fin de la ceguera para depurar.
+«sin confirmar». El cabo que quedaba (si el BSP muxeaba UART6 sobre otros pads)
+**se resolvió el mismo 2026-08-16**: el BSP y el DTS usan los mismos pads
+`EPDC_DATA08/09` en ALT3. Ver la tabla de la consola del M4 más abajo.
 
 Reconfirmado el 2026-08-16. Los grupos de pinctrl definidos en el árbol son
 **solo `ecspi3grp` y `ecspi3_cs_grp`**: Linux no muxea pines para ECSPI1, 2 ni 4,

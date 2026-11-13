@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Instrumento M4
+Name[es]=Instrumento M4
+Comment=Traza en vivo del M4 por RPMsg (señal sintética y detector STA/LTA)
+Exec=/home/ubuntu/visor.sh
+Icon=/home/ubuntu/.local/share/icons/instrumento.svg
+Terminal=false
+Categories=Education;Science;
+StartupNotify=false

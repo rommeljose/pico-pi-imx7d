@@ -19,3 +19,1695 @@ index e280647..d190079 100644
      }
  }
  
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/FreeRTOSConfig.h b/examples/imx7d_pico_m4/demo_apps/instrumento/FreeRTOSConfig.h
+new file mode 100644
+index 0000000..ddb391f
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/FreeRTOSConfig.h
+@@ -0,0 +1,163 @@
++/*
++    FreeRTOS V8.0.0 - Copyright (C) 2014 Real Time Engineers Ltd.
++    All rights reserved
++
++    VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
++
++    ***************************************************************************
++     *                                                                       *
++     *    FreeRTOS provides completely free yet professionally developed,    *
++     *    robust, strictly quality controlled, supported, and cross          *
++     *    platform software that has become a de facto standard.             *
++     *                                                                       *
++     *    Help yourself get started quickly and support the FreeRTOS         *
++     *    project by purchasing a FreeRTOS tutorial book, reference          *
++     *    manual, or both from: http://www.FreeRTOS.org/Documentation        *
++     *                                                                       *
++     *    Thank you!                                                         *
++     *                                                                       *
++    ***************************************************************************
++
++    This file is part of the FreeRTOS distribution.
++
++    FreeRTOS is free software; you can redistribute it and/or modify it under
++    the terms of the GNU General Public License (version 2) as published by the
++    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
++
++    >>! NOTE: The modification to the GPL is included to allow you to distribute
++    >>! a combined work that includes FreeRTOS without being obliged to provide
++    >>! the source code for proprietary components outside of the FreeRTOS
++    >>! kernel.
++
++    FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
++    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
++    FOR A PARTICULAR PURPOSE.  Full license text is available from the following
++    link: http://www.freertos.org/a00114.html
++
++    1 tab == 4 spaces!
++
++    ***************************************************************************
++     *                                                                       *
++     *    Having a problem?  Start by reading the FAQ "My application does   *
++     *    not run, what could be wrong?"                                     *
++     *                                                                       *
++     *    http://www.FreeRTOS.org/FAQHelp.html                               *
++     *                                                                       *
++    ***************************************************************************
++
++    http://www.FreeRTOS.org - Documentation, books, training, latest versions,
++    license and Real Time Engineers Ltd. contact details.
++
++    http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
++    including FreeRTOS+Trace - an indispensable productivity tool, a DOS
++    compatible FAT file system, and our tiny thread aware UDP/IP stack.
++
++    http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
++    Integrity Systems to sell under the OpenRTOS brand.  Low cost OpenRTOS
++    licenses offer ticketed support, indemnification and middleware.
++
++    http://www.SafeRTOS.com - High Integrity Systems also provide a safety
++    engineered and independently SIL3 certified version for use in safety and
++    mission critical applications that require provable dependability.
++
++    1 tab == 4 spaces!
++*/
++
++
++#ifndef FREERTOS_CONFIG_H
++#define FREERTOS_CONFIG_H
++
++/*-----------------------------------------------------------
++ * Application specific definitions.
++ *
++ * These definitions should be adjusted for your particular hardware and
++ * application requirements.
++ *
++ * THESE PARAMETERS ARE DESCRIBED WITHIN THE 'CONFIGURATION' SECTION OF THE
++ * FreeRTOS API DOCUMENTATION AVAILABLE ON THE FreeRTOS.org WEB SITE.
++ *
++ * See http://www.freertos.org/a00110.html.
++ *----------------------------------------------------------*/
++
++/* Ensure stdint is only used by the compiler, and not the assembler. */
++#ifdef __ICCARM__
++    #include <stdint.h>
++#endif
++
++#define configUSE_PREEMPTION              1
++#define configUSE_IDLE_HOOK               0
++#define configUSE_TICK_HOOK               0
++#define configCPU_CLOCK_HZ                (240000000ul)
++#define configTICK_RATE_HZ                ((TickType_t)1000)
++#define configMAX_PRIORITIES              (5)
++#define configMINIMAL_STACK_SIZE          ((unsigned short)130)
++#define configTOTAL_HEAP_SIZE             ((size_t)(20 * 1024))
++#define configMAX_TASK_NAME_LEN           (10)
++#define configUSE_TRACE_FACILITY          0
++#define configUSE_16_BIT_TICKS            0
++#define configIDLE_SHOULD_YIELD           0
++#define configUSE_MUTEXES                 0
++#define configQUEUE_REGISTRY_SIZE         8
++#define configCHECK_FOR_STACK_OVERFLOW    2
++#define configUSE_RECURSIVE_MUTEXES       0
++#define configUSE_MALLOC_FAILED_HOOK      1
++#define configUSE_APPLICATION_TASK_TAG    0
++#define configUSE_COUNTING_SEMAPHORES     1
++#define configGENERATE_RUN_TIME_STATS     0
++
++/* Co-routine definitions. */
++#define configUSE_CO_ROUTINES             0
++#define configMAX_CO_ROUTINE_PRIORITIES   (2)
++
++/* Software timer definitions. */
++#define configUSE_TIMERS                  0
++#define configTIMER_TASK_PRIORITY         (2)
++#define configTIMER_QUEUE_LENGTH          10
++#define configTIMER_TASK_STACK_DEPTH      (configMINIMAL_STACK_SIZE * 2)
++
++/* Set the following definitions to 1 to include the API function, or zero
++to exclude the API function. */
++#define INCLUDE_vTaskPrioritySet          0
++#define INCLUDE_uxTaskPriorityGet         0
++#define INCLUDE_vTaskDelete               0
++#define INCLUDE_vTaskCleanUpResources     0
++#define INCLUDE_vTaskSuspend              1
++#define INCLUDE_vTaskDelayUntil           1
++#define INCLUDE_vTaskDelay                1
++
++/* Cortex-M specific definitions. */
++#ifdef __NVIC_PRIO_BITS
++    /* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
++    #define configPRIO_BITS               __NVIC_PRIO_BITS
++#else
++    #define configPRIO_BITS               4        /* 15 priority levels */
++#endif
++
++/* The lowest interrupt priority that can be used in a call to a "set priority"
++function. */
++#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0xf
++
++/* The highest interrupt priority that can be used by any interrupt service
++routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
++INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
++PRIORITY THAN THIS! (higher priorities are lower numeric values. */
++#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    1
++
++/* Interrupt priorities used by the kernel port layer itself.  These are generic
++to all Cortex-M ports, and do not rely on any particular library functions. */
++#define configKERNEL_INTERRUPT_PRIORITY    (configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
++/* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
++See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
++#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
++
++/* Normal assert() semantics without relying on the provision of an assert.h
++header file. */
++#define configASSERT(x) if((x) == 0) {taskDISABLE_INTERRUPTS(); for(;;);}
++
++/* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
++standard names. */
++#define vPortSVCHandler     SVC_Handler
++#define xPortPendSVHandler  PendSV_Handler
++#define xPortSysTickHandler SysTick_Handler
++
++#endif /* FREERTOS_CONFIG_H */
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/hardware_init.c b/examples/imx7d_pico_m4/demo_apps/instrumento/hardware_init.c
+new file mode 100644
+index 0000000..094b843
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/hardware_init.c
+@@ -0,0 +1,62 @@
++/*
++ * Copyright (c) 2015, Freescale Semiconductor, Inc.
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without modification,
++ * are permitted provided that the following conditions are met:
++ *
++ * o Redistributions of source code must retain the above copyright notice, this list
++ *   of conditions and the following disclaimer.
++ *
++ * o Redistributions in binary form must reproduce the above copyright notice, this
++ *   list of conditions and the following disclaimer in the documentation and/or
++ *   other materials provided with the distribution.
++ *
++ * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
++ *   contributors may be used to endorse or promote products derived from this
++ *   software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
++ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
++ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
++ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
++ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++#include "board.h"
++#include "pin_mux.h"
++#include "gpio_pins.h"
++
++/* Instrumento sintético (etapa 0). Igual que str_echo_freertos (MU para RPMsg)
++ * más el USER LED (GPIO2_IO06), configurado como en blinking_imx_demo: acceso
++ * para todos los dominios y sin semáforo, para que Linux pueda LEER su estado
++ * en /sys/class/gpio/gpio38/value sin quitárselo al M4. */
++void hardware_init(void)
++{
++    /* Board specific RDC settings */
++    BOARD_RdcInit();
++
++    /* Board specific clock settings */
++    BOARD_ClockInit();
++
++    /* initialize debug uart */
++    dbg_uart_init();
++
++    /* RDC MU*/
++    RDC_SetPdapAccess(RDC, BOARD_MU_RDC_PDAP, 3 << (BOARD_DOMAIN_ID * 2), false, false);
++
++    /* Enable clock gate for MU*/
++    CCM_ControlGate(CCM, BOARD_MU_CCM_CCGR, ccmClockNeededRun);
++
++    /* USER LED: compartido con Linux, que solo lo lee */
++    RDC_SetPdapAccess(RDC, BOARD_GPIO_LED_RDC_PDAP, 0xFF, false, false);
++    configure_gpio_pin(BOARD_GPIO_LED_CONFIG);
++}
++
++/*******************************************************************************
++ * EOF
++ ******************************************************************************/
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c b/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c
+new file mode 100644
+index 0000000..d4e4769
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/instrumento.c
+@@ -0,0 +1,1129 @@
++/*
++ * Instrumento — proyecto «M4 instrumento, Linux analista», etapas 0 a 2 (v0.5).
++ *
++ * El Cortex-M4 hace el trabajo continuo, sin depender de Linux:
++ *   - adquiere fs muestras/s de una de dos fuentes: el ADS1220 por ECSPI3
++ *     («fuente adc», el ADC marca el ritmo) o una señal sintética (ruido + seno
++ *     + «sismos» con fase P y S); procesa: quita la media y aplica STA/LTA;
++ *   - enciende el USER LED (GPIO2_IO06) mientras dura un evento;
++ *   - mide su propia carga y el jitter de su periodo de muestreo.
++ *
++ * Linux (A7): órdenes y respuestas en texto por /dev/ttyRPMSG0; las muestras,
++ * en binario por /dev/rpmsgN tras «bin» (o en texto D si nadie se suscribe).
++ * Protocolo completo en docs/M4_Instrumento_Bitacora.md:
++ *
++ *   M4 -> Linux   H <nombre> <versión> fs=<fs> fuente=<adc|sint>
++ *                 D <muestra> <fs> <v1> <v2> ...          bloque de muestras
++ *                 E <muestra> <ratio×100>                 inicio de evento
++ *                 F <muestra> <duración en muestras> <pico>  fin de evento
++ *                 S clave=valor ...  |  bloque binario 0xB1 (12 B + i32 × n)
++ *                 OK <orden> | ERR <orden>
++ *   Linux -> M4   hola | estado | inicia | pausa | bin [0] | fs <Hz> | ruido <c>
++ *                 seno <c> <mHz> | amp <c> | sismo [c] | auto 0|1 | umbral <on> <off>
++ *                 fuente sint | fuente adc [corto|ain01|avdd|temp] [pga] [sps]
++ *                 spi lazo | spi suelta | adc prueba     (pruebas; solo en «sint»)
++ * Basado en str_echo_freertos (BSP FreeRTOS 1.0.1 de NXP/TechNexion, BSD-3).
++ * Lo nuevo: Copyright (c) 2026 rommeljose y colaboradores, licencia MIT.
++ */
++
++#include <stdint.h>
++#include <string.h>
++#include <math.h>
++
++#ifdef PRUEBA_HOST          /* prueba_host.c: generador y detector en el PC */
++#include "prueba_host.h"
++#else
++#include "rpmsg/rpmsg_rtos.h"
++#include "FreeRTOS.h"
++#include "task.h"
++#include "queue.h"
++#include "board.h"
++#include "mu_imx.h"
++#include "gpio_imx.h"
++#include "gpio_pins.h"
++#include "debug_console_imx.h"
++#include "ecspi.h"
++#include "ccm_imx7d.h"
++#include "ccm_analog_imx7d.h"
++#endif
++
++#define NOMBRE              "instrumento"
++#define VERSION             "0.5"
++
++#define APP_MU_IRQ_PRIORITY 3
++#define PILA_ADQ            512     /* palabras */
++#define PILA_COM            512
++#define PRIO_ADQ            (tskIDLE_PRIORITY + 3)
++#define PRIO_COM            (tskIDLE_PRIORITY + 1)
++
++#define BLOQUE_MAX          25      /* muestras por mensaje D */
++#define COLA_LEN            16      /* mensajes M4 -> Linux en espera */
++#define LATIDO_MS           2000    /* sin «bin» en este tiempo: vuelta al texto */
++
++#define PI2                 6.28318531f
++
++/* pdMS_TO_TICKS no existe en FreeRTOS V8.0.0 */
++#ifndef pdMS_TO_TICKS
++#define pdMS_TO_TICKS(ms)   ((TickType_t)((ms) / portTICK_PERIOD_MS))
++#endif
++
++/* ------------------------------------------------------------------------- */
++/* Parámetros: los escribe la tarea de comunicación, los lee la de adquisición.
++ * Son palabras alineadas: la lectura y la escritura son atómicas en el M4.   */
++
++static volatile struct {
++    int32_t fs;             /* muestras/s, divisor de 1000 (tick de 1 ms)  */
++    int32_t ruido;          /* desviación típica del ruido, cuentas        */
++    int32_t seno_amp;       /* amplitud del seno, cuentas                  */
++    int32_t seno_mhz;       /* frecuencia del seno, milihercios            */
++    int32_t sismo_amp;      /* amplitud de la fase S de un sismo, cuentas  */
++    int32_t automatico;     /* 1: sismos espontáneos cada 40–100 s         */
++    int32_t umbral_on;      /* STA/LTA ×10 para disparar                   */
++    int32_t umbral_off;     /* STA/LTA ×10 para terminar                   */
++    int32_t transmitir;     /* 1: enviar bloques y eventos a Linux         */
++    int32_t sismo_pedido;   /* >0: inyectar un sismo ya, con esta amplitud */
++    int32_t fuente;         /* FUENTE_SINT o FUENTE_ADC                    */
++    int32_t adc_r0, adc_r1; /* registros 0 y 1 del ADS1220                 */
++    int32_t adc_sps;        /* muestras/s nominales del ADS1220            */
++    int32_t adc_gen;        /* sube en cada cambio: la adquisición reconfigura */
++} par = {
++    .fs = 100, .ruido = 20, .seno_amp = 0, .seno_mhz = 200,
++    .sismo_amp = 3000, .automatico = 1,
++    .umbral_on = 30, .umbral_off = 15,
++    .transmitir = 0, .sismo_pedido = 0,
++    .fuente = 0, .adc_r0 = 0xEE, .adc_r1 = 0x44, .adc_sps = 90, .adc_gen = 0,
++};
++enum { FUENTE_SINT = 0, FUENTE_ADC = 1 };
++
++/* Estadísticas: las escribe la adquisición, las lee la comunicación. */
++static volatile uint32_t est_muestras, est_eventos, est_perdidos, est_sismos;
++static volatile uint32_t est_carga_ppm;     /* carga de la adquisición, ppm  */
++static volatile uint32_t est_peor_us;       /* peor tiempo de una muestra    */
++static volatile uint32_t est_jitter_us;     /* peor desvío del periodo, 1 s  */
++static volatile uint32_t est_evento_activo;
++static volatile int32_t  est_fs;            /* muestras/s de la fuente activa */
++static volatile int32_t  est_fuente;        /* fuente activa de verdad        */
++static volatile uint32_t est_adc_saltos;    /* datos del ADC no leídos a tiempo */
++static volatile int32_t  est_adc_err;       /* 0, o el error de la última toma */
++
++/* ------------------------------------------------------------------------- */
++/* Mensajes de la adquisición a la comunicación.                              */
++
++enum { M_BLOQUE = 1, M_EVENTO_INI, M_EVENTO_FIN };
++
++enum { F_EVENTO = 1, F_CALENTANDO = 2 };   /* bits de msg_t.flags */
++
++typedef struct {
++    uint8_t  tipo;
++    uint8_t  n;
++    uint16_t fs;
++    uint16_t seq;                   /* bloques: numerados al crearse,
++                                       así un salto delata los perdidos */
++    uint8_t  flags;
++    uint8_t  libre;
++    uint32_t muestra;               /* índice de la primera muestra        */
++    int32_t  v[BLOQUE_MAX];         /* E: v0=ratio×100; F: v0=dur, v1=pico */
++} msg_t;
++
++static QueueHandle_t cola;
++
++#ifndef PRUEBA_HOST
++/* ------------------------------------------------------------------------- */
++/* LED                                                                        */
++
++static void led(int encendido)
++{
++    GPIO_WritePinOutput(BOARD_GPIO_LED_CONFIG->base, BOARD_GPIO_LED_CONFIG->pin,
++                        encendido ? gpioPinSet : gpioPinClear);
++}
++
++static void led_init(void)
++{
++    gpio_init_config_t cfg = {
++        .pin           = BOARD_GPIO_LED_CONFIG->pin,
++        .direction     = gpioDigitalOutput,
++        .interruptMode = gpioNoIntmode,
++    };
++    GPIO_Init(BOARD_GPIO_LED_CONFIG->base, &cfg);
++    led(0);
++}
++
++/* Fallo irrecuperable: el LED parpadea rápido (~10 Hz) para siempre. Linux lo
++ * ve leyendo /sys/class/gpio/gpio38/value varias veces.                     */
++static void __attribute__((noreturn)) fallo(const char *por_que)
++{
++    volatile uint32_t i;
++    int s = 0;
++    PRINTF("\r\nFALLO: %s\r\n", por_que);
++    taskDISABLE_INTERRUPTS();
++    for (;;) {
++        led(s ^= 1);
++        for (i = 0; i < 2400000; i++) { }
++    }
++}
++
++void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
++{
++    (void)xTask;
++    (void)pcTaskName;
++    fallo("desbordamiento de pila");
++}
++
++void vApplicationMallocFailedHook(void)
++{
++    fallo("sin memoria");
++}
++
++/* El BSP compila con -D__NDEBUG (no NDEBUG): los assert() de los drivers siguen
++ * activos. El __assert_func de newlib arrastra fprintf, vfprintf y malloc
++ * (~4 KB de los 32 KB de TCM). Este lo sustituye y además se ve en el LED. */
++void __assert_func(const char *fichero, int linea, const char *func, const char *expr)
++{
++    (void)fichero; (void)linea; (void)func; (void)expr;
++    fallo("assert");
++}
++
++/* ------------------------------------------------------------------------- */
++/* Contador de ciclos del núcleo (DWT): carga y jitter, sin temporizadores    */
++/* periféricos (Linux apaga el reloj del GPT3).                               */
++
++static void ciclos_init(void)
++{
++    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
++    DWT->CYCCNT = 0;
++    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
++}
++
++#define CICLOS_POR_US   (configCPU_CLOCK_HZ / 1000000u)
++#endif /* !PRUEBA_HOST */
++
++/* ------------------------------------------------------------------------- */
++/* Generador de señal                                                         */
++
++static uint32_t semilla = 2463534242u;
++
++static uint32_t aleatorio(void)                 /* xorshift32 */
++{
++    semilla ^= semilla << 13;
++    semilla ^= semilla >> 17;
++    semilla ^= semilla << 5;
++    return semilla;
++}
++
++static float uniforme(void)                     /* [0, 1) */
++{
++    return (aleatorio() >> 8) * (1.0f / 16777216.0f);
++}
++
++static float gauss(void)                        /* media 0, desviación 1 (aprox.) */
++{
++    return (uniforme() + uniforme() + uniforme() + uniforme() - 2.0f) * 1.7320508f;
++}
++
++/* Envolvente de una fase: sube con constante r y decae con constante d (s). */
++static float envolvente(float t, float r, float d)
++{
++    if (t <= 0.0f) return 0.0f;
++    return (1.0f - expf(-t / r)) * expf(-t / d);
++}
++
++/* Seno propio: el sinf de libm trae la reducción de argumento de precisión
++ * completa (~2,4 KB). Error < 1e-4, de sobra para una señal sintética. */
++static float seno(float x)
++{
++    float x2;
++    x -= PI2 * (float)(int32_t)(x * (1.0f / PI2));      /* (-2π, 2π) */
++    if (x >  3.14159265f) x -= PI2;
++    if (x < -3.14159265f) x += PI2;                     /* [-π, π]  */
++    if (x >  1.57079633f) x =  3.14159265f - x;
++    if (x < -1.57079633f) x = -3.14159265f - x;         /* [-π/2, π/2] */
++    x2 = x * x;
++    return x * (1.0f - x2 / 6.0f * (1.0f - x2 / 20.0f * (1.0f - x2 / 42.0f)));
++}
++
++static float limita_f(float f, int32_t fs)      /* evita el aliasing */
++{
++    float max = 0.4f * fs;
++    return f < max ? f : max;
++}
++
++static struct {
++    int   activo;
++    float t;            /* s desde la llegada de la P */
++    float ts;           /* retraso S–P, s: «distancia» del sismo */
++    float a;            /* amplitud de la S */
++    float fase;
++} sismo;
++
++static uint32_t proximo_auto;
++static float    fase_seno;      /* acumulador de fase del seno, [0, 2π) */   /* muestras hasta el siguiente sismo espontáneo */
++
++static void sismo_inicia(float a)
++{
++    sismo.activo = 1;
++    sismo.t      = 0.0f;
++    sismo.ts     = 1.5f + 3.5f * uniforme();
++    sismo.a      = a;
++    sismo.fase   = PI2 * uniforme();
++    est_sismos++;
++}
++
++static float genera(int32_t fs)
++{
++    float dt = 1.0f / fs;
++    float x  = par.ruido * gauss();
++
++    fase_seno += PI2 * (par.seno_mhz * 0.001f) * dt;
++    if (fase_seno >= PI2) fase_seno -= PI2;
++    if (par.seno_amp)
++        x += par.seno_amp * seno(fase_seno);
++
++    if (par.sismo_pedido > 0) {
++        sismo_inicia((float)par.sismo_pedido);
++        par.sismo_pedido = 0;
++    } else if (par.automatico && !sismo.activo) {
++        if (proximo_auto == 0) {
++            sismo_inicia(par.sismo_amp * (0.3f + 0.7f * uniforme()));
++            proximo_auto = (uint32_t)((40.0f + 60.0f * uniforme()) * fs);
++        } else {
++            proximo_auto--;
++        }
++    }
++
++    if (sismo.activo) {
++        float ts = sismo.t - sismo.ts;
++        float fp = limita_f(7.0f, fs), fsw = limita_f(2.5f, fs);
++        x += 0.35f * sismo.a * envolvente(sismo.t, 0.15f, 1.2f) * seno(PI2 * fp * sismo.t);
++        x += sismo.a * envolvente(ts, 0.3f, 3.0f) *
++             (0.7f * seno(PI2 * fsw * sismo.t + sismo.fase) + 0.3f * gauss());
++        sismo.t += dt;
++        if (sismo.t > sismo.ts + 20.0f)
++            sismo.activo = 0;
++    }
++    return x;
++}
++
++/* ------------------------------------------------------------------------- */
++/* Detector STA/LTA recursivo                                                 */
++
++static struct {
++    float    a_sta, a_lta, a_med;
++    float    sta, lta, media;
++    uint32_t desde;     /* muestras desde el último reinicio */
++    int      activo;
++    uint32_t ini;
++    uint32_t bajo;      /* muestras seguidas por debajo de umbral_off */
++    float    pico;
++} det;
++
++#define RETENCION_S 3   /* s bajo umbral_off antes de cerrar: P y S, un evento */
++
++static void detector_reinicia(int32_t fs)
++{
++    det.a_sta  = 1.0f / (0.5f * fs);    /* ventana corta: 0,5 s */
++    det.a_lta  = 1.0f / (10.0f * fs);   /* ventana larga: 10 s  */
++    det.a_med  = 1.0f / (30.0f * fs);   /* media: 30 s          */
++    det.sta    = det.lta = 0.0f;
++    det.desde  = 0;
++    if (det.activo) led(0);
++    det.activo = 0;
++    est_evento_activo = 0;
++}
++
++static void detecta(float x, uint32_t n, int32_t fs)
++{
++    float a, y, ratio;
++    msg_t m;
++
++    /* Al arrancar, la media y la LTA convergen como un promedio simple */
++    a = 1.0f / (det.desde + 1);
++    det.media += (x - det.media) * (a > det.a_med ? a : det.a_med);
++    y = fabsf(x - det.media);
++    det.sta += (y - det.sta) * (a > det.a_sta ? a : det.a_sta);
++    if (!det.activo)                    /* la LTA se congela durante el evento */
++        det.lta += (y - det.lta) * (a > det.a_lta ? a : det.a_lta);
++    det.desde++;
++
++    if (det.desde < (uint32_t)(10 * fs))  /* calentamiento: una ventana larga */
++        return;
++
++    ratio = det.sta / (det.lta + 1e-3f);
++
++    if (!det.activo) {
++        if (ratio * 10.0f >= par.umbral_on) {
++            det.activo = 1;
++            det.ini    = n;
++            det.pico   = y;
++            det.bajo   = 0;
++            est_eventos++;
++            est_evento_activo = 1;
++            led(1);
++            if (par.transmitir) {
++                m.tipo = M_EVENTO_INI; m.n = 1; m.fs = fs; m.muestra = n;
++                m.v[0] = (int32_t)(ratio * 100.0f);
++                if (xQueueSend(cola, &m, 0) != pdPASS) est_perdidos++;
++            }
++        }
++    } else {
++        if (y > det.pico) det.pico = y;
++        det.bajo = ratio * 10.0f < par.umbral_off ? det.bajo + 1 : 0;
++        if (det.bajo >= (uint32_t)(RETENCION_S * fs) || n - det.ini > (uint32_t)(120 * fs)) {
++            det.activo = 0;
++            est_evento_activo = 0;
++            led(0);
++            if (par.transmitir) {
++                m.tipo = M_EVENTO_FIN; m.n = 2; m.fs = fs; m.muestra = n;
++                m.v[0] = (int32_t)(n - det.ini);
++                m.v[1] = (int32_t)det.pico;
++                if (xQueueSend(cola, &m, 0) != pdPASS) est_perdidos++;
++            }
++        }
++    }
++}
++
++#ifndef PRUEBA_HOST
++/* ------------------------------------------------------------------------- */
++/* Tarea de adquisición: el trabajo continuo. Nunca espera a Linux.           */
++
++static int32_t muestras_por_bloque(int32_t fs)
++{
++    int32_t n = fs / 10;                /* ~10 mensajes por segundo */
++    if (n < 1) n = 1;
++    if (n > BLOQUE_MAX) n = BLOQUE_MAX;
++    return n;
++}
++
++static int     ads_toma(uint8_t r0, uint8_t r1);
++static void    ads_suelta(void);
++static int     ads_drdy_alto(void);
++static int32_t ads_lee(void);
++
++static void TareaAdq(void *pv)
++{
++    TickType_t prox;
++    int32_t    fs = 0, periodo = 1, nb = 1;
++    uint32_t   n = 0, c_ant = 0, c0, c1, dc;
++    uint32_t   acc = 0, peor = 0, jit = 0, seg = 0;
++    uint16_t   seq = 0;
++    msg_t      b;
++    float      x;
++    int32_t    fuente = FUENTE_SINT, gen = -1;
++    uint32_t   per_us = 0, t_lect = 0;
++    (void)pv;
++
++    b.n = 0;
++    prox = xTaskGetTickCount();
++
++    for (;;) {
++        /* Cambio de fuente o de configuración del ADC: solo aquí se toca el SPI */
++        if (par.adc_gen != gen || (fuente == FUENTE_SINT) != (par.fuente == FUENTE_SINT)) {
++            gen = par.adc_gen;
++            if (fuente == FUENTE_ADC) ads_suelta();
++            fuente = FUENTE_SINT;
++            if (par.fuente == FUENTE_ADC) {
++                int r = ads_toma((uint8_t)par.adc_r0, (uint8_t)par.adc_r1);
++                est_adc_err = r > 0 ? 0 : (r < 0 ? 2 : 1);
++                if (r > 0) fuente = FUENTE_ADC;
++                else { ads_suelta(); par.fuente = FUENTE_SINT; }
++            }
++            est_fuente = fuente;
++            fs = 0;                     /* fuerza el reinicio de abajo */
++        }
++        if ((fuente == FUENTE_ADC ? par.adc_sps : par.fs) != fs) {   /* arranque o cambio de fs */
++            fs      = fuente == FUENTE_ADC ? par.adc_sps : par.fs;
++            est_fs  = fs;
++            per_us  = 1000000u / (uint32_t)fs;
++            periodo = 1000 / fs;
++            nb      = muestras_por_bloque(fs);
++            detector_reinicia(fs);
++            proximo_auto = (uint32_t)(15 * fs);  /* tras el calentamiento */
++            b.n     = 0;
++            prox    = xTaskGetTickCount();
++            c_ant   = 0;
++        }
++
++        if (fuente == FUENTE_ADC) {
++            /* El ADS1220 marca el ritmo. Dato listo = DOUT/DRDY bajo (DRDYM),
++             * y que haya pasado medio periodo desde la última lectura: justo
++             * tras leer, DOUT aún puede mostrar el último bit del dato.     */
++            vTaskDelay(1);
++            if (ads_drdy_alto() ||
++                (t_lect && (DWT->CYCCNT - t_lect) / CICLOS_POR_US < per_us / 2))
++                continue;
++            c0 = DWT->CYCCNT;
++            x = (float)ads_lee();
++            if (t_lect) {               /* lectura tardía: se perdió algún dato */
++                uint32_t dt = (c0 - t_lect) / CICLOS_POR_US;
++                if (dt > per_us + per_us / 2) est_adc_saltos += (dt + per_us / 2) / per_us - 1;
++            }
++            t_lect = c0;
++        } else {
++            vTaskDelayUntil(&prox, periodo);
++            c0 = DWT->CYCCNT;
++            t_lect = 0;
++            x = genera(fs);
++        }
++
++        /* Jitter: desvío entre muestras consecutivas y el periodo nominal.
++         * Con el ADC mide la latencia del sondeo, no el muestreo (que es del ADC). */
++        if (c_ant) {
++            int32_t d = (int32_t)(c0 - c_ant) - (int32_t)(per_us * CICLOS_POR_US);
++            if (d < 0) d = -d;
++            if ((uint32_t)d > jit) jit = (uint32_t)d;
++        }
++        c_ant = c0;
++
++        detecta(x, n, fs);
++
++        if (par.transmitir) {
++            if (b.n == 0) b.muestra = n;
++            b.v[b.n++] = (int32_t)(x >= 0.0f ? x + 0.5f : x - 0.5f);
++            if (b.n >= nb) {
++                b.tipo  = M_BLOQUE;
++                b.fs    = (uint16_t)fs;
++                b.seq   = seq++;
++                b.flags = (uint8_t)((det.activo ? F_EVENTO : 0) |
++                                    (det.desde < (uint32_t)(10 * fs) ? F_CALENTANDO : 0));
++                if (xQueueSend(cola, &b, 0) != pdPASS) est_perdidos++;
++                b.n = 0;
++            }
++        } else {
++            b.n = 0;
++        }
++
++        n++;
++        est_muestras = n;
++
++        c1 = DWT->CYCCNT;
++        dc = c1 - c0;
++        acc += dc;
++        if (dc > peor) peor = dc;
++
++        if (++seg >= (uint32_t)fs) {    /* cada segundo */
++            est_carga_ppm = acc / (configCPU_CLOCK_HZ / 1000000u); /* sin división de 64 bits */
++            est_peor_us   = peor / CICLOS_POR_US;
++            est_jitter_us = jit / CICLOS_POR_US;
++            acc = peor = jit = seg = 0;
++        }
++    }
++}
++
++/* ------------------------------------------------------------------------- */
++/* Formato de texto, sin printf (newlib-nano + malloc: mejor no).            */
++
++static char *pon_txt(char *p, const char *s)
++{
++    while (*s) *p++ = *s++;
++    return p;
++}
++
++static char *pon_int(char *p, int32_t v)
++{
++    char t[11];
++    int i = 0;
++    uint32_t u = v < 0 ? (uint32_t)(-(v + 1)) + 1u : (uint32_t)v;
++    if (v < 0) *p++ = '-';
++    do { t[i++] = (char)('0' + u % 10u); u /= 10u; } while (u);
++    while (i) *p++ = t[--i];
++    return p;
++}
++
++static char *pon_par(char *p, const char *clave, int32_t v)
++{
++    *p++ = ' ';
++    p = pon_txt(p, clave);
++    *p++ = '=';
++    return pon_int(p, v);
++}
++
++/* ------------------------------------------------------------------------- */
++/* ECSPI3 en el M4 (etapa 2). Requisito: Linux ha desligado spi_imx
++ *   echo 30840000.spi > /sys/bus/platform/drivers/spi_imx/unbind
++ * Tres decisiones, aprendidas del ejemplo de la placa VAL y del GPT3:
++ *  - RDC COMPARTIDO (0xFF), nunca exclusivo: si Linux vuelve a ligar spi_imx,
++ *    no debe encontrarse registros prohibidos.
++ *  - El mux del reloj NO se cambia (Linux lo dejó en 240 MHz/4 = 60 MHz): se lee
++ *    y se calcula. get_ecspi_clock_freq() del BSP pico solo sabe de ECSPI1/2.
++ *  - El M4 enciende él mismo el target root y la puerta CCGR de todos los
++ *    dominios: sin driver, Linux no los volverá a tocar.                    */
++
++#define SPI_BAUD    1000000u
++
++static uint32_t spi_hz, spi_baud, spi_mux;
++
++/* Linux (clk-imx7d.c) deja ECSPI3 en «pll_sys_main_240m_clk» (mux 1) / 4 = 60 MHz.
++ * La PLL del sistema del i.MX7 es fija a 480 MHz.                          */
++static uint32_t ecspi3_reloj(void)
++{
++    uint32_t pre, post, hz;
++    spi_mux = CCM_GetRootMux(CCM, ccmRootEcspi3);
++    CCM_GetRootDivider(CCM, ccmRootEcspi3, &pre, &post);
++    switch (spi_mux) {
++    case ccmRootmuxEcspiOsc24m:     hz =  24000000u; break;
++    case ccmRootmuxEcspiSysPllDiv2: hz = 240000000u; break;
++    case ccmRootmuxEcspiSysPllDiv4: hz = 120000000u; break;
++    case ccmRootmuxEcspiSysPllDiv1: hz = 480000000u; break;
++    case ccmRootmuxEcspiSysPllPfd4: hz = CCM_ANALOG_GetPfdFreq(CCM_ANALOG, ccmAnalogPfd4Frac); break;
++    default: return 0;
++    }
++    return hz / (pre + 1) / (post + 1);
++}
++
++static int ecspi3_toma(void)
++{
++    ecspi_init_config_t c;
++    RDC_SetPdapAccess(RDC, rdcPdapEcspi3, 0xFF, false, false);
++    CCM_EnableRoot(CCM, ccmRootEcspi3);
++    CCM_ControlGate(CCM, ccmCcgrGateEcspi3, ccmClockNeededAll);
++    spi_hz = ecspi3_reloj();
++    if (!spi_hz) return 0;
++    memset(&c, 0, sizeof(c));
++    c.clockRate     = spi_hz;
++    c.baudRate      = SPI_BAUD;
++    c.channelSelect = ecspiSelectChannel0;
++    c.mode          = ecspiMasterMode;
++    c.burstLength   = 7;                            /* 8 bits */
++    c.clockPhase    = ecspiClockPhaseSecondEdge;    /* modo SPI 1: el del ADS1220 */
++    c.clockPolarity = ecspiClockPolarityActiveHigh;
++    c.ecspiAutoStart = false;
++    ECSPI_Init(ECSPI3, &c);
++    spi_baud = ECSPI_SetBaudRate(ECSPI3, spi_hz, SPI_BAUD);
++    while (ECSPI_GetRxfifoCounter(ECSPI3)) (void)ECSPI_ReceiveData(ECSPI3);
++    return 1;
++}
++
++static int ecspi3_byte(uint8_t sale, uint8_t *entra)
++{
++    uint32_t t0 = DWT->CYCCNT;
++    ECSPI_SendData(ECSPI3, sale);
++    ECSPI_StartBurst(ECSPI3);
++    while (!ECSPI_GetStatusFlag(ECSPI3, ecspiFlagRxfifoReady))
++        if (DWT->CYCCNT - t0 > 1000u * CICLOS_POR_US) return 0;   /* 1 ms */
++    *entra = (uint8_t)ECSPI_ReceiveData(ECSPI3);
++    return 1;
++}
++
++/* Lazo INTERNO (TESTREG.LBC): TX -> RX dentro del ECSPI, sin tocar las patillas.
++ * Prueba que el M4 es dueño del periférico: reloj, RDC y registros.        */
++static char *spi_lazo(char *p)
++{
++    uint32_t i, bien = 0, primer_malo = 0xFFFFFFFFu, t0, us;
++    uint8_t e, x;
++    if (!ecspi3_toma()) {
++        p = pon_txt(p, "ERR spi reloj desconocido");
++        return pon_par(p, "mux", (int32_t)spi_mux);
++    }
++    ECSPI_TESTREG_REG(ECSPI3) |= ECSPI_TESTREG_LBC_MASK;
++    t0 = DWT->CYCCNT;
++    for (i = 0; i < 256; i++) {
++        x = (uint8_t)(i * 37u + 11u);
++        if (!ecspi3_byte(x, &e)) break;
++        if (e == x) bien++; else if (primer_malo == 0xFFFFFFFFu) primer_malo = i;
++    }
++    us = (DWT->CYCCNT - t0) / CICLOS_POR_US;
++    ECSPI_TESTREG_REG(ECSPI3) &= ~ECSPI_TESTREG_LBC_MASK;
++    p = pon_txt(p, bien == 256 ? "OK spi lazo" : "ERR spi lazo");
++    p = pon_par(p, "bytes", (int32_t)i);
++    p = pon_par(p, "bien", (int32_t)bien);
++    p = pon_par(p, "mux", (int32_t)spi_mux);
++    p = pon_par(p, "reloj_hz", (int32_t)spi_hz);
++    p = pon_par(p, "baud", (int32_t)spi_baud);
++    p = pon_par(p, "us", (int32_t)us);
++    if (primer_malo != 0xFFFFFFFFu) p = pon_par(p, "primer_malo", (int32_t)primer_malo);
++    return p;
++}
++
++/* ------------------------------------------------------------------------- */
++/* ADS1220 (módulo CJMCU-1220) por ECSPI3 (etapa 2, paso 4).
++ * Cableado en J8: MOSI 19, MISO 21, SCLK 23, CS 26, 3,3 V en 1, CLK a DGND.
++ *
++ * SIN PIN DRDY: los GPIO de J8 probados (36 y 11) los empuja la placa base
++ * hacia fuera y no dejan entrar la señal (medido 2026-11-13). Se usa el modo
++ * DRDYM del ADS1220: con CS bajo, DOUT/DRDY (= MISO) baja cuando hay dato.
++ * Para verlo, el M4 conmuta el pad de MISO (I2C1_SCL) a GPIO4_IO08 un instante,
++ * lee PSR y lo devuelve a ECSPI3_MISO (ALT3).
++ *
++ * CS = GPIO4_IO11 (pad I2C2_SDA, el cs-gpios de Linux). GPIO4 lo usa también
++ * Linux (reguladores, wlreg_on, shutdown): solo se tocan los bits 11 de DR/GDIR
++ * y el 8 de GDIR, y se LEE PSR. Nunca IMR/ISR: son del driver de Linux.     */
++
++#define ADS_RESET   0x06u
++#define ADS_START   0x08u
++#define ADS_RDATA   0x10u
++#define ADS_RREG(r, n)  (0x20u | ((r) << 2) | ((n) - 1u))
++#define ADS_WREG(r, n)  (0x40u | ((r) << 2) | ((n) - 1u))
++#define CS_BIT          11u
++#define MISO_BIT        8u
++#define MUX_ALT3_SPI    3u
++#define MUX_ALT5_GPIO   5u
++
++static void espera_us(uint32_t us)
++{
++    uint32_t t0 = DWT->CYCCNT;
++    while (DWT->CYCCNT - t0 < us * CICLOS_POR_US) { }
++}
++
++static void ads_cs(int bajo)
++{
++    if (bajo) GPIO_DR_REG(GPIO4) &= ~(1u << CS_BIT);
++    else      GPIO_DR_REG(GPIO4) |=  (1u << CS_BIT);
++}
++
++/* Nivel de DOUT/DRDY: pad de MISO a GPIO, leer, y de vuelta a ECSPI3. */
++static int ads_drdy_alto(void)
++{
++    int v;
++    IOMUXC_SW_MUX_CTL_PAD_I2C1_SCL = MUX_ALT5_GPIO;
++    espera_us(1);
++    v = (int)((GPIO_PSR_REG(GPIO4) >> MISO_BIT) & 1u);
++    IOMUXC_SW_MUX_CTL_PAD_I2C1_SCL = MUX_ALT3_SPI;
++    return v;
++}
++
++static int ads_xfer(const uint8_t *sale, uint8_t *entra, uint32_t n)
++{
++    uint32_t i; uint8_t e;
++    for (i = 0; i < n; i++) {
++        if (!ecspi3_byte(sale[i], &e)) return 0;
++        if (entra) entra[i] = e;
++    }
++    return 1;
++}
++
++static uint8_t ads_regs[4];
++
++/* Toma el ADS1220: ECSPI3, CS bajo fijo, RESET y configuración.
++ * r0, r1: MUX/PGA y DR/MODE/CM/TS; r3 lleva siempre DRDYM = 1.          */
++static int ads_toma(uint8_t r0, uint8_t r1)
++{
++    uint8_t w[5], l[5] = { 0 };
++    if (!ecspi3_toma()) return 0;
++    RDC_SetPdapAccess(RDC, rdcPdapGpio4, 0xFF, false, false);
++    GPIO_DR_REG(GPIO4)   |=  (1u << CS_BIT);    /* CS alto antes de hacerlo salida */
++    GPIO_GDIR_REG(GPIO4) |=  (1u << CS_BIT);
++    GPIO_GDIR_REG(GPIO4) &= ~(1u << MISO_BIT);  /* GPIO4_IO08: entrada */
++    ads_cs(1);
++    espera_us(5);
++    w[0] = ADS_RESET;
++    if (!ads_xfer(w, 0, 1)) return 0;
++    espera_us(100);                             /* 50 µs + 32 tCLK */
++    w[0] = ADS_WREG(0, 4); w[1] = r0; w[2] = r1; w[3] = 0x00; w[4] = 0x02;
++    if (!ads_xfer(w, 0, 5)) return 0;
++    w[0] = ADS_RREG(0, 4); w[1] = w[2] = w[3] = w[4] = 0;
++    if (!ads_xfer(w, l, 5)) return 0;
++    memcpy(ads_regs, l + 1, 4);
++    if (l[1] != r0 || l[2] != r1 || l[3] != 0x00 || l[4] != 0x02) return -1;
++    w[0] = ADS_START;
++    return ads_xfer(w, 0, 1) ? 1 : 0;
++}
++
++static int32_t ads_lee(void)
++{
++    uint8_t w[4] = { ADS_RDATA, 0, 0, 0 }, l[4] = { 0 };
++    int32_t c;
++    ads_xfer(w, l, 4);
++    c = (int32_t)(((uint32_t)l[1] << 16) | ((uint32_t)l[2] << 8) | l[3]);
++    return (c & 0x800000) ? c - (1 << 24) : c;
++}
++
++/* Suelta: ADS1220 en RESET (sin DRDYM ni conversión), CS alto, pad de MISO
++ * en ECSPI3 y el módulo apagado. Así lo encuentra Linux al volver a ligar.  */
++static void ads_suelta(void)
++{
++    uint8_t w = ADS_RESET;
++    if (ECSPI_CONREG_REG(ECSPI3) & ECSPI_CONREG_EN_MASK) (void)ads_xfer(&w, 0, 1);
++    ads_cs(0);
++    IOMUXC_SW_MUX_CTL_PAD_I2C1_SCL = MUX_ALT3_SPI;
++    ECSPI_CONREG_REG(ECSPI3) = 0;
++}
++
++/* «adc prueba»: 1 s de conversión continua a 20 SPS, temperatura (TS = 1).
++ * Vigila DOUT/DRDY cada 1 ms; lee el dato en cada flanco de bajada.         */
++static char *adc_prueba(char *p)
++{
++    uint32_t t_fin, t_ult = 0, per_min = 0xFFFFFFFFu, per_max = 0;
++    uint32_t datos = 0, altos = 0, bajos = 0, alto_tras_leer = 0, i;
++    int r, ant = 1, v;
++    int32_t primero = 0, ultimo = 0;
++    TickType_t t0;
++
++    r = ads_toma(0x00, 0x06);                   /* r1: 20 SPS, continuo, TS */
++    if (r <= 0) {
++        p = pon_txt(p, r < 0 ? "ERR adc registros" : "ERR adc spi");
++        for (i = 0; i < 4; i++) p = pon_par(p, i == 0 ? "r0" : i == 1 ? "r1" : i == 2 ? "r2" : "r3", ads_regs[i]);
++        ads_suelta();
++        return p;
++    }
++    t0 = xTaskGetTickCount();
++    t_fin = 1000;
++    while ((xTaskGetTickCount() - t0) < pdMS_TO_TICKS(t_fin)) {
++        v = ads_drdy_alto();
++        if (v) altos++; else bajos++;
++        if (!v && ant) {                        /* flanco de bajada: dato nuevo */
++            uint32_t ahora = DWT->CYCCNT;
++            ultimo = ads_lee();
++            if (!datos) primero = ultimo;
++            if (datos) {
++                uint32_t per = (ahora - t_ult) / CICLOS_POR_US;
++                if (per < per_min) per_min = per;
++                if (per > per_max) per_max = per;
++            }
++            t_ult = ahora;
++            datos++;
++            v = ads_drdy_alto();
++            if (v) alto_tras_leer++;
++        }
++        ant = v;
++        vTaskDelay(1);
++    }
++    ads_suelta();
++    p = pon_txt(p, (datos >= 15 && datos <= 25) ? "OK adc prueba" : "ERR adc prueba");
++    p = pon_par(p, "datos", (int32_t)datos);
++    p = pon_par(p, "alto_tras_leer", (int32_t)alto_tras_leer);
++    p = pon_par(p, "altos", (int32_t)altos);
++    p = pon_par(p, "bajos", (int32_t)bajos);
++    if (datos > 1) {
++        p = pon_par(p, "per_min_us", (int32_t)per_min);
++        p = pon_par(p, "per_max_us", (int32_t)per_max);
++    }
++    p = pon_par(p, "t_mC", (int32_t)((primero >> 10) * 3125 / 100));
++    p = pon_par(p, "t_fin_mC", (int32_t)((ultimo >> 10) * 3125 / 100));
++    return p;
++}
++
++/* ------------------------------------------------------------------------- */
++/* Tarea de comunicación: dueña única del canal RPMsg.                        */
++
++static struct rpmsg_channel *canal;
++static char tx[RPMSG_BUFFER_SIZE];
++static char rx[RPMSG_BUFFER_SIZE];   /* rpmsg_rtos_recv copia maxlen bytes */
++
++/* Linux puede hablarnos desde varios endpoints: el del tty (canal->dst) y,
++ * desde la etapa 1, el de /dev/rpmsgN. Se responde SIEMPRE a quien escribió
++ * (dst_resp); si no, la respuesta acaba en el tty.                          */
++static unsigned long dst_resp;      /* a quién va la respuesta en curso      */
++static unsigned long dst_bin;       /* endpoint suscrito al binario; 0: nadie */
++static TickType_t    ult_latido;
++
++static void envia(char *ini, char *fin)
++{
++    *fin++ = '\n';
++    if (rpmsg_rtos_send(canal->rp_ept, ini, (int)(fin - ini), dst_resp) != 0)
++        est_perdidos++;
++}
++
++/* Bloque binario, little-endian, 12 B de cabecera + n × int32:
++ *   0 u8 0xB1 (bloque, formato 1)   1 u8 n    2 u8 flags   3 u8 0
++ *   4 u16 fs   6 u16 seq   8 u32 índice de la primera muestra   12 i32 v[n]
++ * El primer byte no es ASCII: no se confunde con una línea de texto.        */
++#define BIN_BLOQUE  0xB1
++
++static void envia_bin(const msg_t *m)
++{
++    uint8_t *p = (uint8_t *)tx;
++    int len = 12 + 4 * m->n;
++    p[0] = BIN_BLOQUE; p[1] = m->n; p[2] = m->flags; p[3] = 0;
++    memcpy(p + 4, &m->fs, 2);
++    memcpy(p + 6, &m->seq, 2);
++    memcpy(p + 8, &m->muestra, 4);
++    memcpy(p + 12, m->v, 4u * m->n);
++    if (rpmsg_rtos_send(canal->rp_ept, p, len, dst_bin) != 0)
++        est_perdidos++;
++}
++
++static void envia_hola(void)
++{
++    char *p = pon_txt(tx, "H " NOMBRE " " VERSION);
++    p = pon_par(p, "fs", est_fs);
++    p = pon_txt(p, est_fuente == FUENTE_ADC ? " fuente=adc" : " fuente=sint");
++    envia(tx, p);
++}
++
++static void envia_estado(void)
++{
++    char *p = pon_txt(tx, "S");
++    p = pon_par(p, "fs", est_fs);
++    p = pon_txt(p, est_fuente == FUENTE_ADC ? " fuente=adc" : " fuente=sint");
++    p = pon_par(p, "adc_r0", par.adc_r0);
++    p = pon_par(p, "adc_r1", par.adc_r1);
++    p = pon_par(p, "adc_sps", par.adc_sps);
++    p = pon_par(p, "adc_saltos", (int32_t)est_adc_saltos);
++    p = pon_par(p, "adc_err", est_adc_err);
++    p = pon_par(p, "ruido", par.ruido);
++    p = pon_par(p, "seno", par.seno_amp);
++    p = pon_par(p, "seno_mhz", par.seno_mhz);
++    p = pon_par(p, "amp", par.sismo_amp);
++    p = pon_par(p, "auto", par.automatico);
++    p = pon_par(p, "umbral_on", par.umbral_on);
++    p = pon_par(p, "umbral_off", par.umbral_off);
++    p = pon_par(p, "tx", par.transmitir);
++    p = pon_par(p, "bin", (int32_t)dst_bin);
++    p = pon_par(p, "muestras", (int32_t)est_muestras);
++    p = pon_par(p, "sismos", (int32_t)est_sismos);
++    p = pon_par(p, "eventos", (int32_t)est_eventos);
++    p = pon_par(p, "evento", (int32_t)est_evento_activo);
++    p = pon_par(p, "perdidos", (int32_t)est_perdidos);
++    p = pon_par(p, "carga_ppm", (int32_t)est_carga_ppm);
++    p = pon_par(p, "peor_us", (int32_t)est_peor_us);
++    p = pon_par(p, "jitter_us", (int32_t)est_jitter_us);
++    p = pon_par(p, "heap", (int32_t)xPortGetFreeHeapSize());
++    envia(tx, p);
++}
++
++static void envia_msg(const msg_t *m)
++{
++    char *p = tx;
++    int i;
++    switch (m->tipo) {
++    case M_BLOQUE:
++        if (dst_bin) { envia_bin(m); return; }
++        p = pon_txt(p, "D ");
++        p = pon_int(p, (int32_t)m->muestra);
++        *p++ = ' ';
++        p = pon_int(p, m->fs);
++        for (i = 0; i < m->n; i++) { *p++ = ' '; p = pon_int(p, m->v[i]); }
++        break;
++    case M_EVENTO_INI:
++        p = pon_txt(p, "E ");
++        p = pon_int(p, (int32_t)m->muestra);
++        *p++ = ' ';
++        p = pon_int(p, m->v[0]);
++        break;
++    case M_EVENTO_FIN:
++        p = pon_txt(p, "F ");
++        p = pon_int(p, (int32_t)m->muestra);
++        *p++ = ' ';
++        p = pon_int(p, m->v[0]);
++        *p++ = ' ';
++        p = pon_int(p, m->v[1]);
++        break;
++    default:
++        return;
++    }
++    envia(tx, p);
++}
++
++static void responde(const char *pref, const char *orden)
++{
++    char *p = pon_txt(tx, pref);
++    int i;
++    *p++ = ' ';
++    for (i = 0; orden[i] && i < 60; i++) *p++ = orden[i];
++    envia(tx, p);
++}
++
++/* Lee un entero tras los espacios; devuelve 0 si no hay. */
++static int lee_int(const char **s, int32_t *v)
++{
++    const char *p = *s;
++    int neg = 0, hay = 0;
++    int32_t r = 0;
++    while (*p == ' ' || *p == '\t') p++;
++    if (*p == '-') { neg = 1; p++; }
++    while (*p >= '0' && *p <= '9') { r = r * 10 + (*p++ - '0'); hay = 1; }
++    if (!hay) return 0;
++    *v = neg ? -r : r;
++    *s = p;
++    return 1;
++}
++
++static int empieza(const char *s, const char *pal, const char **resto)
++{
++    size_t n = strlen(pal);
++    if (strncmp(s, pal, n) != 0) return 0;
++    if (s[n] != '\0' && s[n] != ' ') return 0;
++    *resto = s + n;
++    return 1;
++}
++
++/* «fuente sint»
++ * «fuente adc [corto|ain01|avdd|temp] [pga 1..128] [sps 20|45|90|175|330|600]»
++ * Lo omitido conserva el valor anterior. Requiere spi_imx DESLIGADO en Linux. */
++static int lee_palabra(const char **s, const char *pal)
++{
++    const char *r;
++    while (**s == ' ') (*s)++;
++    if (!empieza(*s, pal, &r)) return 0;
++    *s = r;
++    return 1;
++}
++
++static void fuente_orden(const char *s, const char *r)
++{
++    static const int32_t tasas[] = { 20, 45, 90, 175, 330, 600 };
++    int32_t mux = par.adc_r0 >> 4, g, pga, sps, ts = (par.adc_r1 >> 1) & 1, dr, i, byp;
++
++    if (lee_palabra(&r, "sint")) {
++        par.fuente = FUENTE_SINT; par.adc_gen++;
++        responde("OK", s); return;
++    }
++    if (!lee_palabra(&r, "adc")) { responde("ERR", s); return; }
++    if      (lee_palabra(&r, "corto")) { mux = 0xE; ts = 0; }
++    else if (lee_palabra(&r, "ain01")) { mux = 0x0; ts = 0; }
++    else if (lee_palabra(&r, "avdd"))  { mux = 0xD; ts = 0; }
++    else if (lee_palabra(&r, "temp"))  { mux = 0x0; ts = 1; }
++    pga = 1 << ((par.adc_r0 >> 1) & 7);
++    sps = par.adc_sps;
++    if (lee_int(&r, &pga) && lee_int(&r, &sps)) { }
++    for (g = 0; g < 8 && (1 << g) != pga; g++) { }
++    for (dr = 0, i = 0; i < 6; i++) if (tasas[i] == sps) { dr = i; break; }
++    if (g == 8 || i == 6) { responde("ERR pga 1..128 y sps 20|45|90|175|330|600;", s); return; }
++    byp = 0;
++    if (mux == 0xD || ts) { g = 0; byp = 1; }   /* monitores y temperatura: PGA fuera */
++    par.adc_r0  = (mux << 4) | (g << 1) | byp;
++    par.adc_r1  = (dr << 5) | (1 << 2) | (ts << 1);   /* modo normal, continuo */
++    par.adc_sps = sps;
++    par.fuente  = FUENTE_ADC;
++    par.adc_gen++;
++    responde("OK", s);
++}
++
++static void orden(const char *s)
++{
++    const char *r;
++    int32_t a, b;
++
++    if (empieza(s, "hola", &r) || strncmp(s, "hello", 5) == 0) {
++        envia_hola();                   /* «hello world!» lo envía Linux al cargar */
++        return;
++    }
++    if (empieza(s, "estado", &r)) { envia_estado(); return; }
++    if (empieza(s, "fuente", &r)) { fuente_orden(s, r); return; }
++    /* Las pruebas usan el SPI desde esta tarea: solo con la fuente sintética */
++    if ((empieza(s, "spi", &r) || empieza(s, "adc", &r)) &&
++        (par.fuente == FUENTE_ADC || est_fuente == FUENTE_ADC)) {
++        responde("ERR ocupado: fuente adc;", s); return;
++    }
++    if (empieza(s, "spi lazo", &r)) { envia(tx, spi_lazo(tx)); return; }
++    if (empieza(s, "adc prueba", &r)) { envia(tx, adc_prueba(tx)); return; }
++    if (empieza(s, "spi suelta", &r)) {     /* ADS1220 en reset, CS alto, módulo apagado */
++        ads_suelta();
++        responde("OK", s); return;
++    }
++    if (empieza(s, "bin", &r)) {
++        if (lee_int(&r, &a) && a == 0) {        /* «bin 0»: baja del binario */
++            dst_bin = 0; responde("OK", s);
++        } else {                                /* «bin»: alta y latido, en silencio */
++            dst_bin = dst_resp; ult_latido = xTaskGetTickCount();
++        }
++        return;
++    }
++    if (empieza(s, "inicia", &r)) { par.transmitir = 1; responde("OK", s); return; }
++    if (empieza(s, "pausa", &r))  { par.transmitir = 0; responde("OK", s); return; }
++    if (empieza(s, "fs", &r) && lee_int(&r, &a) &&
++        a >= 10 && a <= 250 && 1000 % a == 0) {
++        par.fs = a; responde("OK", s); return;
++    }
++    if (empieza(s, "ruido", &r) && lee_int(&r, &a) && a >= 0 && a <= 1000000) {
++        par.ruido = a; responde("OK", s); return;
++    }
++    if (empieza(s, "seno", &r) && lee_int(&r, &a) && lee_int(&r, &b) &&
++        a >= 0 && a <= 1000000 && b >= 1 && b <= 125000) {
++        par.seno_amp = a; par.seno_mhz = b; responde("OK", s); return;
++    }
++    if (empieza(s, "amp", &r) && lee_int(&r, &a) && a > 0 && a <= 1000000) {
++        par.sismo_amp = a; responde("OK", s); return;
++    }
++    if (empieza(s, "sismo", &r)) {
++        if (!lee_int(&r, &a)) a = par.sismo_amp;
++        if (a > 0 && a <= 1000000) { par.sismo_pedido = a; responde("OK", s); return; }
++    }
++    if (empieza(s, "auto", &r) && lee_int(&r, &a) && (a == 0 || a == 1)) {
++        par.automatico = a; responde("OK", s); return;
++    }
++    if (empieza(s, "umbral", &r) && lee_int(&r, &a) && lee_int(&r, &b) &&
++        a >= 11 && a <= 500 && b >= 10 && b < a) {
++        par.umbral_on = a; par.umbral_off = b; responde("OK", s); return;
++    }
++    responde("ERR", s);
++}
++
++/* Un mensaje RPMsg puede traer varias líneas; también se acepta sin '\n'. */
++static void procesa(char *buf, int len)
++{
++    char *ini = buf, *p;
++    buf[len] = '\0';
++    for (p = buf; ; p++) {
++        if (*p == '\n' || *p == '\r' || *p == '\0') {
++            char fin = *p;
++            *p = '\0';
++            while (*ini == ' ') ini++;
++            if (*ini) orden(ini);
++            if (fin == '\0') break;
++            ini = p + 1;
++        }
++    }
++}
++
++static void TareaCom(void *pv)
++{
++    struct remote_device *rdev = NULL;
++    TickType_t ult_estado;
++    unsigned long src;
++    msg_t m;
++    int len, r;
++    (void)pv;
++
++    PRINTF("\r\n" NOMBRE " " VERSION ": esperando a Linux (RPMsg)...\r\n");
++    r = rpmsg_rtos_init(0 /*REMOTE_CPU_ID*/, &rdev, RPMSG_MASTER, &canal);
++    if (r != 0) fallo("rpmsg_rtos_init");
++    PRINTF("Canal RPMsg [%d ---> %d]\r\n", canal->src, canal->dst);
++    dst_resp = canal->dst;
++
++    ult_estado = xTaskGetTickCount();
++    for (;;) {
++        /* 1. Lo que manda la adquisición (espera corta) */
++        if (xQueueReceive(cola, &m, pdMS_TO_TICKS(20)) == pdPASS) {
++            envia_msg(&m);
++            while (xQueueReceive(cola, &m, 0) == pdPASS)
++                envia_msg(&m);
++        }
++
++        /* 2. Órdenes de Linux, sin bloquear */
++        while (rpmsg_rtos_recv(canal->rp_ept, rx, &len, sizeof(rx) - 1, &src, 0) == RPMSG_SUCCESS) {
++            dst_resp = src;
++            if (len > 0 && len < (int)sizeof(rx)) procesa(rx, len);
++            dst_resp = canal->dst;
++        }
++
++        /* Sin latido, el endpoint pudo desaparecer (visor muerto): enviarle
++         * más bloques llenaría el log de «msg received with no recipient».  */
++        if (dst_bin && xTaskGetTickCount() - ult_latido > pdMS_TO_TICKS(LATIDO_MS))
++            dst_bin = 0;
++
++        /* 3. Estado una vez por segundo mientras se transmite */
++        if (par.transmitir && xTaskGetTickCount() - ult_estado >= pdMS_TO_TICKS(1000)) {
++            ult_estado = xTaskGetTickCount();
++            envia_estado();
++        }
++    }
++}
++
++/* ------------------------------------------------------------------------- */
++
++void BOARD_MU_HANDLER(void)
++{
++    rpmsg_handler();
++}
++
++int main(void)
++{
++    hardware_init();
++    led_init();
++    ciclos_init();
++
++    MU_Init(BOARD_MU_BASE_ADDR);
++    NVIC_SetPriority(BOARD_MU_IRQ_NUM, APP_MU_IRQ_PRIORITY);
++    NVIC_EnableIRQ(BOARD_MU_IRQ_NUM);
++
++    cola = xQueueCreate(COLA_LEN, sizeof(msg_t));
++    if (!cola) fallo("xQueueCreate");
++
++    /* La adquisición arranca ya, aunque Linux todavía no haya cargado nada */
++    xTaskCreate(TareaAdq, "adq", PILA_ADQ, NULL, PRIO_ADQ, NULL);
++    xTaskCreate(TareaCom, "com", PILA_COM, NULL, PRIO_COM, NULL);
++
++    vTaskStartScheduler();
++    for (;;) { }
++}
++#endif /* !PRUEBA_HOST */
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c
+new file mode 100644
+index 0000000..39e958b
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.c
+@@ -0,0 +1,53 @@
++/* Prueba en el PC del generador y del detector de instrumento.c.
++ *   cc -O2 -DPRUEBA_HOST -o /tmp/prueba prueba_host.c -lm && /tmp/prueba
++ * Comprueba: (1) sin sismos no hay falsos disparos; (2) con sismos
++ * automáticos, cada sismo genera un evento; (3) a 10, 100 y 250 SPS. */
++#include "instrumento.c"
++
++static int led_estado, cambios_led;
++static void led(int e) { if (e != led_estado) cambios_led++; led_estado = e; }
++static int ini_ev, fin_ev; static long dur_total; static float pico_max;
++static int xQueueSend(QueueHandle_t q, const void *pm, int espera)
++{
++    const msg_t *m = pm; (void)q; (void)espera;
++    if (m->tipo == M_EVENTO_INI) ini_ev++;
++    if (m->tipo == M_EVENTO_FIN) { fin_ev++; dur_total += m->v[0]; if (m->v[1] > pico_max) pico_max = m->v[1]; }
++    return pdPASS;
++}
++
++static float max_err_seno(void)
++{
++    float e = 0, x;
++    for (x = -200.0f; x < 200.0f; x += 0.001f) {
++        float d = fabsf(seno(x) - (float)sin(x));
++        if (d > e) e = d;
++    }
++    return e;
++}
++
++static int corre(int fs, int segundos, int automatico, int32_t ruido)
++{
++    uint32_t n, N = (uint32_t)fs * segundos;
++    memset(&det, 0, sizeof det); memset(&sismo, 0, sizeof sismo);
++    est_eventos = est_sismos = 0; ini_ev = fin_ev = 0; dur_total = 0; pico_max = 0;
++    par.fs = fs; par.automatico = automatico; par.ruido = ruido; par.transmitir = 1;
++    detector_reinicia(fs);
++    proximo_auto = 15 * fs;
++    for (n = 0; n < N; n++) detecta(genera(fs), n, fs);
++    printf("fs=%3d  %5d s  auto=%d ruido=%-4d  sismos=%-3u eventos=%-3u (ini %d, fin %d)  "
++           "dur media=%.1f s  pico=%.0f\n", fs, segundos, automatico, (int)ruido,
++           (unsigned)est_sismos, (unsigned)est_eventos, ini_ev, fin_ev,
++           fin_ev ? (double)dur_total / fin_ev / fs : 0.0, pico_max);
++    return 0;
++}
++
++int main(void)
++{
++    printf("error máximo de seno() en [-200, 200] rad: %.2e\n", max_err_seno());
++    corre(100, 3600, 0, 20);     /* una hora de ruido: falsos disparos */
++    corre(100, 3600, 1, 20);
++    corre(10,  3600, 1, 20);
++    corre(250, 3600, 1, 20);
++    corre(100, 3600, 1, 200);    /* ruido 10 veces mayor */
++    return 0;
++}
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.h b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.h
+new file mode 100644
+index 0000000..1a32815
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/prueba_host.h
+@@ -0,0 +1,6 @@
++/* Sustitutos mínimos para compilar generador y detector en el PC. */
++#include <stdio.h>
++typedef void *QueueHandle_t;
++#define pdPASS 1
++static void led(int encendido);
++static int xQueueSend(QueueHandle_t q, const void *m, int espera);
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/CMakeLists.txt b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/CMakeLists.txt
+new file mode 100644
+index 0000000..95b12e8
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/CMakeLists.txt
+@@ -0,0 +1,205 @@
++INCLUDE(CMakeForceCompiler)
++
++# CROSS COMPILER SETTING
++SET(CMAKE_SYSTEM_NAME Generic)
++CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
++
++# THE VERSION NUMBER
++SET (Tutorial_VERSION_MAJOR 1)
++SET (Tutorial_VERSION_MINOR 0)
++
++# ENABLE ASM
++ENABLE_LANGUAGE(ASM)
++
++SET(CMAKE_STATIC_LIBRARY_PREFIX)
++SET(CMAKE_STATIC_LIBRARY_SUFFIX)
++
++SET(CMAKE_EXECUTABLE_LIBRARY_PREFIX)
++SET(CMAKE_EXECUTABLE_LIBRARY_SUFFIX)
++
++
++# CURRENT DIRECTORY
++SET(ProjDirPath ${CMAKE_CURRENT_SOURCE_DIR})
++
++# DEBUG LINK FILE
++set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -T${ProjDirPath}/../../../../../platform/devices/MCIMX7D/linker/gcc/MCIMX7D_M4_tcm.ld  -static")
++
++# RELEASE LINK FILE
++set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -T${ProjDirPath}/../../../../../platform/devices/MCIMX7D/linker/gcc/MCIMX7D_M4_tcm.ld  -static")
++
++# DEBUG ASM FLAGS
++SET(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} -g  -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  -mthumb  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mapcs  -std=gnu99")
++
++# DEBUG C FLAGS
++SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g  -O0  -fno-strict-aliasing  -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  -mthumb  -MMD  -MP  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mapcs  -std=gnu99")
++
++# DEBUG LD FLAGS
++SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -g  -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  --specs=nano.specs  -lm  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -Os  -mthumb  -mapcs  -Xlinker --gc-sections  -Xlinker -static  -Xlinker -z  -Xlinker muldefs")
++
++# RELEASE ASM FLAGS
++SET(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  -mthumb  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mapcs  -std=gnu99")
++
++# RELEASE C FLAGS
++SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Os  -fno-strict-aliasing  -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  -mthumb  -MMD  -MP  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -mapcs  -std=gnu99")
++
++# RELEASE LD FLAGS
++SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -mcpu=cortex-m4  -mfloat-abi=hard  -mfpu=fpv4-sp-d16  --specs=nano.specs  -lm  -Wall  -fno-common  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -Os  -mthumb  -mapcs  -Xlinker --gc-sections  -Xlinker -static  -Xlinker -z  -Xlinker muldefs")
++
++# ASM MACRO
++SET(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG}  -D__DEBUG")
++
++# C MACRO
++SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -D__DEBUG")
++SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DCPU_MCIMX7D_M4")
++SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}  -D__NDEBUG")
++SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}  -DCPU_MCIMX7D_M4")
++
++# CXX MACRO
++
++# INCLUDE_DIRECTORIES
++IF(CMAKE_BUILD_TYPE MATCHES Debug)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/CMSIS/Include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices/MCIMX7D/include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices/MCIMX7D/startup)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/drivers/inc)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/utilities/inc)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/env/freertos)
++ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/CMSIS/Include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices/MCIMX7D/include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/devices/MCIMX7D/startup)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/drivers/inc)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../platform/utilities/inc)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/..)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4)
++    INCLUDE_DIRECTORIES(${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/env/freertos)
++ENDIF()
++
++# ADD_EXECUTABLE
++ADD_EXECUTABLE(instrumento
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h"
++    "${ProjDirPath}/../../../../../platform/devices/MCIMX7D/startup/gcc/startup_MCIMX7D_M4.S"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/portable/MemMang/heap_2.c"
++    "${ProjDirPath}/../FreeRTOSConfig.h"
++    "${ProjDirPath}/../instrumento.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/gpio_imx.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/ecspi.c"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/gpio_imx.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/ecspi.h"
++    "${ProjDirPath}/../../../gpio_pins.c"
++    "${ProjDirPath}/../../../gpio_pins.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_rtos.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4/platform.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4/rpmsg_platform_porting.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_ext.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/hil/hil.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/llist/llist.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/shm/sh_mem.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/config/config.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/env/env.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_core.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/virtio/virtio.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/virtio/virtio_ring.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/virtio/virtqueue.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/croutine.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/event_groups.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/FreeRTOS.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/list.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/mpu_wrappers.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/portable.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/projdefs.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/queue.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/semphr.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/StackMacros.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/task.h"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/include/timers.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/ccm_analog_imx7d.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/ccm_imx7d.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/lmem.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/rdc.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/rdc_defs_imx7d.h"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/wdog_imx.h"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_rtos.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4/platform.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/imx7d_m4/platform_info.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/hil/hil.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/llist/llist.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/common/shm/sh_mem.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/config/config.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/remote_device.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_ext.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/rpmsg/rpmsg_core.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/virtio/virtio.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/virtio/virtqueue.c"
++    "${ProjDirPath}/../../../../../middleware/multicore/open-amp/porting/env/freertos/rpmsg_porting.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/croutine.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/event_groups.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/list.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/queue.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/tasks.c"
++    "${ProjDirPath}/../../../../../rtos/FreeRTOS/Source/timers.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/ccm_analog_imx7d.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/ccm_imx7d.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/lmem.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/rdc.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/wdog_imx.c"
++    "${ProjDirPath}/../../../../../platform/utilities/src/debug_console_imx.c"
++    "${ProjDirPath}/../../../../../platform/utilities/inc/debug_console_imx.h"
++    "${ProjDirPath}/../../../../../platform/utilities/src/print_scan.c"
++    "${ProjDirPath}/../../../../../platform/utilities/src/print_scan.h"
++    "${ProjDirPath}/../../../../../platform/devices/MCIMX7D/startup/system_MCIMX7D_M4.c"
++    "${ProjDirPath}/../../../../../platform/devices/MCIMX7D/startup/system_MCIMX7D_M4.h"
++    "${ProjDirPath}/../../../pin_mux.c"
++    "${ProjDirPath}/../../../pin_mux.h"
++    "${ProjDirPath}/../../../board.c"
++    "${ProjDirPath}/../../../board.h"
++    "${ProjDirPath}/../../../clock_freq.c"
++    "${ProjDirPath}/../../../clock_freq.h"
++    "${ProjDirPath}/../hardware_init.c"
++    "${ProjDirPath}/../../../../../platform/drivers/src/uart_imx.c"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/uart_imx.h"
++    "${ProjDirPath}/../../../../../platform/drivers/src/mu_imx.c"
++    "${ProjDirPath}/../../../../../platform/drivers/inc/mu_imx.h"
++)
++SET_TARGET_PROPERTIES(instrumento PROPERTIES OUTPUT_NAME "instrumento.elf")
++
++TARGET_LINK_LIBRARIES(instrumento -Wl,--start-group)
++# LIBRARIES
++IF(CMAKE_BUILD_TYPE MATCHES Debug)
++ELSEIF(CMAKE_BUILD_TYPE MATCHES Release)
++ENDIF()
++
++# SYSTEM LIBRARIES
++TARGET_LINK_LIBRARIES(instrumento m)
++TARGET_LINK_LIBRARIES(instrumento c)
++TARGET_LINK_LIBRARIES(instrumento gcc)
++TARGET_LINK_LIBRARIES(instrumento nosys)
++TARGET_LINK_LIBRARIES(instrumento -Wl,--end-group)
++
++# MAP FILE
++SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}  -Xlinker -Map=debug/instrumento.map")
++SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}  -Xlinker -Map=release/instrumento.map")
++
++# BIN AND HEX
++ADD_CUSTOM_COMMAND(TARGET instrumento POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Oihex ${EXECUTABLE_OUTPUT_PATH}/instrumento.elf ${EXECUTABLE_OUTPUT_PATH}/instrumento.hex)
++ADD_CUSTOM_COMMAND(TARGET instrumento POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Obinary ${EXECUTABLE_OUTPUT_PATH}/instrumento.elf ${EXECUTABLE_OUTPUT_PATH}/instrumento.bin)
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_all.sh b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_all.sh
+new file mode 100755
+index 0000000..ebb0c25
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_all.sh
+@@ -0,0 +1,5 @@
++#!/bin/sh
++cmake -DCMAKE_TOOLCHAIN_FILE="../../../../../tools/cmake_toolchain_files/armgcc.cmake" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug  .
++make -j4
++cmake -DCMAKE_TOOLCHAIN_FILE="../../../../../tools/cmake_toolchain_files/armgcc.cmake" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release  .
++make -j4
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_debug.sh b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_debug.sh
+new file mode 100755
+index 0000000..571868b
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_debug.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++cmake -DCMAKE_TOOLCHAIN_FILE="../../../../../tools/cmake_toolchain_files/armgcc.cmake" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug  .
++make -j4
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_release.sh b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_release.sh
+new file mode 100755
+index 0000000..035ce4e
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/build_release.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++cmake -DCMAKE_TOOLCHAIN_FILE="../../../../../tools/cmake_toolchain_files/armgcc.cmake" -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release  .
++make -j4
+diff --git a/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/clean.sh b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/clean.sh
+new file mode 100755
+index 0000000..795ad87
+--- /dev/null
++++ b/examples/imx7d_pico_m4/demo_apps/instrumento/armgcc/clean.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++rm -rf debug release CMakeFiles
++rm -rf Makefile cmake_install.cmake CMakeCache.txt
