@@ -18,8 +18,12 @@ Ubuntu de TechNexion (python3-gi, GTK 3, pycairo).
 
 Con VISOR_GUARDA=<fichero> en el entorno, añade cada muestra recibida por el
 canal binario al fichero, una por línea: «t_unix índice valor».
-Para ver el ADC: m4orden.py "fuente adc ain01 128 90" (con spi_imx desligado)
-antes de lanzar el visor; la fuente es estado del M4 y el visor no la cambia.
+En modo gráfico, la segunda fila elige la fuente del M4 (sintética o ADS1220,
+entrada, ganancia, SPS) y «Aplicar» la pone en marcha. El visor cede el SPI al
+M4 con /usr/local/sbin/spi-m4 (sudo sin contraseña solo para ese script) antes
+de «fuente adc», y lo devuelve a Linux tras «fuente sint» y al cerrarse. La
+última configuración se guarda en ~/.config/instrumento.conf y se aplica al
+abrir. En --consola la fuente no se toca: es estado del M4 (m4orden.py).
 
 Protocolo: ver docs/M4_Instrumento_Bitacora.md.
 Copyright (c) 2026 rommeljose y colaboradores. MIT.
@@ -29,9 +33,11 @@ import array
 import collections
 import fcntl
 import glob
+import json
 import os
 import signal
 import struct
+import subprocess
 import sys
 import termios
 import time
@@ -49,6 +55,43 @@ LATIDO_S = 0.5                          # el M4 deja el binario tras 2 s sin lat
 GPIO_LED = "/sys/class/gpio/gpio38"     # USER LED = GPIO2_IO06; SOLO LECTURA
 VENTANA_S = 30                          # segundos de traza en pantalla
 PANEL_XFCE = 26     # px: el panel de XFCE se dibuja encima sin reservar su franja
+SPI_M4 = "/usr/local/sbin/spi-m4"                   # cede/devuelve ECSPI3 (sudo)
+SPI_LIGADO = "/sys/bus/platform/drivers/spi_imx/30840000.spi"
+CONF = os.path.expanduser("~/.config/instrumento.conf")
+CONF_DEF = {"fuente": "sint", "entrada": "ain01", "pga": 64, "sps": 90}
+ENTRADAS = [("ain01", "geófono (AIN0−AIN1)"), ("corto", "entradas en corto"),
+            ("avdd", "AVDD/4"), ("temp", "temperatura")]
+PGAS = [1, 2, 4, 8, 16, 32, 64, 128]
+SPSS = [20, 45, 90, 175, 330, 600]
+
+
+def lee_conf():
+    """(configuración, existía el fichero)"""
+    try:
+        with open(CONF) as f:
+            d = json.load(f)
+        return {k: d.get(k, v) for k, v in CONF_DEF.items()}, True
+    except (OSError, ValueError):
+        return dict(CONF_DEF), False
+
+
+def guarda_conf(d):
+    try:
+        os.makedirs(os.path.dirname(CONF), exist_ok=True)
+        with open(CONF, "w") as f:
+            json.dump(d, f)
+    except OSError:
+        pass
+
+
+def spi_m4(accion):
+    """Cede o devuelve el ECSPI3. Devuelve None si fue bien, o el error."""
+    try:
+        r = subprocess.run(["sudo", "-n", SPI_M4, accion], capture_output=True,
+                           text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return str(e)
+    return None if r.returncode == 0 else (r.stderr.strip() or f"código {r.returncode}")
 
 
 # --------------------------------------------------------------------------
@@ -206,6 +249,7 @@ class Estado:
         self.seq = None             # último seq de bloque binario
         self.flags = 0              # del último bloque binario
         self.via = "texto"
+        self.t_s = 0.0              # hora de la última línea S
 
     def bloque(self, ini, fs, vals, seq=None):
         if fs != self.fs:           # otra base de tiempo: se empieza de cero
@@ -272,6 +316,7 @@ class Estado:
                     self.eventos.append([fin - dur, fin, 0.0, pico])
             elif t == "S":
                 self.s = dict(kv.split("=", 1) for kv in p[1:] if "=" in kv)
+                self.t_s = time.time()
             elif t == "H":
                 self.hola = " ".join(p[1:])
             elif t in ("OK", "ERR"):
@@ -402,7 +447,10 @@ def grafico(pantalla_completa):
         cr.select_font_face("Sans")
         cr.set_font_size(15)
         cr.move_to(8, 18)
-        cr.show_text(f"fs={st.fs} SPS   "
+        fuente = s.get("fuente", "?")
+        if fuente == "adc":
+            fuente = "ADC " + aplicada["txt"]
+        cr.show_text(f"{fuente}   fs={st.fs} SPS   "
                      f"tx={'sí' if s.get('tx') == '1' else 'no'}   "
                      f"sismos={s.get('sismos', '?')}  eventos={s.get('eventos', '?')}  "
                      f"perdidos={s.get('perdidos', '?')}   vía {st.via}"
@@ -513,15 +561,84 @@ def grafico(pantalla_completa):
         r = int(st.s.get("ruido", 20))
         return f"ruido {max(0, min(100000, int(r * f) if r else 10))}"
 
-    boton("¡Sismo!", lambda: "sismo")
+    solo_sint = [boton("¡Sismo!", lambda: "sismo")]
     b_pausa = boton("Pausa", pausa_sigue)
-    boton("10", lambda: "fs 10")
-    boton("100", lambda: "fs 100")
-    boton("250 SPS", lambda: "fs 250")
+    solo_sint += [boton("10", lambda: "fs 10"),
+                  boton("100", lambda: "fs 100"),
+                  boton("250 SPS", lambda: "fs 250")]
     boton("Umbral−", lambda: umbral(-5))
     boton("Umbral+", lambda: umbral(+5))
-    boton("Ruido×2", lambda: ruido(2))
-    boton("Ruido÷2", lambda: ruido(0.5))
+    solo_sint += [boton("Ruido×2", lambda: ruido(2)),
+                  boton("Ruido÷2", lambda: ruido(0.5))]
+
+    # Segunda fila: la fuente del M4 y el reparto del SPI
+    fila = Gtk.Box(spacing=4)
+    caja.pack_start(fila, False, False, 2)
+
+    def combo(opciones):
+        cb_ = Gtk.ComboBoxText()
+        for ident, texto in opciones:
+            cb_.append(str(ident), texto)
+        fila.pack_start(cb_, False, False, 0)
+        return cb_
+
+    fila.pack_start(Gtk.Label(label=" Fuente"), False, False, 0)
+    c_fuente = combo([("sint", "sintética"), ("adc", "ADS1220")])
+    c_entrada = combo(ENTRADAS)
+    c_pga = combo([(g, f"×{g}") for g in PGAS])
+    c_sps = combo([(v, f"{v} SPS") for v in SPSS])
+    b_aplicar = Gtk.Button(label="Aplicar")
+    fila.pack_start(b_aplicar, False, False, 0)
+    l_spi = Gtk.Label(label="")
+    fila.pack_start(l_spi, True, True, 0)
+
+    conf, habia_conf = lee_conf()
+    c_fuente.set_active_id(conf["fuente"])
+    c_entrada.set_active_id(conf["entrada"])
+    c_pga.set_active_id(str(conf["pga"]))
+    c_sps.set_active_id(str(conf["sps"]))
+
+    aplicada = {"txt": "", "fuente": None}      # lo último que se pidió al M4
+    espera = {"adc": 0.0}                       # comprobar que el ADC respondió
+
+    def sensibles(*_):
+        adc = c_fuente.get_active_id() == "adc"
+        c_entrada.set_sensitive(adc)
+        c_sps.set_sensitive(adc)
+        c_pga.set_sensitive(adc and c_entrada.get_active_id() in ("ain01", "corto"))
+
+    c_fuente.connect("changed", sensibles)
+    c_entrada.connect("changed", sensibles)
+    sensibles()
+
+    def devolver():
+        err = spi_m4("devolver")
+        if err:
+            st.respuestas.append("ERR spi-m4: " + err)
+        return False
+
+    def aplicar(*_):
+        d = {"fuente": c_fuente.get_active_id(), "entrada": c_entrada.get_active_id(),
+             "pga": int(c_pga.get_active_id()), "sps": int(c_sps.get_active_id())}
+        guarda_conf(d)
+        if d["fuente"] == "adc":
+            err = spi_m4("ceder")               # primero soltar Linux
+            if err:
+                st.respuestas.append("ERR spi-m4: " + err)
+                return
+            g = d["pga"] if d["entrada"] in ("ain01", "corto") else 1
+            c.envia(f"fuente adc {d['entrada']} {g} {d['sps']}")
+            aplicada["txt"] = f"{d['entrada']} ×{g} {d['sps']} SPS"
+            espera["adc"] = time.time()
+            GLib.timeout_add(700, lambda: (c.envia("estado"), False)[1])
+        else:
+            c.envia("fuente sint")              # el M4 suelta el bus en su tarea...
+            aplicada["txt"] = ""
+            espera["adc"] = 0.0
+            GLib.timeout_add(600, devolver)     # ...y entonces vuelve a Linux
+        aplicada["fuente"] = d["fuente"]
+
+    b_aplicar.connect("clicked", aplicar)
     salir = Gtk.Button(label="✕")
     salir.connect("clicked", lambda *_: Gtk.main_quit())
     barra.pack_start(salir, True, True, 0)
@@ -533,11 +650,25 @@ def grafico(pantalla_completa):
     def refresca():
         area.queue_draw()
         b_pausa.set_label("Pausa" if st.s.get("tx", "1") == "1" else "Sigue")
+        adc = st.s.get("fuente") == "adc"
+        for b in solo_sint:
+            b.set_sensitive(not adc)
+        l_spi.set_text("SPI: " + ("Linux" if os.path.exists(SPI_LIGADO) else "M4"))
+        # ¿Tomó el M4 el ADC? Si no responde, el M4 vuelve solo a la sintética
+        # (adc_err≠0) y el bus debe volver a Linux.
+        if espera["adc"] and st.t_s > espera["adc"] + 0.5:
+            espera["adc"] = 0.0
+            if st.s.get("fuente") != "adc":
+                st.respuestas.append(f"ERR el ADC no responde (adc_err={st.s.get('adc_err', '?')})")
+                aplicada["txt"] = ""
+                devolver()
         return True
 
     GLib.timeout_add(100, refresca)
     for o in ("hola", "inicia", "estado"):
         c.envia(o)
+    if habia_conf:
+        GLib.timeout_add(300, lambda: (aplicar(), False)[1])
 
     win.connect("destroy", Gtk.main_quit)
     signal.signal(signal.SIGTERM, lambda *_: Gtk.main_quit())
@@ -556,6 +687,12 @@ def grafico(pantalla_completa):
     try:
         Gtk.main()
     finally:
+        # Al cerrar, el bus vuelve a Linux: primero el M4 lo suelta.
+        if aplicada["fuente"] == "adc" or st.s.get("fuente") == "adc" \
+                or not os.path.exists(SPI_LIGADO):
+            c.envia("fuente sint")
+            time.sleep(0.6)
+            devolver()
         if cb:
             cb.cierra()
         c.cierra()

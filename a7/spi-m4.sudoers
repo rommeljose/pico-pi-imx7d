@@ -1,0 +1,5 @@
+# /etc/sudoers.d/spi-m4 (root, 0440). Instalar SIEMPRE comprobando antes:
+#   sudo visudo -c -f spi-m4.sudoers && sudo install -m 0440 spi-m4.sudoers /etc/sudoers.d/spi-m4
+# Deja al usuario del escritorio ceder o devolver el ECSPI3 sin contraseña,
+# y nada más.
+ubuntu ALL=(root) NOPASSWD: /usr/local/sbin/spi-m4

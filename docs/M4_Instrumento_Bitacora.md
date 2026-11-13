@@ -15,7 +15,7 @@ fuera de la placa.
 |---|---|
 | 0 — señal sintética, STA/LTA en el M4, visor | ✅ verificada (2026-11-12) |
 | 1 — bloques binarios por `/dev/rpmsg0`, latido | ✅ verificada (2026-11-12) |
-| 2 — ECSPI3 en el M4 y ADC real (**ADS1220**) | ✅ verificada (2026-11-13), con un **geófono SM-6** conectado directo. Falta el servicio que desliga `spi_imx` al arrancar, el rechazo de 50/60 Hz y una alimentación analógica propia |
+| 2 — ECSPI3 en el M4 y ADC real (**ADS1220**) | ✅ verificada (2026-11-13), con un **geófono SM-6** conectado directo. El visor elige la fuente y reparte el SPI (paso 5, en manual). Falta el rechazo de 50/60 Hz y una alimentación analógica propia |
 | 3 — PPS de un GPS en el M4 | pendiente |
 | 4 — varias placas en red | pendiente |
 
@@ -809,3 +809,53 @@ la potencia (pico a ~60 Hz medido a 600 SPS).
 - Cable apantallado.
 - AVDD con regulador propio.
 - Medir el ruido de fondo de noche.
+
+## 2026-11-13 — Paso 5, en manual: el visor elige la fuente y reparte el SPI
+
+En vez de un servicio que desligue `spi_imx` al arrancar, el usuario prefirió
+**arranque manual desde el icono del escritorio**. Así el SPI queda en manos de
+Linux salvo cuando se pide, y un reinicio nunca deja la tarjeta a medias. El
+servicio al arrancar queda para cuando la placa vaya al campo.
+
+**Piezas:**
+
+- **`/usr/local/sbin/spi-m4 ceder|devolver|estado`** (`a7/spi-m4`): solo hace el
+  `unbind`/`bind` de `30840000.spi` y comprueba el resultado. Una regla en
+  `/etc/sudoers.d/spi-m4` (`a7/spi-m4.sudoers`, validada con `visudo -c`) deja al
+  usuario del escritorio ejecutar ese script, y solo ese, sin contraseña.
+- **Segunda fila del visor:** fuente (sintética / ADS1220), entrada (geófono,
+  corto, AVDD/4, temperatura), ganancia ×1–×128 (inactiva con AVDD y
+  temperatura, que van sin PGA), 20–600 SPS, **Aplicar** y el estado `SPI: Linux`
+  / `SPI: M4`. Con el ADC activo se desactivan los botones que solo valen para la
+  sintética.
+- **Orden fijo:**
+  - Al pasar al ADC: primero `spi-m4 ceder` y después `fuente adc …`.
+  - Al volver a la sintética o al cerrar: primero `fuente sint`, 0,6 s de espera
+    (el M4 suelta el bus en su tarea, no al responder `OK`) y después
+    `spi-m4 devolver`.
+- **Si el ADC no responde,** el M4 vuelve solo a la sintética con `adc_err≠0`. El
+  visor lo ve en la siguiente línea `S`, lo avisa y devuelve el SPI.
+- **Memoria:** `~/.config/instrumento.conf` (JSON) guarda lo último aplicado, y
+  el visor lo aplica al abrir. Sin ese fichero, no cambia nada al arrancar.
+
+**Verificado funcionando** (2026-11-13), sin tocar la pantalla. Con
+`instrumento.conf` en geófono ×64 a 90 SPS, desde el visor anterior en ×128:
+
+| Paso | SPI | M4 |
+|---|---|---|
+| Abrir (`visor.sh`) | M4 | `fuente=adc adc_r0=12` (×64) |
+| Cerrar (`visor.sh parar`) | Linux, `/dev/spidev2.0` de vuelta | `fuente=sint` |
+| Reabrir | M4 | `fuente=adc adc_r0=12` |
+
+La fila cabe en los 800 px (captura de pantalla). **Verificado por el usuario
+en la pantalla**, el mismo día:
+
+- **Aplicar** a sintética: `SPI: Linux` y botones reactivados.
+- **Aplicar** a ADS1220 ×32: `SPI: M4` y la cabecera `ADC ain01 ×32 90 SPS`.
+- Cerrar con ✕ y abrir desde el icono: volvió con ×32.
+
+**Sin probar:** el aviso de ADC que no responde, porque haría falta desconectar
+el módulo.
+
+Con ×64 los golpes cercanos aún llegan a la saturación (±8,39 M cuentas): para
+golpes, ×16 o ×32.

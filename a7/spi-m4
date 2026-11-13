@@ -1,0 +1,34 @@
+#!/bin/sh
+# spi-m4: cede el ECSPI3 al M4 (desliga spi_imx) o se lo devuelve a Linux.
+#
+#   spi-m4 ceder       desliga spi_imx: /dev/spidev2.0 desaparece y el M4 puede tomar el bus
+#   spi-m4 devolver    liga spi_imx: Linux recupera el bus y /dev/spidev2.0
+#   spi-m4 estado      imprime «linux» o «m4» (no necesita root)
+#
+# Se instala en /usr/local/sbin/spi-m4 (root, 755) y con una regla de sudoers
+# (spi-m4.sudoers) que deja al usuario del escritorio ejecutar SOLO este script
+# sin contraseña. Lo usa el visor del instrumento.
+#
+# Orden obligado: ceder ANTES de «fuente adc»; «fuente sint» ANTES de devolver.
+# Ligar el driver con el M4 usando el bus reinicia el controlador bajo sus pies.
+#
+# Copyright (c) 2026 rommeljose y colaboradores. MIT.
+DEV=30840000.spi
+DRV=/sys/bus/platform/drivers/spi_imx
+
+ligado() { [ -e "$DRV/$DEV" ]; }
+
+case "$1" in
+    ceder)
+        ligado && { echo "$DEV" > "$DRV/unbind" || exit 1; }
+        ligado && { echo "spi-m4: spi_imx sigue ligado" >&2; exit 1; }
+        echo m4 ;;
+    devolver)
+        ligado || { echo "$DEV" > "$DRV/bind" || exit 1; }
+        ligado || { echo "spi-m4: spi_imx no se ligó" >&2; exit 1; }
+        echo linux ;;
+    estado)
+        if ligado; then echo linux; else echo m4; fi ;;
+    *)
+        echo "uso: spi-m4 ceder|devolver|estado" >&2; exit 2 ;;
+esac
